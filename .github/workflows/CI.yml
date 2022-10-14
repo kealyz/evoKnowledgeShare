@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: 
+    - main
+    - Dev
+    - Features/*
+  pull_request:
+    branches:
+    - main
+    - Dev
+    - Features/*
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.x
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: src/evoKnowledgeShare.Backend
+    - name: Build
+      run: dotnet build --configuration Release
+      working-directory: src/evoKnowledgeShare.Backend
+    - name: Test with the dotnet CLI
+      run: dotnet test
+      working-directory: src/evoKnowledgeShare.Backend
+    - uses: actions/upload-artifact@v2
+      with:
+       name: evoKnowledgeShare
+       path: evoKnowledgeShare/bin/Release
