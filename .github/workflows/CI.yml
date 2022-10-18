@@ -25,13 +25,13 @@ jobs:
         dotnet-version: 6.x
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: src/evoKnowledgeShare.Backend
+      working-directory: src/evoKnowledgeShare
     - name: Build
       run: dotnet build --configuration Release
-      working-directory: src/evoKnowledgeShare.Backend
+      working-directory: src/evoKnowledgeShare
     - name: Test with the dotnet CLI
       run: dotnet test
-      working-directory: src/evoKnowledgeShare.Backend
+      working-directory: src/evoKnowledgeShare
     - uses: actions/upload-artifact@v2
       with:
        name: evoKnowledgeShare
