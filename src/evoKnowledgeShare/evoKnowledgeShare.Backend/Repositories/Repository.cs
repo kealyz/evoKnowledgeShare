@@ -1,9 +1,17 @@
-﻿using evoKnowledgeShare.Backend.Interfaces;
+﻿using evoKnowledgeShare.Backend.DataAccess;
+using evoKnowledgeShare.Backend.Interfaces;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {
+        private readonly EvoKnowledgeDbContext myDbContext;
+
+        public Repository(EvoKnowledgeDbContext dbContext)
+        {
+            myDbContext = dbContext;
+        }
+
         public void Add(T entity)
         {
             throw new NotImplementedException();

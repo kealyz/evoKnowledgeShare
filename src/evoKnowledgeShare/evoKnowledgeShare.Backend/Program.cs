@@ -1,4 +1,7 @@
 using evoKnowledgeShare.Backend.DataAccess;
+using evoKnowledgeShare.Backend.Interfaces;
+using evoKnowledgeShare.Backend.Models;
+using evoKnowledgeShare.Backend.Repositories;
 using evoKnowledgeShare.Backend.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +18,7 @@ namespace evoKnowledgeShare.Backend
             builder.Services.AddControllers();
 
             builder.Services.AddDbContext<EvoKnowledgeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString")));
+            builder.Services.AddScoped<IRepository<User>, Repository<User>>();
             builder.Services.AddScoped<UserService>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

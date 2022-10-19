@@ -1,8 +1,5 @@
-﻿using evoKnowledgeShare.Backend.DataAccess;
-using evoKnowledgeShare.Backend.Interfaces;
+﻿using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
-using evoKnowledgeShare.Backend.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace evoKnowledgeShare.Backend.Services
 {

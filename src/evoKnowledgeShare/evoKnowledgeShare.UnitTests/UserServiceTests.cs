@@ -8,29 +8,14 @@ namespace evoKnowledgeShare.UnitTests
     public class UserServiceTests
     {
         private UserService myUserService;
-        private readonly Mock<IRepository<User>> myRepositoryMock = new Mock<IRepository<User>>();
-        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-
-        [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            stopwatch.Start();
-            myUserService = new UserService(myRepositoryMock.Object);
-            stopwatch.Stop();
-            Console.WriteLine("One time setup took {0} ms.", stopwatch.ElapsedMilliseconds);
-        }
+        private Mock<IRepository<User>> myRepositoryMock;
+        readonly System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
         [SetUp]
         public void Setup()
         {
-        }
-
-        [Test]
-        public void GetAllUsers_ShouldReturnAll()
-        {
-            // Arrange
-            stopwatch.Restart();
-            stopwatch.Start();
+            myRepositoryMock = new Mock<IRepository<User>>(MockBehavior.Strict);
+            myUserService = new UserService(myRepositoryMock.Object);
             myRepositoryMock.Setup(x => x.GetAll()).Returns(() =>
             {
                 return new List<User>()
@@ -39,8 +24,21 @@ namespace evoKnowledgeShare.UnitTests
                     new User(2,"TestUser2","User2","UserLastName2")
                 };
             });
-            stopwatch.Stop();
-            Console.WriteLine("Mock setup took {0} ms.", stopwatch.ElapsedMilliseconds);
+
+            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(() =>
+            {
+                return new List<User>()
+                {
+                    new User(1,"TestUser","User","UserLastName"),
+                    new User(2,"TestUser2","User2","UserLastName2")
+                };
+            });
+        }
+
+        [Test]
+        public void GetAllUsers_ShouldReturnAll()
+        {
+            // Arrange
 
             stopwatch.Restart();
             stopwatch.Start();
@@ -56,26 +54,11 @@ namespace evoKnowledgeShare.UnitTests
             stopwatch.Stop();
             Console.WriteLine("Assertion took {0} ms.", stopwatch.ElapsedMilliseconds);
         }
-
+        
         [Test]
         public async Task GetAllUsersAsync_ShouldReturnAll()
         {
             // Arrange
-            stopwatch.Restart();
-            stopwatch.Start();
-            myRepositoryMock.Setup(x => x.GetAllAsync()).Returns(() =>
-            {
-                Task.FromResult(() =>
-                {
-                    return new List<User>()
-                    {
-                        new User(1,"TestUser","User","UserLastName"),
-                        new User(2,"TestUser2","User2","UserLastName2")
-                    };
-                });
-            });
-            stopwatch.Stop();
-            Console.WriteLine("Mock setup took {0} ms.", stopwatch.ElapsedMilliseconds);
 
             stopwatch.Restart();
             stopwatch.Start();
