@@ -33,6 +33,11 @@ namespace evoKnowledgeShare.UnitTests
                     new User(2,"TestUser2","User2","UserLastName2")
                 };
             });
+
+            myRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(() =>
+            {
+                return new User(1, "Helo", "szia", "");
+            });
         }
 
         [Test]
