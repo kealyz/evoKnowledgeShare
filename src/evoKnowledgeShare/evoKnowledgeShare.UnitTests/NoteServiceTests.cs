@@ -25,98 +25,135 @@ namespace evoKnowledgeShare.UnitTests
             {
                 return new List<Note>()
                 {
-                    new Note(new Guid(),"z004cj8m",1,DateTimeOffset.Now,"Description","Title")
+                    new Note(Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c"),"11111111",1,new DateTimeOffset(2022, 10, 23, 12, 0, 0, 10, new TimeSpan(1, 0, 0)),"Leiras1","Title1"),
+                    new Note(Guid.Parse("d8592323-486f-480e-bb7b-f58810cdb7e2"),"22222222",2,new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0)),"Leiras2","Title2"),
+                    new Note(Guid.Parse("d9e2aed2-a6b4-48ed-a133-6cc8198b2f24"),"33333333",3,new DateTimeOffset(2022, 10, 23, 14, 20, 0, 10, new TimeSpan(1, 0, 0)),"Leiras3","Title3")
                 };
             });
             myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(() =>
             {
                 return new List<Note>()
                 {
-                    new Note(new Guid(),"z004cj8m",1,DateTimeOffset.Now,"Description","Title")
+                    new Note(Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c"),"11111111",1,new DateTimeOffset(2022, 10, 23, 12, 0, 0, 10, new TimeSpan(1, 0, 0)),"Leiras1","Title1"),
+                    new Note(Guid.Parse("d8592323-486f-480e-bb7b-f58810cdb7e2"),"22222222",2,new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0)),"Leiras2","Title2"),
+                    new Note(Guid.Parse("d9e2aed2-a6b4-48ed-a133-6cc8198b2f24"),"33333333",3,new DateTimeOffset(2022, 10, 23, 14, 20, 0, 10, new TimeSpan(1, 0, 0)),"Leiras3","Title3")
                 };
-            });
-            myRepositoryMock.Setup(x => x.GetByGuid(Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c"))).Returns(() =>
-            {
-                return new Note(Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c"), "z004cj8m", 1, DateTimeOffset.Now, "Description", "Title");
-            });
-            myRepositoryMock.Setup(x => x.GetByUserId("z004cj8m")).Returns(() =>
-            {
-                return new Note(new Guid(), "z004cj8m", 1, DateTimeOffset.Now, "Description", "Title");
-            });
-            myRepositoryMock.Setup(x => x.GetByTopicId(2)).Returns(() =>
-            {
-                return new Note(new Guid(), "alma", 2, DateTimeOffset.Now, "Description", "Title");
-            });
-            myRepositoryMock.Setup(x => x.GetByCreationTime(new DateTimeOffset(2008, 5, 1, 8, 6, 32, 545, new TimeSpan(1, 0, 0)))).Returns(() =>
-            {
-                return new Note(new Guid(), "korte", 1, new DateTimeOffset(2008, 5, 1, 8, 6, 32, 545,new TimeSpan(1, 0, 0)), "Description", "Title");
-            });
-            myRepositoryMock.Setup(x => x.GetByDescription("Leiras")).Returns(() =>
-            {
-                return new Note(new Guid(), "barack", 1, DateTimeOffset.Now, "Leiras", "Title");
-            });
-            myRepositoryMock.Setup(x => x.GetByTitle("Cim")).Returns(() =>
-            {
-                return new Note(new Guid(), "uborka", 1, DateTimeOffset.Now, "Description", "Cim");
             });
 
         }
+        //Gets
         [Test]
         public void NoteService_GetAll_ShouldReturnAll()
         {
             var notes = myNoteService.GetAll();
 
-            Assert.That(notes.Count, Is.EqualTo(1));
+            Assert.That(notes.Count, Is.EqualTo(3));
         }
+        [Test]
+        public void NoteService_GetNoteById_ShouldReturnASPecificNote()
+        {
+            Guid guid = Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c");
+            var note = myNoteService.getNoteById(guid);
+
+            Assert.That(note.NoteId, Is.EqualTo(guid));
+        }
+        [Test]
+        public void NoteService_getNoteByUserId_ShouldReturnSpecificNote()
+        {
+            string userId = "22222222";
+            var note = myNoteService.getNoteByUserId(userId);
+
+            Assert.That(note.UserId, Is.EqualTo(userId));
+        }
+        [Test]
+        public void NoteService_getNoteByTopicId_ShouldReturnSpecificNote()
+        {
+            int topicId = 2;
+            var note = myNoteService.getNoteByTopicId(topicId);
+
+            Assert.That(note.TopicId, Is.EqualTo(topicId));
+        }
+        [Test]
+        public void NoteService_getNoteByCreationTime_ShouldReturnSpecificNote()
+        {
+            DateTimeOffset date = new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0));
+            var note = myNoteService.getNoteByCreationTime(date);
+
+            Assert.That(note.CreatedAt, Is.EqualTo(date));
+        }
+        [Test]
+        public void NoteService_getNoteByDescription_ShouldReturnSpecificNote()
+        {
+            string description = "Leiras1";
+            Note note = myNoteService.getNoteByDescription(description);
+
+            Assert.That(note.Description, Is.EqualTo(description));
+        }
+        [Test]
+        public void NoteService_getNoteByTitle_ShouldReturnSpecificNote()
+        {
+            string title = "Title1";
+            Note note = myNoteService.getNoteByTitle(title);
+
+            Assert.That(note.Title, Is.EqualTo(title));
+        }
+
+        //Gets but async
         [Test]
         public async Task NoteService_GetAllAsync_ShouldReturnAll()
         {
             var notes = await myNoteService.GetAllAsync();
 
 
-            Assert.That(notes.Count(), Is.EqualTo(1));
+            Assert.That(notes.Count(), Is.EqualTo(3));
         }
         [Test]
-        public void NoteService_GetNoteByGuid_ShouldReturnASPecificNote()
+        public async Task NoteService_GetNoteByIdAsync_ShouldReturnASPecificNote()
         {
-            var note = myNoteService.getNoteByGuid(Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c"));
+            Guid guid = Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c");
+            var note = await myNoteService.getNoteByIdAsync(guid);
 
-            Assert.That(note.UserId, Is.EqualTo("z004cj8m"));
+            Assert.That(note.NoteId, Is.EqualTo(guid));
         }
         [Test]
-        public void NoteService_getNoteByUserId_ShouldReturnSpecificNote()
+        public async Task NoteService_getNoteByUserIdAsync_ShouldReturnSpecificNote()
         {
-            Note note = myNoteService.getNoteByUserId("z004cj8m");
+            string userId = "22222222";
+            var note = await myNoteService.getNoteByUserIdAsync(userId);
 
-            Assert.That(note.Description, Is.EqualTo("Description"));
+            Assert.That(note.UserId, Is.EqualTo(userId));
         }
         [Test]
-        public void NoteService_getNoteByTopicId_ShouldReturnSpecificNote()
+        public async Task NoteService_getNoteByTopicIdAsync_ShouldReturnSpecificNote()
         {
-            Note note = myNoteService.getNoteByTopicId(2);
+            int topicId = 2;
+            var note = await myNoteService.getNoteByTopicIdAsync(topicId);
 
-            Assert.That(note.UserId, Is.EqualTo("alma"));
+            Assert.That(note.TopicId, Is.EqualTo(topicId));
         }
         [Test]
-        public void NoteService_getNoteByCreationTime_ShouldReturnSpecificNote()
+        public async Task NoteService_getNoteByCreationTimeAsync_ShouldReturnSpecificNote()
         {
-            Note note = myNoteService.getNoteByCreationTime(new DateTimeOffset(2008, 5, 1, 8, 6, 32, 545, new TimeSpan(1, 0, 0)));
+            DateTimeOffset date = new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0));
+            var note = await myNoteService.getNoteByCreationTimeAsync(date);
 
-            Assert.That(note.UserId, Is.EqualTo("korte"));
+            Assert.That(note.CreatedAt, Is.EqualTo(date));
         }
         [Test]
-        public void NoteService_getNoteByDescription_ShouldReturnSpecificNote()
+        public async Task NoteService_getNoteByDescriptionAsync_ShouldReturnSpecificNote()
         {
-            Note note = myNoteService.getNoteByDescription("Leiras");
+            string description = "Leiras1";
+            var note = await myNoteService.getNoteByDescriptionAsync(description);
 
-            Assert.That(note.UserId, Is.EqualTo("barack"));
+            Assert.That(note.Description, Is.EqualTo(description));
         }
         [Test]
-        public void NoteService_getNoteByTitle_ShouldReturnSpecificNote()
+        public async Task NoteService_getNoteByTitleAsync_ShouldReturnSpecificNote()
         {
-            Note note = myNoteService.getNoteByTitle("Cim");
+            string title = "Title1";
+            var note = await myNoteService.getNoteByTitleAsync(title);
 
-            Assert.That(note.UserId, Is.EqualTo("uborka"));
+            Assert.That(note.Title, Is.EqualTo(title));
         }
     }
 }

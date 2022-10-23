@@ -6,12 +6,6 @@
         Task AddAsync(T entity);
         void AddRange(IEnumerable<T> entities);
         T GetById(int id);
-        T GetByUserId(string id);
-        T GetByGuid(Guid guid);
-        T GetByTopicId(int id);
-        T GetByCreationTime(DateTimeOffset date);
-        T GetByDescription (string description);
-        T GetByTitle (string title);
         IEnumerable<T> GetRangeById(IEnumerable<int> ids);
         IEnumerable<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync();
