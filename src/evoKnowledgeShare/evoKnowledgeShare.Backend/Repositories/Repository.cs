@@ -37,7 +37,37 @@ namespace evoKnowledgeShare.Backend.Repositories
             throw new NotImplementedException();
         }
 
+        public T GetByCreationTime(DateTimeOffset date)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetByDescription(string description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetByGuid(Guid guid)
+        {
+            throw new NotImplementedException();
+        }
+
         public T GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetByTitle(string title)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetByTopicId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetByUserId(string id)
         {
             throw new NotImplementedException();
         }

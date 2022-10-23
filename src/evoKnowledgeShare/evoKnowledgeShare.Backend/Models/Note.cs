@@ -13,7 +13,6 @@ namespace evoKnowledgeShare.Backend.Models
             Description = description;
             Title = title;
         }
-
         [Key]
         public Guid NoteId { get; set; }
         [Required]
@@ -26,9 +25,6 @@ namespace evoKnowledgeShare.Backend.Models
         public string Description { get; set; }
         [Required]
         public string Title { get; set; }
-
-
-
     }
     
 
