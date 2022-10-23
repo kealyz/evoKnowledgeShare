@@ -2,11 +2,6 @@
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace evoKnowledgeShare.UnitTests
 {
@@ -21,139 +16,193 @@ namespace evoKnowledgeShare.UnitTests
         {
             myRepositoryMock = new Mock<IRepository<Note>>(MockBehavior.Strict);
             myNoteService = new NoteService(myRepositoryMock.Object);
-            myRepositoryMock.Setup(x => x.GetAll()).Returns(() =>
-            {
-                return new List<Note>()
-                {
-                    new Note(Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c"),"11111111",1,new DateTimeOffset(2022, 10, 23, 12, 0, 0, 10, new TimeSpan(1, 0, 0)),"Leiras1","Title1"),
-                    new Note(Guid.Parse("d8592323-486f-480e-bb7b-f58810cdb7e2"),"22222222",2,new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0)),"Leiras2","Title2"),
-                    new Note(Guid.Parse("d9e2aed2-a6b4-48ed-a133-6cc8198b2f24"),"33333333",3,new DateTimeOffset(2022, 10, 23, 14, 20, 0, 10, new TimeSpan(1, 0, 0)),"Leiras3","Title3")
-                };
-            });
-            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(() =>
-            {
-                return new List<Note>()
-                {
-                    new Note(Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c"),"11111111",1,new DateTimeOffset(2022, 10, 23, 12, 0, 0, 10, new TimeSpan(1, 0, 0)),"Leiras1","Title1"),
-                    new Note(Guid.Parse("d8592323-486f-480e-bb7b-f58810cdb7e2"),"22222222",2,new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0)),"Leiras2","Title2"),
-                    new Note(Guid.Parse("d9e2aed2-a6b4-48ed-a133-6cc8198b2f24"),"33333333",3,new DateTimeOffset(2022, 10, 23, 14, 20, 0, 10, new TimeSpan(1, 0, 0)),"Leiras3","Title3")
-                };
-            });
 
         }
         //Gets
         [Test]
         public void NoteService_GetAll_ShouldReturnAll()
         {
-            var notes = myNoteService.GetAll();
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            myRepositoryMock.Setup(x=>x.GetAll()).Returns(new List<Note>
+            {
+                expectedNote
+            });
 
-            Assert.That(notes.Count, Is.EqualTo(3));
+            var actualNotes = myNoteService.GetAll();
+
+            Assert.That(actualNotes.Count, Is.EqualTo(1));
+            Assert.That(actualNotes.First, Is.EqualTo(expectedNote));
         }
         [Test]
-        public void NoteService_GetNoteById_ShouldReturnASPecificNote()
+        public void NoteService_GetNoteById_ShouldReturnASpecificNote()
         {
-            Guid guid = Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c");
-            var note = myNoteService.getNoteById(guid);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.NoteId, Is.EqualTo(guid));
+            var note = myNoteService.GetNoteById(expectedNote.NoteId);
+
+            Assert.That(note, Is.EqualTo(expectedNote));
         }
         [Test]
-        public void NoteService_getNoteByUserId_ShouldReturnSpecificNote()
+        public void NoteService_getNotesByUserId_ShouldReturnSpecificNote()
         {
-            string userId = "22222222";
-            var note = myNoteService.getNoteByUserId(userId);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.UserId, Is.EqualTo(userId));
+            var note = myNoteService.GetNotesByUserId(expectedNote.UserId);
+
+            Assert.That(note.Count, Is.EqualTo(1));
+            Assert.That(note.First, Is.EqualTo(expectedNote));
         }
         [Test]
-        public void NoteService_getNoteByTopicId_ShouldReturnSpecificNote()
+        public void NoteService_getNotesByTopicId_ShouldReturnSpecificNote()
         {
-            int topicId = 2;
-            var note = myNoteService.getNoteByTopicId(topicId);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.TopicId, Is.EqualTo(topicId));
-        }
-        [Test]
-        public void NoteService_getNoteByCreationTime_ShouldReturnSpecificNote()
-        {
-            DateTimeOffset date = new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0));
-            var note = myNoteService.getNoteByCreationTime(date);
+            var note = myNoteService.GetNotesByTopicId(expectedNote.TopicId);
 
-            Assert.That(note.CreatedAt, Is.EqualTo(date));
+            Assert.That(note.Count, Is.EqualTo(1));
+            Assert.That(note.First, Is.EqualTo(expectedNote));
         }
         [Test]
         public void NoteService_getNoteByDescription_ShouldReturnSpecificNote()
         {
-            string description = "Leiras1";
-            Note note = myNoteService.getNoteByDescription(description);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.Description, Is.EqualTo(description));
+            var note = myNoteService.GetNoteByDescription(expectedNote.Description);
+
+            Assert.That(note, Is.EqualTo(expectedNote));
         }
         [Test]
         public void NoteService_getNoteByTitle_ShouldReturnSpecificNote()
         {
-            string title = "Title1";
-            Note note = myNoteService.getNoteByTitle(title);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.Title, Is.EqualTo(title));
+            var note = myNoteService.GetNoteByTitle(expectedNote.Title);
+
+            Assert.That(note, Is.EqualTo(expectedNote));
         }
 
         //Gets but async
         [Test]
         public async Task NoteService_GetAllAsync_ShouldReturnAll()
         {
-            var notes = await myNoteService.GetAllAsync();
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Note>
+            {
+                expectedNote
+            });
 
+            var actualNotes = await myNoteService.GetAllAsync();
 
-            Assert.That(notes.Count(), Is.EqualTo(3));
+            Assert.That(actualNotes.Count, Is.EqualTo(1));
+            Assert.That(actualNotes.First, Is.EqualTo(expectedNote));
         }
         [Test]
-        public async Task NoteService_GetNoteByIdAsync_ShouldReturnASPecificNote()
+        public async Task NoteService_GetNoteByIdAsync_ShouldReturnASpecificNote()
         {
-            Guid guid = Guid.Parse("cdf2648a-2a53-4e7a-9d7a-6daae5c3e10c");
-            var note = await myNoteService.getNoteByIdAsync(guid);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.NoteId, Is.EqualTo(guid));
+            var note =await myNoteService.GetNoteByIdAsync(expectedNote.NoteId);
+
+            Assert.That(note, Is.EqualTo(expectedNote));
         }
         [Test]
-        public async Task NoteService_getNoteByUserIdAsync_ShouldReturnSpecificNote()
+        public async Task NoteService_getNotesByUserIdAsync_ShouldReturnSpecificNote()
         {
-            string userId = "22222222";
-            var note = await myNoteService.getNoteByUserIdAsync(userId);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.UserId, Is.EqualTo(userId));
+            var note = await myNoteService.GetNotesByUserIdAsync(expectedNote.UserId);
+
+            Assert.That(note.Count, Is.EqualTo(1));
+            Assert.That(note.First, Is.EqualTo(expectedNote));
         }
         [Test]
-        public async Task NoteService_getNoteByTopicIdAsync_ShouldReturnSpecificNote()
+        public async Task NoteService_getNotesByTopicIdAsync_ShouldReturnSpecificNote()
         {
-            int topicId = 2;
-            var note = await myNoteService.getNoteByTopicIdAsync(topicId);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.TopicId, Is.EqualTo(topicId));
-        }
-        [Test]
-        public async Task NoteService_getNoteByCreationTimeAsync_ShouldReturnSpecificNote()
-        {
-            DateTimeOffset date = new DateTimeOffset(2022, 10, 23, 13, 10, 0, 10, new TimeSpan(1, 0, 0));
-            var note = await myNoteService.getNoteByCreationTimeAsync(date);
+            var note =await myNoteService.GetNotesByTopicIdAsync(expectedNote.TopicId);
 
-            Assert.That(note.CreatedAt, Is.EqualTo(date));
+            Assert.That(note.Count, Is.EqualTo(1));
+            Assert.That(note.First, Is.EqualTo(expectedNote));
         }
         [Test]
         public async Task NoteService_getNoteByDescriptionAsync_ShouldReturnSpecificNote()
         {
-            string description = "Leiras1";
-            var note = await myNoteService.getNoteByDescriptionAsync(description);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.Description, Is.EqualTo(description));
+            var note = await myNoteService.GetNoteByDescriptionAsync(expectedNote.Description);
+
+            Assert.That(note, Is.EqualTo(expectedNote));
         }
         [Test]
         public async Task NoteService_getNoteByTitleAsync_ShouldReturnSpecificNote()
         {
-            string title = "Title1";
-            var note = await myNoteService.getNoteByTitleAsync(title);
+            var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notExpectedNote = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<Note>
+            {
+                expectedNote,
+                notExpectedNote
+            });
 
-            Assert.That(note.Title, Is.EqualTo(title));
+            var note = await myNoteService.GetNoteByTitleAsync(expectedNote.Title);
+
+            Assert.That(note, Is.EqualTo(expectedNote));
         }
+
     }
 }

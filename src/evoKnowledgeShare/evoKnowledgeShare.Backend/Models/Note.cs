@@ -25,7 +25,19 @@ namespace evoKnowledgeShare.Backend.Models
         public string Description { get; set; }
         [Required]
         public string Title { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            obj?.GetHashCode();
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(NoteId, UserId, TopicId, CreatedAt, Description, Title);
+        }
     }
+
     
 
 }
