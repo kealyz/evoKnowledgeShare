@@ -31,6 +31,10 @@ namespace evoKnowledgeShare.Backend.Services {
             return myRepository.GetById(id);
         }
 
+        public IEnumerable<Topic> GetByTitle(string title) {
+            return myRepository.GetAll().Where(x => x.Title == title).ToList();
+        }
+
         public IEnumerable<Topic> GetRangeById(IEnumerable<int> ids) {
             return myRepository.GetRangeById(ids);
         }
