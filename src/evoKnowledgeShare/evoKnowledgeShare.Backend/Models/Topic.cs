@@ -7,5 +7,14 @@
             this.TopicID = TopicID;
             this.Title = Title;
         }
+
+        public override bool Equals(object? obj) {
+            obj?.GetHashCode();
+            return false;
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(TopicID, Title);
+        }
     }
 }
