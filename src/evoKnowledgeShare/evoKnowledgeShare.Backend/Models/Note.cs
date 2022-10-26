@@ -28,7 +28,10 @@ namespace evoKnowledgeShare.Backend.Models
 
         public override bool Equals(object? obj)
         {
-            obj?.GetHashCode();
+            if (obj?.GetHashCode())
+            {
+                return true;
+            }
             return false;
         }
 
