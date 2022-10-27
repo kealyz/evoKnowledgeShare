@@ -18,7 +18,7 @@ namespace evoKnowledgeShare.UnitTests
             myRepositoryMock = new Mock<IRepository<History>>(MockBehavior.Strict);
             myHistoryService = new HistoryService(myRepositoryMock.Object);
 
-            List<History> historiesList = new List<History>
+            var historiesList = new List<History>
             {
                 new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(), "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001"),
                 new History(new Guid("6eaf2c30-8276-499a-804b-630fe8e79722"), "Activity param", new DateTimeOffset(), "0.1", new Guid("9b042f7b-3c56-4d1c-a4fd-63f500c4cd92"), "PK002")
