@@ -26,9 +26,5 @@ namespace evoKnowledgeShare.Backend.Models
             NoteId = noteId;
             PKKey = pkKey;
         }
-
-        public History()
-        {
-        }
     }
 }
