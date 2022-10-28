@@ -79,5 +79,16 @@ namespace evoKnowledgeShare.UnitTests
             stopwatch.Stop();
             Console.WriteLine("Assertion took {0} ms.", stopwatch.ElapsedMilliseconds);
         }
+
+        [Test]
+        public async Task Test()
+        {
+            var user = new User(1, "Lajos", "Lali", "L");
+            myRepositoryMock.Setup(x => x.AddAsync(It.Is<User>(y => y.Equals(user))));
+
+            await myUserService.CreateUserAsync(user);
+
+            myRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(y => y.Equals(user))), Times.Once);
+        }
     }
 }

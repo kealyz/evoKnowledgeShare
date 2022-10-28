@@ -7,7 +7,7 @@ namespace evoKnowledgeShare.Backend.DataAccess
     {
         public DbSet<User> Users { get; set; }
 
-        public EvoKnowledgeDbContext(DbContextOptions<EvoKnowledgeDbContext> options) : base(options)
+        public EvoKnowledgeDbContext(DbContextOptions options) : base(options)
         {
         }
     }
