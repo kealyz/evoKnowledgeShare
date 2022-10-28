@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 
 namespace evoKnowledgeShare.Backend.Models
 {
@@ -19,6 +20,17 @@ namespace evoKnowledgeShare.Backend.Models
             UserName = userName;
             FirstName = firstName;
             LastName = lastName;
+        }
+        public override bool Equals(Object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            User u = (User)obj;
+            return Id.Equals(u.Id) && UserName.Equals(u.UserName) && FirstName.Equals(u.FirstName) && LastName.Equals(u.LastName);
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, UserName, FirstName, LastName);
         }
     }
 }
