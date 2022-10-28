@@ -22,4 +22,8 @@
     <ProjectReference Include="..\evoKnowledgeShare.Backend\evoKnowledgeShare.Backend.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>

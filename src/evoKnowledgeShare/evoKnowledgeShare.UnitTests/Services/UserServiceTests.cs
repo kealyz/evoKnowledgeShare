@@ -3,7 +3,7 @@ using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Moq;
 
-namespace evoKnowledgeShare.UnitTests
+namespace evoKnowledgeShare.UnitTests.Services
 {
     public class UserServiceTests
     {
@@ -59,7 +59,7 @@ namespace evoKnowledgeShare.UnitTests
             stopwatch.Stop();
             Console.WriteLine("Assertion took {0} ms.", stopwatch.ElapsedMilliseconds);
         }
-        
+
         [Test]
         public async Task GetAllUsersAsync_ShouldReturnAll()
         {
@@ -81,10 +81,10 @@ namespace evoKnowledgeShare.UnitTests
         }
 
         [Test]
-        public async Task Test()
+        public async Task UserService_CreateUserAsync_CreatesNewUser()
         {
             var user = new User(1, "Lajos", "Lali", "L");
-            myRepositoryMock.Setup(x => x.AddAsync(It.Is<User>(y => y.Equals(user))));
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).Returns(Task.CompletedTask);
 
             await myUserService.CreateUserAsync(user);
 

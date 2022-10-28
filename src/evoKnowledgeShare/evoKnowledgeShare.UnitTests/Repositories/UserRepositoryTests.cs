@@ -2,13 +2,8 @@
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace evoKnowledgeShare.UnitTests
+namespace evoKnowledgeShare.UnitTests.Repositories
 {
     [TestFixture]
     public class UserRepositoryTests
