@@ -15,16 +15,16 @@ namespace evoKnowledgeShare.Backend.Models
         [Required]
         public Guid NoteId { get; set; }
         [Required]
-        public string PKKey { get; set; }
+        public string UserId { get; set; }
 
-        public History(Guid id, string activity, DateTimeOffset changeDate, string version, Guid noteId, string pkKey)
+        public History(Guid id, string activity, DateTimeOffset changeDate, string version, Guid noteId, string userId)
         {
             Id = id;
             Activity = activity;
             ChangeDate = changeDate;
             Version = version;
             NoteId = noteId;
-            PKKey = pkKey;
+            UserId = userId;
         }
     }
 }

@@ -19,16 +19,5 @@ namespace evoKnowledgeShare.Backend.Services
         public History GetById(Guid id) => myHistoryRepository.GetAll().First(x => x.Id == id);
 
         public async Task CreateHistory(History history) => await myHistoryRepository.AddAsync(history);
-
-        public void RemoveHistoryById(Guid id)
-        {
-            var historyEntity = myHistoryRepository.GetAll().First(x => x.Id == id);
-            if (historyEntity is not null)
-            {
-                myHistoryRepository.Remove(historyEntity);
-            }
-        }
-
-        public void UpdateHistory(History history) => myHistoryRepository.Update(history);
     }
 }
