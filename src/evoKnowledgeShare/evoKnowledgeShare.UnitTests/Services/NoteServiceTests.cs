@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace evoKnowledgeShare.UnitTests
+namespace evoKnowledgeShare.UnitTests.Services
 {
     public class NoteServiceTests
     {
