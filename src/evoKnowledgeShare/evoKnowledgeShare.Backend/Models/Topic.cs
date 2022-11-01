@@ -9,7 +9,8 @@
         }
 
         public override bool Equals(object? obj) {
-            obj?.GetHashCode();
+            if (obj?.GetHashCode() == this.GetHashCode())
+                return true;
             return false;
         }
 
