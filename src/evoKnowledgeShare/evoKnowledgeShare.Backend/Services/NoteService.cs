@@ -42,9 +42,9 @@ namespace evoKnowledgeShare.Backend.Services
         public void RemoveNotesByAuthor(String userID) => myRepository.RemoveRange(myRepository.GetAll().Where(x => x.UserId == userID).ToList());
 
         //Remove but async
-        public async Task RemoveNoteAsync(Note note) => myRepository.RemoveAsync(note);
-        public async Task RemoveNoteByIdAsync(Guid id) => myRepository.RemoveAsync(myRepository.GetAll().Where(x => x.NoteId == id).First());
-        public async Task RemoveNotesByAuthorAsync(String userID) => myRepository.RemoveRangeAsync(myRepository.GetAll().Where(x => x.UserId == userID).ToList());
+        public async Task RemoveNoteAsync(Note note) => await myRepository.RemoveAsync(note);
+        public async Task RemoveNoteByIdAsync(Guid id) => await myRepository.RemoveAsync(myRepository.GetAll().Where(x => x.NoteId == id).First());
+        public async Task RemoveNotesByAuthorAsync(String userID) => await myRepository.RemoveRangeAsync(myRepository.GetAll().Where(x => x.UserId == userID).ToList());
 
         //Modify
         public void ModifyNote(Note note) => myRepository.Update(note);
