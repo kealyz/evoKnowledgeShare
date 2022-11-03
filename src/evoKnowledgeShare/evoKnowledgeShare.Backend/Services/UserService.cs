@@ -18,7 +18,9 @@ namespace evoKnowledgeShare.Backend.Services
 
         public User GetNoteById(int id) => myRepository.GetAll().Where(x => x.Id == id).First();
 
-        public async Task AddAsync(User user)
+        public async Task AddAsync(User user){}
+
+        public async Task CreateUserAsync(User user)
         {
             await myRepository.AddAsync(user);
         }

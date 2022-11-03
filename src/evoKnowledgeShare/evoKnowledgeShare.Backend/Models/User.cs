@@ -21,13 +21,30 @@ namespace evoKnowledgeShare.Backend.Models
             FirstName = firstName;
             LastName = lastName;
         }
-        public override bool Equals(Object obj)
+
+        public bool Equals(User other)
         {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-            User u = (User)obj;
-            return Id.Equals(u.Id) && UserName.Equals(u.UserName) && FirstName.Equals(u.FirstName) && LastName.Equals(u.LastName);
+            if (GetHashCode() == other.GetHashCode())
+            {
+                return Id == other.Id &&
+                UserName == other.UserName &&
+                FirstName == other.FirstName &&
+                LastName == other.LastName;
+            }
+
+            return false;
         }
+
+        public override bool Equals(object? other)
+        {
+            if (other is User otherUser)
+            {
+                return Equals(otherUser);
+            }
+
+            return false;
+        }
+
         public override int GetHashCode()
         {
             return HashCode.Combine(Id, UserName, FirstName, LastName);
