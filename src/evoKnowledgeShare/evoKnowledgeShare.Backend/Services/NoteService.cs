@@ -28,5 +28,13 @@ namespace evoKnowledgeShare.Backend.Services
         public async Task<Note> GetNoteByDescriptionAsync(string description) => (await myRepository.GetAllAsync()).Where(x => x.Description == description).First();
         public async Task<Note> GetNoteByTitleAsync(string title) => (await myRepository.GetAllAsync()).Where(x => x.Title == title).First();
 
+        //Adds
+        public void AddNote(Note note) => myRepository.Add(note);
+        public void AddNotes(List<Note> notes) => myRepository.AddRange(notes);
+
+        //Adds but async
+        public async Task AddNoteAsync(Note note) => await myRepository.AddAsync(note);
+        public async Task AddNotesAsync(List<Note> notes) => await myRepository.AddRangeAsync(notes);
+
     }
 }

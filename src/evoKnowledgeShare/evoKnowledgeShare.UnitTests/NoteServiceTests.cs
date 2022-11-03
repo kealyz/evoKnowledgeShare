@@ -204,5 +204,37 @@ namespace evoKnowledgeShare.UnitTests
             Assert.That(note, Is.EqualTo(expectedNote));
         }
 
+        [Test]
+        public void NoteService_AddNote_ShouldAddNoteToRepository()
+        {
+            var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notes= new List<Note>();
+            myRepositoryMock.Setup(x => x.Add(It.IsAny<Note>())).Callback<Note>((note =>
+            {
+                notes.Add(note);
+            }));
+            myNoteService.AddNote(note);
+            myRepositoryMock.Verify(x=>x.Add(note),Times.Once());
+            Assert.That(notes.Count == 1);
+            Assert.That(notes.ElementAt(0).Equals(note));
+
+        }
+        //[Test]
+        //public async Task NoteService_AddNoteAsync_ShouldAddNoteToRepository()
+        //{
+        //    var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+        //    var notes = new List<Note>();
+        //    myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Note>())).Callback<Note>((note =>
+        //    {
+        //        notes.Add(note);
+        //    }));
+
+        //    await myNoteService.AddNoteAsync(note);
+        //    myRepositoryMock.Verify(x => x.AddAsync(note), Times.Once());
+        //    Assert.That(notes.Count, Is.EqualTo(1));
+        //    Assert.That(notes.ElementAt(0), Is.EqualTo(note));
+
+        //}
+
     }
 }
