@@ -3,113 +3,46 @@ using evoKnowledgeShare.Backend.Interfaces;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public abstract class Repository<T> : IRepository<T> where T : class
     {
-        private readonly EvoKnowledgeDbContext myDbContext;
+        protected readonly EvoKnowledgeDbContext myDbContext;
 
         public Repository(EvoKnowledgeDbContext dbContext)
         {
             myDbContext = dbContext;
         }
 
-        public void Add(T entity)
+        public abstract void Add(T entity);
+
+        public abstract Task AddAsync(T entity);
+
+        public abstract void AddRange(IEnumerable<T> entities);
+
+        public abstract IEnumerable<T> GetAll();
+
+        public abstract Task<IEnumerable<T>> GetAllAsync();
+
+        public abstract T GetById(int id);
+
+        public abstract IEnumerable<T> GetRangeById(IEnumerable<int> ids);
+
+        public abstract void Remove(T entity);
+
+        public abstract void RemoveById(int id);
+
+        public abstract void RemoveRange(IEnumerable<T> entities);
+
+        public abstract void RemoveRangeById(IEnumerable<int> ids);
+
+        public void SaveChanges()
         {
-            throw new NotImplementedException();
+            myDbContext.SaveChanges();
         }
 
-        public async Task AddAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task SaveChangesAsync(CancellationToken cancellationToken = default);
 
-        public void AddRange(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Update(T entity);
 
-        public Task AddRangeAsync(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<T> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public T GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<T> GetRangeById(IEnumerable<int> ids)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Remove(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveRange(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveRangeAsync(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveRangeById(IEnumerable<int> ids)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateRange(IEnumerable<T> entitites)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IRepository<T>.RemoveRangeAsync(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IRepository<T>.UpdateAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void UpdateRange(IEnumerable<T> entitites);
     }
 }

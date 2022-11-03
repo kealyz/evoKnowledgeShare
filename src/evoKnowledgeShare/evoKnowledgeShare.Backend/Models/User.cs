@@ -20,5 +20,33 @@ namespace evoKnowledgeShare.Backend.Models
             FirstName = firstName;
             LastName = lastName;
         }
+
+        public bool Equals(User other)
+        {
+            if (GetHashCode() == other.GetHashCode())
+            {
+                return Id == other.Id &&
+                UserName == other.UserName &&
+                FirstName == other.FirstName &&
+                LastName == other.LastName;
+            }
+
+            return false;
+        }
+
+        public override bool Equals(object? other)
+        {
+            if (other is User otherUser)
+            {
+                return Equals(otherUser);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, UserName, FirstName, LastName);
+        }
     }
 }

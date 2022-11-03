@@ -3,7 +3,7 @@ using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Moq;
 
-namespace evoKnowledgeShare.UnitTests
+namespace evoKnowledgeShare.UnitTests.Services
 {
     public class NoteServiceTests
     {
