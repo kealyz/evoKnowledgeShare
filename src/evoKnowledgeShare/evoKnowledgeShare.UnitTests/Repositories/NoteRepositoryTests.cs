@@ -174,7 +174,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_UpdateRange_ShouldUpdateNotesInRepository()
         {
-            SetUp(9);
+            SetUp(10);
             var note = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
             var note2 = new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2");
             var note3 = new Note(new Guid(), "c", 3, new DateTimeOffset(), "leiras3", "cim3");
