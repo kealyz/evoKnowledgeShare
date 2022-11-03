@@ -36,5 +36,21 @@ namespace evoKnowledgeShare.Backend.Services
         public async Task AddNoteAsync(Note note) => await myRepository.AddAsync(note);
         public async Task AddNotesAsync(List<Note> notes) => await myRepository.AddRangeAsync(notes);
 
+        //Remove
+        public void RemoveNote(Note note) => myRepository.Remove(note);
+        public void RemoveNoteById(Guid id) => myRepository.Remove(myRepository.GetAll().Where(x => x.NoteId == id).First());
+        public void RemoveNotesByAuthor(String userID) => myRepository.RemoveRange(myRepository.GetAll().Where(x => x.UserId == userID).ToList());
+
+        //Remove but async
+        public void RemoveNoteAsync(Note note) => myRepository.RemoveAsync(note);
+        public void RemoveNoteByIdAsync(Guid id) => myRepository.RemoveAsync(myRepository.GetAll().Where(x => x.NoteId == id).First());
+        public void RemoveNotesByAuthorAsync(String userID) => myRepository.RemoveRangeAsync(myRepository.GetAll().Where(x => x.UserId == userID).ToList());
+
+        //Modify
+        public void ModifyNote(Note note) => myRepository.Update(note);
+
+        //Modify but async
+        public async Task ModifyNoteAsync(Note note) =>await myRepository.UpdateAsync(note);
+
     }
 }
