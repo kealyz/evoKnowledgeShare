@@ -27,6 +27,11 @@ namespace evoKnowledgeShare.Backend.Repositories
             throw new NotImplementedException();
         }
 
+        public Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<T> GetAll()
         {
             throw new NotImplementedException();
