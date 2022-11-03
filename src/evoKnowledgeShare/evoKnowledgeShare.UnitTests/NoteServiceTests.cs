@@ -219,6 +219,30 @@ namespace evoKnowledgeShare.UnitTests
             Assert.That(notes.ElementAt(0).Equals(note));
 
         }
+        [Test]
+        public void NoteService_AddNotes_ShouldAddNotesToRepository()
+        {
+            var note1 = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var note2 = new Note(Guid.NewGuid(), "22222222", 2, DateTimeOffset.Now, "Leiras2", "Title2");
+            var noteList = new List<Note>();
+            noteList.Add(note1);
+            noteList.Add(note2);
+            var actualNoteList = new List<Note>();
+
+            myRepositoryMock.Setup(x => x.AddRange(It.IsAny<IEnumerable<Note>>())).Callback<IEnumerable<Note>>((notes =>
+            {
+                foreach (var item in notes)
+                {
+                    actualNoteList.Add(item);
+                }
+            }));
+
+            myNoteService.AddNotes(noteList);
+            myRepositoryMock.Verify(x => x.AddRange(noteList), Times.Once());
+            Assert.That(actualNoteList.Count == 2);
+            Assert.That(actualNoteList.ElementAt(0).Equals(note1));
+        }
+
         //[Test]
         //public async Task NoteService_AddNoteAsync_ShouldAddNoteToRepository()
         //{
@@ -236,5 +260,82 @@ namespace evoKnowledgeShare.UnitTests
 
         //}
 
+        //[Test]
+        //public void NoteService_AddNotesAsync_ShouldAddNotesToRepository()
+        //{
+
+        //}
+
+        [Test]
+        public void NoteService_RemoveNote_ShouldRemoveNoteFromRepository()
+        {
+            var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var notes = new List<Note>();
+            notes.Add(note);
+            myRepositoryMock.Setup(x => x.Remove(It.IsAny<Note>())).Callback<Note>((note =>
+            {
+                notes.Remove(note);
+            }));
+
+            myNoteService.RemoveNote(note);
+            myRepositoryMock.Verify(x => x.Remove(note), Times.Once());
+            Assert.That(notes.Count == 0);
+        }
+        //[Test]
+        //public void NoteService_RemoveNoteById_ShouldRemoveNoteFromRepository()
+        //{
+        //    var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+        //    var notes = new List<Note>();
+        //    notes.Add(note);
+        //    myRepositoryMock.Setup(x => x.Remove(It.IsAny<Note>())).Callback<Guid>((note =>
+        //    {
+        //        notes.Remove();
+        //    }));
+
+        //    myNoteService.RemoveNoteById(note.NoteId);
+        //    myRepositoryMock.Verify(x => x.Remove(note), Times.Once());
+        //    Assert.That(notes.Count == 0);
+        //}
+        //[Test]
+        //public void NoteService_RemoveNotesByAuthor_ShouldRemoveNotesFromRepository()
+        //{
+
+        //}
+        //[Test]
+        //public async Task NoteService_RemoveNoteAsync_ShouldRemoveNoteFromRepository()
+        //{
+        //    var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+        //    var notes = new List<Note>();
+        //    notes.Add(note);
+
+        //    myRepositoryMock.Setup(x => x.RemoveAsync(It.IsAny<Note>())).Callback<Note>((note =>
+        //    {
+        //        notes.Remove(note);
+        //    }));
+
+        //    await myNoteService.RemoveNoteAsync(note);
+        //    myRepositoryMock.Verify(x => x.RemoveAsync(note), Times.Once());
+        //    Assert.That(notes.Count == 0);
+        //}
+        //[Test]
+        //public void NoteService_RemoveNoteByIdAsync_ShouldRemoveNoteFromRepository()
+        //{
+
+        //}
+        //[Test]
+        //public void NoteService_RemoveNotesByAuthorAsync_ShouldRemoveNotesFromRepository()
+        //{
+
+        //}
+        //[Test]
+        //public void NoteService_ModifyNote_ShouldChangeTheValuesOfOldNoteToNew()
+        //{
+
+        //}
+        //[Test]
+        //public void NoteService_ModifyNoteAsync_ShouldChangeTheValuesOfOldNoteToNew()
+        //{
+
+        //}
     }
 }
