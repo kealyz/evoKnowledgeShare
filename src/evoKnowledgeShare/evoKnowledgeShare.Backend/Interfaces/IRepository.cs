@@ -11,10 +11,13 @@
         IEnumerable<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync();
         void Remove(T entity);
+        Task RemoveAsync(T entity);
         void RemoveById(int id);
         void RemoveRange(IEnumerable<T> entities);
+        Task RemoveRangeAsync(IEnumerable<T> entities);
         void RemoveRangeById(IEnumerable<int> ids);
         void Update(T entity);
+        Task UpdateAsync(T entity);
         void UpdateRange(IEnumerable<T> entitites);
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }

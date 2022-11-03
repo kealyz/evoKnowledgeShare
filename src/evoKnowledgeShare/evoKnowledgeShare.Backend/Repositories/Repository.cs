@@ -57,12 +57,22 @@ namespace evoKnowledgeShare.Backend.Repositories
             throw new NotImplementedException();
         }
 
+        public Task RemoveAsync(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public void RemoveById(int id)
         {
             throw new NotImplementedException();
         }
 
         public void RemoveRange(IEnumerable<T> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveRangeAsync(IEnumerable<T> entities)
         {
             throw new NotImplementedException();
         }
@@ -82,7 +92,22 @@ namespace evoKnowledgeShare.Backend.Repositories
             throw new NotImplementedException();
         }
 
+        public void UpdateAsync(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public void UpdateRange(IEnumerable<T> entitites)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IRepository<T>.RemoveRangeAsync(IEnumerable<T> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IRepository<T>.UpdateAsync(T entity)
         {
             throw new NotImplementedException();
         }
