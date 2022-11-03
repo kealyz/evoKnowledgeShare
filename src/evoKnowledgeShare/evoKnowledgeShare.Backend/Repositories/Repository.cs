@@ -18,6 +18,11 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public abstract void AddRange(IEnumerable<T> entities);
 
+        public Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            throw new NotImplementedException();
+        }
+
         public abstract IEnumerable<T> GetAll();
 
         public abstract Task<IEnumerable<T>> GetAllAsync();
@@ -28,9 +33,19 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public abstract void Remove(T entity);
 
+        public Task RemoveAsync(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public abstract void RemoveById(int id);
 
         public abstract void RemoveRange(IEnumerable<T> entities);
+
+        public Task RemoveRangeAsync(IEnumerable<T> entities)
+        {
+            throw new NotImplementedException();
+        }
 
         public abstract void RemoveRangeById(IEnumerable<int> ids);
 
@@ -42,6 +57,11 @@ namespace evoKnowledgeShare.Backend.Repositories
         public abstract Task SaveChangesAsync(CancellationToken cancellationToken = default);
 
         public abstract void Update(T entity);
+
+        public Task UpdateAsync(T entity)
+        {
+            throw new NotImplementedException();
+        }
 
         public abstract void UpdateRange(IEnumerable<T> entitites);
     }
