@@ -16,9 +16,6 @@ namespace evoKnowledgeShare.Backend.Services
 
         public async Task<IEnumerable<User>> GetAsync() => await myRepository.GetAllAsync();
 
-        public async Task CreateUserAsync(User user)
-        {
-            await myRepository.AddAsync(user);
-        }
+        public async Task CreateUserAsync(User user) => await myRepository.AddAsync(user);
     }
 }
