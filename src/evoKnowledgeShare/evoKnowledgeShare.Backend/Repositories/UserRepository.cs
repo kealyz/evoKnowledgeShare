@@ -63,17 +63,13 @@ namespace evoKnowledgeShare.Backend.Repositories
             throw new NotImplementedException();
         }
 
-        public override Task SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
 
         public override void Update(User entity)
         {
             throw new NotImplementedException();
         }
 
-        public override void UpdateRange(IEnumerable<User> entitites)
+        public override void UpdateRange(IEnumerable<User> entities)
         {
             throw new NotImplementedException();
         }
