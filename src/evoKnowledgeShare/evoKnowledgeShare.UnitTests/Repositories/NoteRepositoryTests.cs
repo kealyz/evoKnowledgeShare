@@ -11,7 +11,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         NoteRepository myRepository;
         EvoKnowledgeDbContext myDbContext;
 
-        public void SetUp(int id)
+        private void SetUp(int id)
         {
             DbContextOptions dbContextOptions = new DbContextOptionsBuilder<EvoKnowledgeDbContext>()
                 .UseInMemoryDatabase($"InMemoryDB{id}").Options;
@@ -190,7 +190,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 note4,
                 note5
             };
-
+            
             Assert.IsTrue(myDbContext.Notes.First().Description == "leiras");
             Assert.That(note, Is.EqualTo(myDbContext.Notes.First()));
             Assert.IsTrue(myDbContext.Notes.Last().Description == "leiras3");
