@@ -20,10 +20,7 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override void AddRange(IEnumerable<Note> entities)
         {
-            foreach (var item in entities)
-            {
-                myDbContext.Notes.Add(item);
-            }
+            myDbContext.Notes.AddRange(entities);
         }
 
         public override IEnumerable<Note> GetAll()
@@ -63,10 +60,7 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override void RemoveRange(IEnumerable<Note> entities)
         {
-            foreach (var item in entities)
-            {
-                myDbContext.Notes.Remove(item);
-            }
+            myDbContext.Notes.RemoveRange(entities);
         }
 
         public override void RemoveRangeById(IEnumerable<int> ids)
