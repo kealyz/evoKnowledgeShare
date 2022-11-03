@@ -23,7 +23,7 @@ namespace evoKnowledgeShare.UnitTests
         public void NoteService_GetAll_ShouldReturnAll()
         {
             var expectedNote = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
-            myRepositoryMock.Setup(x=>x.GetAll()).Returns(new List<Note>
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<Note>
             {
                 expectedNote
             });
@@ -137,7 +137,7 @@ namespace evoKnowledgeShare.UnitTests
                 notExpectedNote
             });
 
-            var note =await myNoteService.GetNoteByIdAsync(expectedNote.NoteId);
+            var note = await myNoteService.GetNoteByIdAsync(expectedNote.NoteId);
 
             Assert.That(note, Is.EqualTo(expectedNote));
         }
@@ -168,7 +168,7 @@ namespace evoKnowledgeShare.UnitTests
                 notExpectedNote
             });
 
-            var note =await myNoteService.GetNotesByTopicIdAsync(expectedNote.TopicId);
+            var note = await myNoteService.GetNotesByTopicIdAsync(expectedNote.TopicId);
 
             Assert.That(note.Count, Is.EqualTo(1));
             Assert.That(note.First, Is.EqualTo(expectedNote));
@@ -208,13 +208,13 @@ namespace evoKnowledgeShare.UnitTests
         public void NoteService_AddNote_ShouldAddNoteToRepository()
         {
             var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
-            var notes= new List<Note>();
+            var notes = new List<Note>();
             myRepositoryMock.Setup(x => x.Add(It.IsAny<Note>())).Callback<Note>((note =>
             {
                 notes.Add(note);
             }));
             myNoteService.AddNote(note);
-            myRepositoryMock.Verify(x=>x.Add(note),Times.Once());
+            myRepositoryMock.Verify(x => x.Add(note), Times.Once());
             Assert.That(notes.Count == 1);
             Assert.That(notes.ElementAt(0).Equals(note));
 
@@ -326,16 +326,41 @@ namespace evoKnowledgeShare.UnitTests
         //public void NoteService_RemoveNotesByAuthorAsync_ShouldRemoveNotesFromRepository()
         //{
 
-        //}
-        //[Test]
-        //public void NoteService_ModifyNote_ShouldChangeTheValuesOfOldNoteToNew()
-        //{
 
-        //}
-        //[Test]
-        //public void NoteService_ModifyNoteAsync_ShouldChangeTheValuesOfOldNoteToNew()
-        //{
+        [Test]
+        public void NoteService_ModifyNote_ShouldChangeTheValuesOfOldNoteToNew()
+        {
+            var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+            var note2 = new Note(note.NoteId, "a", 2, note.CreatedAt, "leiras2", "title2");
+            var notes = new List<Note>();
+            notes.Add(note);
+            myRepositoryMock.Setup(x => x.Update(It.IsAny<Note>())).Callback<Note>((note =>
+            {
+                notes=new List<Note> { note };
+            }));
 
+            myNoteService.ModifyNote(note);
+            myRepositoryMock.Verify(x => x.Update(note), Times.Once());
+            Assert.That(notes.Count == 1);
+            Assert.That(notes.Contains(note), Is.True);
+        }
+        //[Test]
+        //public async Task NoteService_ModifyNoteAsync_ShouldChangeTheValuesOfOldNoteToNew()
+        //{
+        //    var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
+        //    var note2 = new Note(note.NoteId, "a", 2, note.CreatedAt, "leiras2", "title2");
+        //    var notes = new List<Note>();
+        //    notes.Add(note);
+        //    myRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Note>())).Callback<Note>((note =>
+        //    {
+        //        notes = new List<Note> { note };
+        //    }));
+
+        //    await myNoteService.ModifyNoteAsync(note);
+        //    myRepositoryMock.Verify(x => x.UpdateAsync(note), Times.Once());
+        //    Assert.That(notes.Count == 1);
+        //    Assert.That(notes.Contains(note), Is.True);
         //}
+
     }
 }
