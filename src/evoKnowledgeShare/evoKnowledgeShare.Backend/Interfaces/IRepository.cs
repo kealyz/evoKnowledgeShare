@@ -5,6 +5,7 @@
         void Add(T entity);
         Task AddAsync(T entity);
         void AddRange(IEnumerable<T> entities);
+        Task AddRangeAsync(IEnumerable<T> entities);
         T GetById(int id);
         IEnumerable<T> GetRangeById(IEnumerable<int> ids);
         IEnumerable<T> GetAll();
