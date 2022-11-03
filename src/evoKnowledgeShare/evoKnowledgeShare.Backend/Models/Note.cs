@@ -26,13 +26,18 @@ namespace evoKnowledgeShare.Backend.Models
         [Required]
         public string Title { get; set; }
 
+
         public override bool Equals(object? obj)
         {
-            if (obj?.GetHashCode())
-            {
-                return true;
-            }
-            return false;
+            return obj is Note note &&
+                   GetHashCode() == note.GetHashCode() &&
+                   NoteId.Equals(note.NoteId) &&
+                   UserId == note.UserId &&
+                   TopicId == note.TopicId &&
+                   CreatedAt.Equals(note.CreatedAt) &&
+                   Description == note.Description &&
+                   Title == note.Title;                   ;
+                
         }
 
         public override int GetHashCode()
