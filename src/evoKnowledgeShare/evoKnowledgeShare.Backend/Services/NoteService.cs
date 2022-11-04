@@ -14,6 +14,6 @@ namespace evoKnowledgeShare.Backend.Services
 
         public IEnumerable<Note> Get() => myRepository.GetAll();
 
-
+        public async Task<IEnumerable<Note>> GetAsync() => await myRepository.GetAllAsync();
     }
 }

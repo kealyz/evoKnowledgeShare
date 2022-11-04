@@ -28,5 +28,6 @@ namespace evoKnowledgeShare.Backend.Services
         {
             myRepository.Remove(user);
         }
+        public async Task CreateUserAsync(User user) => await myRepository.AddAsync(user);
     }
 }
