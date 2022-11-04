@@ -7,7 +7,7 @@ namespace evoKnowledgeShare.Backend.Repositories
     {
         protected readonly EvoKnowledgeDbContext myDbContext;
 
-        public Repository(EvoKnowledgeDbContext dbContext)
+        protected Repository(EvoKnowledgeDbContext dbContext)
         {
             myDbContext = dbContext;
         }
@@ -27,7 +27,7 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public abstract Task<IEnumerable<T>> GetAllAsync();
 
-        public abstract T GetById(int id);
+        public abstract T? GetById(int id);
 
         public abstract IEnumerable<T> GetRangeById(IEnumerable<int> ids);
 
@@ -54,15 +54,13 @@ namespace evoKnowledgeShare.Backend.Repositories
             myDbContext.SaveChanges();
         }
 
-        public abstract Task SaveChangesAsync(CancellationToken cancellationToken = default);
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            await myDbContext.SaveChangesAsync(cancellationToken);
+        }
 
         public abstract void Update(T entity);
 
-        public Task UpdateAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public abstract void UpdateRange(IEnumerable<T> entitites);
+        public abstract void UpdateRange(IEnumerable<T> entities);
     }
 }

@@ -15,14 +15,19 @@ namespace evoKnowledgeShare.Backend.Models
         }
         [Key]
         public Guid NoteId { get; set; }
+
         [Required]
         public string UserId { get; set; }
+
         [Required]
         public int TopicId { get; set; }
+
         [Required]
         public DateTimeOffset CreatedAt { get; set; }
+
         [Required]
         public string Description { get; set; }
+
         [Required]
         public string Title { get; set; }
 
