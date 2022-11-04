@@ -33,9 +33,10 @@ namespace evoKnowledgeShare.Backend.Repositories
             return myDbContext.Notes;
         }
 
-        public override async Task<IEnumerable<Note>> GetAllAsync()
+        public override Task<IEnumerable<Note>> GetAllAsync()
         {
-            return myDbContext.Notes;
+            IEnumerable<Note> notes = myDbContext.Notes;
+            return Task.FromResult(notes);
         }
 
 
