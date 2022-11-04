@@ -16,18 +16,16 @@ namespace evoKnowledgeShare.Backend.Services
 
         public async Task<IEnumerable<User>> GetAsync() => await myRepository.GetAllAsync();
 
-        public User GetNoteById(int id) => myRepository.GetAll().Where(x => x.Id == id).First();
+        public User GetUserById(int id) => myRepository.GetAll().Where(x => x.Id == id).First();
 
-        public async Task AddAsync(User user){}
-
-        public async Task CreateUserAsync(User user)
-        {
-            await myRepository.AddAsync(user);
-        }
-        public void RemoveUser(User user)
-        {
-            myRepository.Remove(user);
-        }
         public async Task CreateUserAsync(User user) => await myRepository.AddAsync(user);
+        
+        public void RemoveUser(User user) => myRepository.Remove(user);
+
+        public void RemoveUserById(int id) => myRepository.RemoveById(id);
+
+        public void Update(User user) => myRepository.Update(user);
+
+        public void CreateUser(User user) => myRepository.Add(user);
     }
 }

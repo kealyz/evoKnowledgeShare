@@ -2,6 +2,7 @@ using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.OpenApi.Validations;
 using Moq;
 
 namespace evoKnowledgeShare.UnitTests.Services
@@ -43,7 +44,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public void GetAllUsers_ShouldReturnAll()
+        public void UserService_GetAllUsers_ShouldReturnAll()
         {
             // Arrange
 
@@ -63,7 +64,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public async Task GetAllUsersAsync_ShouldReturnAll()
+        public async Task UserService_GetAllUsersAsync_ShouldReturnAll()
         {
             // Arrange
 
@@ -83,44 +84,24 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test] 
-        public void GetUserById_ShouldReturnSpecificUser()
+        public void UserService_GetUserById_ShouldReturnSpecificUser()
         {
-            var userid = myUserService.GetNoteById(1);
+            var userid = myUserService.GetUserById(1);
 
             Assert.That(userid.Id.Equals(1));
             
         }
 
-        [Test] 
-        public async Task CreateUser_ShouldCreateAnUser()
-        {
-            var newUser = new User(3, "Test3Admin", "Bot", "AI");
-
-            await myUserService.AddAsync(newUser);
-
-            var users = await myUserService.GetAsync();
-
-            Assert.That(users.Where(x => x.Id == newUser.Id).Equals(newUser));
-        }
-
         [Test]
-        public void RemoveUser_ShouldRemoveSpecificUser()
+        public void UserService_CreateUser_ShouldAddCreatedUser()
         {
-            var specificuser = new User(1, "TestUser", "User", "UserLastName");
+            var user = new User(1, "Lajos", "Lali", "L");
+            myRepositoryMock.Setup(x => x.Add(It.IsAny<User>()));
 
-            myUserService.RemoveUser(specificuser);
+            myUserService.CreateUser(user);
 
-            var users = myUserService.Get();
-
-            Assert.That(users.Any(x => x.Equals(specificuser)), Is.False);
+            myRepositoryMock.Verify(x => x.Add(It.Is<User>(y => y.Equals(user))), Times.Once);
         }
-
-        [Test]
-        public void ModifyUsername_ShouldModifyUsername()
-        {
-
-        }
-
 
         [Test]
         public async Task UserService_CreateUserAsync_CreatesNewUser()
@@ -132,5 +113,40 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             myRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(y => y.Equals(user))), Times.Once);
         }
+
+        [Test]
+        public void UserService_UpdateUser_ShouldUpdate()
+        {
+            var user = new User(1, "Lajos", "Lali", "L");
+            myRepositoryMock.Setup(x => x.Update(It.IsAny<User>()));
+
+            myUserService.Update(user);
+
+            myRepositoryMock.Verify(x => x.Update(It.Is<User>(y => y.Equals(user))), Times.Once);
+        }
+
+        [Test]
+        public void UserService_RemoveUser_ShouldRemoveSpecificUser()
+        {
+            var user = new User(1, "Lajos", "Lali", "L");
+            myRepositoryMock.Setup(x => x.Remove(It.IsAny<User>()));
+
+            myUserService.RemoveUser(user);
+
+            myRepositoryMock.Verify(x => x.Remove(It.Is<User>(y => y.Equals(user))), Times.Once);
+        }
+
+        [Test]
+        public void UserService_RemoveUserById_ShouldRemoveSpecificUser()
+        {
+
+            int id = 4;
+            myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<int>()));
+
+            myUserService.RemoveUserById(id);
+
+            myRepositoryMock.Verify(x => x.RemoveById(It.Is<int>(y => y.Equals(id))), Times.Once);
+        }
+
     }
 }
