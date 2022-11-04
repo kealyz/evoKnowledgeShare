@@ -11,10 +11,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         NoteRepository myRepository;
         EvoKnowledgeDbContext myDbContext;
 
-        private void SetUp(int id)
+        private void SetUp(string name)
         {
             DbContextOptions dbContextOptions = new DbContextOptionsBuilder<EvoKnowledgeDbContext>()
-                .UseInMemoryDatabase($"InMemoryDB{id}").Options;
+                .UseInMemoryDatabase($"InMemoryDB{name}").Options;
 
             myDbContext = new EvoKnowledgeDbContext(dbContextOptions);
             myRepository = new NoteRepository(myDbContext);
@@ -24,7 +24,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_Add_ShouldAddNoteToRepository()
         {
-            SetUp(1);
+            SetUp("NoteRepository_Add_ShouldAddNoteToRepository");
             var note = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
 
             myRepository.Add(note);
@@ -36,7 +36,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public async Task NoteRepository_AddAsync_ShouldAddNoteToRepository()
         {
-            SetUp(2);
+            SetUp("NoteRepository_AddAsync_ShouldAddNoteToRepository");
             var note = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
 
             await myRepository.AddAsync(note);
@@ -48,7 +48,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_AddRange_ShouldAddNotesToRepository()
         {
-            SetUp(3);
+            SetUp("NoteRepository_AddRange_ShouldAddNotesToRepository");
             var notes = new List<Note>
             {
             new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim"),
@@ -66,14 +66,14 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public async Task NoteRepository_AddRangeAsync_ShouldAddNotesToRepository()
         {
-            SetUp(11);
+            SetUp("NoteRepository_AddRangeAsync_ShouldAddNotesToRepository");
             var notes = new List<Note>
             {
             new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim"),
             new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2")
             };
 
-            myRepository.AddRangeAsync(notes);
+            await myRepository.AddRangeAsync(notes);
             myRepository.SaveChanges();
 
             Assert.That(myDbContext.Notes.Count(), Is.EqualTo(2));
@@ -83,7 +83,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_GetAll_ShouldReturnAllNotes()
         {
-            SetUp(4);
+            SetUp("NoteRepository_GetAll_ShouldReturnAllNotes");
             var note1 = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
             var note2 = new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2");
             myDbContext.Notes.Add(note1);
@@ -99,7 +99,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public async Task NoteRepository_GetAllAsync_ShouldReturnAllNotes()
         {
-            SetUp(5);
+            SetUp("NoteRepository_GetAllAsync_ShouldReturnAllNotes");
             var note1 = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
             var note2 = new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2");
             myDbContext.Notes.Add(note1);
@@ -115,7 +115,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_Remove_ShouldRemoveNoteFromRepository()
         {
-            SetUp(6);
+            SetUp("NoteRepository_Remove_ShouldRemoveNoteFromRepository");
             var note1 = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
             var note2 = new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2");
             myDbContext.Notes.Add(note1);
@@ -131,7 +131,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_RemoveRange_ShouldRemoveNotesFromRepository()
         {
-            SetUp(7);
+            SetUp("NoteRepository_RemoveRange_ShouldRemoveNotesFromRepository");
             var note1 = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
             var note2 = new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2");
             var note3 = new Note(new Guid(), "c", 3, new DateTimeOffset(), "leiras3", "cim3");
@@ -155,7 +155,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public async Task NoteRepository_SaveChangeAsync_ShouldSaveDb()
         {
-            SetUp(8);
+            SetUp("NoteRepository_SaveChangeAsync_ShouldSaveDb");
             var notes = new List<Note>
             {
             new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim"),
@@ -177,7 +177,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_Update_ShouldUpdateNoteInRepository()
         {
-            SetUp(9);
+            SetUp("NoteRepository_Update_ShouldUpdateNoteInRepository");
             var note = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
             myDbContext.Notes.Add(note);
             myDbContext.SaveChanges();
@@ -192,7 +192,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_UpdateRange_ShouldUpdateNotesInRepository()
         {
-            SetUp(10);
+            SetUp("NoteRepository_UpdateRange_ShouldUpdateNotesInRepository");
             var note = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
             var note2 = new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2");
             var note3 = new Note(new Guid(), "c", 3, new DateTimeOffset(), "leiras3", "cim3");
