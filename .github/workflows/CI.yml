@@ -6,6 +6,11 @@ on:
     - main
     - Dev
     - Features/*
+  pull_request:
+    branches:
+    - main
+    - Dev
+    - Features/*
   pull_request_target:
     branches:
     - main
