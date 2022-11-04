@@ -27,6 +27,11 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
+        public override Task AddRangeAsync(IEnumerable<Topic> entities)
+        {
+            throw new NotImplementedException();
+        }
+
         public override IEnumerable<Topic> GetAll()
         {
             return myDbContext.Topics;
@@ -43,14 +48,29 @@ namespace evoKnowledgeShare.Backend.Repositories
             return myDbContext.Topics.FirstOrDefault(x => x.Id == id);
         }
 
+        public override Task<Topic?> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public override IEnumerable<Topic> GetRangeById(IEnumerable<int> ids)
         {
             return myDbContext.Topics.Where(x => ids.Any(y => x.Id == y));
         }
 
+        public override Task<IEnumerable<Topic>> GetRangeByIdAsync(IEnumerable<int> ids)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Remove(Topic entity)
         {
             myDbContext.Topics.Remove(entity);
+        }
+
+        public override Task RemoveAsync(Topic entity)
+        {
+            throw new NotImplementedException();
         }
 
         public override void RemoveById(int id)
@@ -62,12 +82,22 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
+        public override Task RemoveByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void RemoveRange(IEnumerable<Topic> entities)
         {
             foreach (var topic in entities)
             {
                 myDbContext.Remove(topic);
             }
+        }
+
+        public override Task RemoveRangeAsync(IEnumerable<Topic> entities)
+        {
+            throw new NotImplementedException();
         }
 
         public override void RemoveRangeById(IEnumerable<int> ids)
@@ -82,9 +112,19 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
+        public override Task RemoveRangeByIdAsync(IEnumerable<int> ids)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Update(Topic entity)
         {
             myDbContext.Update(entity);
+        }
+
+        public override Task UpdateAsync(Topic entity)
+        {
+            throw new NotImplementedException();
         }
 
         public override void UpdateRange(IEnumerable<Topic> entities)
@@ -93,6 +133,11 @@ namespace evoKnowledgeShare.Backend.Repositories
             {
                 myDbContext.Update(entity);
             }
+        }
+
+        public override Task UpdateRangeAsync(IEnumerable<Topic> entitites)
+        {
+            throw new NotImplementedException();
         }
     }
 }
