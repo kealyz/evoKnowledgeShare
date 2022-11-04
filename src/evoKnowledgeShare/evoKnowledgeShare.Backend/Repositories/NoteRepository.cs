@@ -25,7 +25,8 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override Task AddRangeAsync(IEnumerable<Note> entities)
         {
-            throw new NotImplementedException();
+            myDbContext.Notes.AddRangeAsync(entities);
+            return Task.CompletedTask;
         }
 
         public override IEnumerable<Note> GetAll()

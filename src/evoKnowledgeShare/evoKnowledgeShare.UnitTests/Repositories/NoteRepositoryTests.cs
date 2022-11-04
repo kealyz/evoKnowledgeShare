@@ -62,6 +62,24 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             Assert.That(myDbContext.Notes.Contains(notes.First()));
             Assert.That(myDbContext.Notes.Contains(notes.Last()));
         }
+
+        [Test]
+        public async Task NoteRepository_AddRangeAsync_ShouldAddNotesToRepository()
+        {
+            SetUp(11);
+            var notes = new List<Note>
+            {
+            new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim"),
+            new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2")
+            };
+
+            myRepository.AddRangeAsync(notes);
+            myRepository.SaveChanges();
+
+            Assert.That(myDbContext.Notes.Count(), Is.EqualTo(2));
+            Assert.That(myDbContext.Notes.Contains(notes.First()));
+            Assert.That(myDbContext.Notes.Contains(notes.Last()));
+        }
         [Test]
         public void NoteRepository_GetAll_ShouldReturnAllNotes()
         {
