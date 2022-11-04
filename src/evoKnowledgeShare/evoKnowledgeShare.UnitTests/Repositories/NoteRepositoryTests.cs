@@ -20,7 +20,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             myRepository = new NoteRepository(myDbContext);
         }
 
-
         [Test]
         public void NoteRepository_Add_ShouldAddNoteToRepository()
         {
