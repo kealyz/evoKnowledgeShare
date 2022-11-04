@@ -11,6 +11,11 @@ on:
     - main
     - Dev
     - Features/*
+  pull_request_target:
+    branches:
+    - main
+    - Dev
+    - Features/*
   workflow_dispatch:
 
 jobs:
@@ -46,7 +51,7 @@ jobs:
         thresholds: '75 90'
     - name: Add Coverage PR Comment
       uses: marocchino/sticky-pull-request-comment@v2
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request_target'
       with:
         recreate: true
         path: code-coverage-results.md
