@@ -14,8 +14,6 @@ namespace evoKnowledgeShare.Backend.Services
 
         public IEnumerable<Topic> GetAll() => myRepository.GetAll();
 
-        public async Task<IEnumerable<Topic>> GetAllAsync() => await myRepository.GetAllAsync();
-
         public Topic? GetById(int id) => myRepository.GetById(id);
 
         public IEnumerable<Topic> GetByTitle(string title) => myRepository.GetAll().Where(x => x.Title == title).ToList();

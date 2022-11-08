@@ -12,24 +12,48 @@ namespace evoKnowledgeShare.Backend.Repositories
             myDbContext = dbContext;
         }
 
+        #region Add section
+
         public abstract void Add(T entity);
+
         public abstract Task AddAsync(T entity);
+
         public abstract void AddRange(IEnumerable<T> entities);
+
         public abstract Task AddRangeAsync(IEnumerable<T> entities);
+
+        #endregion Add section
+
+        #region Get section
+
         public abstract IEnumerable<T> GetAll();
-        public abstract Task<IEnumerable<T>> GetAllAsync();
+
         public abstract T? GetById(int id);
-        public abstract Task<T?> GetByIdAsync(int id);
+
         public abstract IEnumerable<T> GetRangeById(IEnumerable<int> ids);
-        public abstract Task<IEnumerable<T>> GetRangeByIdAsync(IEnumerable<int> ids);
+
+        #endregion Get section
+
+        #region Remove section
+
         public abstract void Remove(T entity);
-        public abstract Task RemoveAsync(T entity);
+
         public abstract void RemoveById(int id);
-        public abstract Task RemoveByIdAsync(int id);
+
         public abstract void RemoveRange(IEnumerable<T> entities);
-        public abstract Task RemoveRangeAsync(IEnumerable<T> entities);
+
         public abstract void RemoveRangeById(IEnumerable<int> ids);
-        public abstract Task RemoveRangeByIdAsync(IEnumerable<int> ids);
+
+        #endregion Remove section
+
+        #region Update section
+
+        public abstract void Update(T entity);
+
+        public abstract void UpdateRange(IEnumerable<T> entities);
+
+        #endregion Update section
+
         public void SaveChanges()
         {
             myDbContext.SaveChanges();
@@ -39,9 +63,5 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             await myDbContext.SaveChangesAsync(cancellationToken);
         }
-        public abstract void Update(T entity);
-        public abstract Task UpdateAsync(T entity);
-        public abstract void UpdateRange(IEnumerable<T> entities);
-        public abstract Task UpdateRangeAsync(IEnumerable<T> entitites);
     }
 }

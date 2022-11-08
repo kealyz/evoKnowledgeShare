@@ -32,20 +32,6 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public async Task GetAllHistoriesAsync_ShouldReturnAll()
-        {
-            var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
-                "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
-            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<History> { entity });
-
-            var historyEntities = await myHistoryService.GetAllAsync();
-
-            myRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
-            Assert.That(historyEntities.Count, Is.EqualTo(1));
-            Assert.That(historyEntities.First, Is.EqualTo(entity));
-        }
-
-        [Test]
         public void GetHistoryById_ShouldReturnSpecificHistory()
         {
             var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),

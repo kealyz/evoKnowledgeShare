@@ -12,8 +12,6 @@ namespace evoKnowledgeShare.Backend.Services
             myHistoryRepository = historyRepository;
         }
 
-        public async Task<IEnumerable<History>> GetAllAsync() => await myHistoryRepository.GetAllAsync();
-
         public IEnumerable<History> GetAll() => myHistoryRepository.GetAll();
 
         public History GetById(Guid id) => myHistoryRepository.GetAll().First(x => x.Id == id);

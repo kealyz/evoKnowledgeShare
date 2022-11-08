@@ -94,27 +94,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public async Task Repository_GetAllAsync_ShouldGetAllAsync()
-        {
-            var expectedTopics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
-            };
-
-            myDbContext.Topics.AddRange(expectedTopics);
-            await myDbContext.SaveChangesAsync();
-
-            var actualTopics = (await myRepository.GetAllAsync()).ToArray();
-
-            Assert.That(actualTopics, Has.Length.EqualTo(expectedTopics.Count));
-            foreach (var actualTopic in actualTopics)
-            {
-                Assert.That(myDbContext.Topics, Does.Contain(actualTopic));
-            }
-        }
-
-        [Test]
         public void Repository_GetById_ShouldReturnATopicWithSpecificId()
         {
             var expectedTopic = new Topic(1, "Test Topic 1.");

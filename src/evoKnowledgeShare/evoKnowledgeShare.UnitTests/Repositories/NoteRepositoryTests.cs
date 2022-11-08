@@ -95,22 +95,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             Assert.That(actual.Contains(note1));
             Assert.That(actual.Contains(note2));
         }
-        [Test]
-        public async Task NoteRepository_GetAllAsync_ShouldReturnAllNotes()
-        {
-            SetUp("NoteRepository_GetAllAsync_ShouldReturnAllNotes");
-            var note1 = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
-            var note2 = new Note(new Guid(), "b", 2, new DateTimeOffset(), "leiras2", "cim2");
-            myDbContext.Notes.Add(note1);
-            myDbContext.Notes.Add(note2);
-            myDbContext.SaveChanges();
 
-            var actual = await myRepository.GetAllAsync();
-
-            Assert.That(actual.Count, Is.EqualTo(2));
-            Assert.That(actual.Contains(note1));
-            Assert.That(actual.Contains(note2));
-        }
         [Test]
         public void NoteRepository_Remove_ShouldRemoveNoteFromRepository()
         {

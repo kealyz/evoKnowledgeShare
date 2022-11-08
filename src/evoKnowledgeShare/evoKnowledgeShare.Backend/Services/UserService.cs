@@ -14,8 +14,6 @@ namespace evoKnowledgeShare.Backend.Services
 
         public IEnumerable<User> Get() => myRepository.GetAll();
 
-        public async Task<IEnumerable<User>> GetAsync() => await myRepository.GetAllAsync();
-
         public User GetUserById(int id) => myRepository.GetAll().Where(x => x.Id == id).First();
 
         public void CreateUser(User user) => myRepository.Add(user);

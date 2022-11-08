@@ -39,26 +39,6 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(actualTopics.Count, Is.EqualTo(2));
         }
 
-        [Test]
-        public async Task Topic_GetAllAsync_ShouldReturnAll()
-        {
-            var shouldReturnFirst = new Topic(1, "Topic Test Title 1.");
-            var shouldReturnSecond = new Topic(2, "Topic Test Title 2.");
-
-            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(() =>
-            {
-                return new List<Topic> {
-                    shouldReturnFirst,
-                    shouldReturnSecond
-                };
-            });
-
-            var actualTopics = await myTopicService.GetAllAsync();
-
-            Assert.That(Equals(actualTopics.ElementAt(0), shouldReturnFirst));
-            Assert.That(Equals(actualTopics.ElementAt(1), shouldReturnSecond));
-            Assert.That(actualTopics.Count, Is.EqualTo(2));
-        }
 
         [Test]
         public void Topic_GetById_ShouldReturnTopicWithSpecificId()
