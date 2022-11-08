@@ -18,6 +18,8 @@ namespace evoKnowledgeShare.Backend.Services
 
         public User GetUserById(int id) => myRepository.GetAll().Where(x => x.Id == id).First();
 
+        public void CreateUser(User user) => myRepository.Add(user);
+
         public async Task CreateUserAsync(User user) => await myRepository.AddAsync(user);
         
         public void RemoveUser(User user) => myRepository.Remove(user);
@@ -26,6 +28,5 @@ namespace evoKnowledgeShare.Backend.Services
 
         public void Update(User user) => myRepository.Update(user);
 
-        public void CreateUser(User user) => myRepository.Add(user);
     }
 }
