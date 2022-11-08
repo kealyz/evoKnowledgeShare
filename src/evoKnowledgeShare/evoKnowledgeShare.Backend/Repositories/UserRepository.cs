@@ -8,114 +8,100 @@ namespace evoKnowledgeShare.Backend.Repositories
         public UserRepository(EvoKnowledgeDbContext dbContext) : base(dbContext)
         { }
 
-        public override void Add(User entity)
-        {
-            myDbContext.Users.Add(entity);
-        }
+        public override void Add(User entity) => myDbContext.Users.Add(entity);
 
-        public override Task AddAsync(User entity)
-        {
-            throw new NotImplementedException();
-        }
+        public override async Task AddAsync(User entity) => await myDbContext.Users.AddAsync(entity);
 
-        public override void AddRange(IEnumerable<User> entities)
-        {
-            throw new NotImplementedException();
-        }
+        public override void AddRange(IEnumerable<User> entities) => myDbContext.Users.AddRange(entities);
 
-        public override Task AddRangeAsync(IEnumerable<User> entities)
-        {
-            throw new NotImplementedException();
-        }
+        public override Task AddRangeAsync(IEnumerable<User> entities) => myDbContext.Users.AddRangeAsync(entities);
 
-        public override IEnumerable<User> GetAll()
-        {
-            return myDbContext.Users;
-        }
+        public override IEnumerable<User> GetAll() => myDbContext.Users;
 
-        public override Task<IEnumerable<User>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
+        public override async Task<IEnumerable<User>> GetAllAsync() => myDbContext.Users;
 
-        public override User GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public override User GetById(int id) => myDbContext.Users.First(x => x.Id == id);
 
-        public override Task<User?> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public override async Task<User?> GetByIdAsync(int id) => myDbContext.Users.First(x => x.Id == id);
 
         public override IEnumerable<User> GetRangeById(IEnumerable<int> ids)
         {
-            throw new NotImplementedException();
+            List<User> users = new List<User>();
+            foreach (var id in ids)
+            {
+                users.Add(myDbContext.Users.First(x => x.Id == id));
+            }
+            return users;
         }
 
-        public override Task<IEnumerable<User>> GetRangeByIdAsync(IEnumerable<int> ids)
-        {
-            throw new NotImplementedException();
-        }
+        public override async Task<IEnumerable<User>> GetRangeByIdAsync(IEnumerable<int> ids) => throw new NotSupportedException();
+        /*{
+            IEnumerable<User> users = new List<User>();
+            foreach (var id in ids)
+            {
+                users.Append(myDbContext.Users.First(x => x.Id == id));
+            }
+            return users;
+        }*/
 
-        public override void Remove(User entity)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Remove(User entity) => myDbContext.Users.Remove(entity);
 
         public override Task RemoveAsync(User entity)
         {
-            throw new NotImplementedException();
+            myDbContext.Users.Remove(entity);
+            return Task.CompletedTask;
         }
 
-        public override void RemoveById(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public override void RemoveById(int id) => myDbContext.Users.Remove(myDbContext.Users.First(x => x.Id == id));
 
         public override Task RemoveByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            myDbContext.Users.Remove(myDbContext.Users.First(x => x.Id == id));
+            return Task.CompletedTask;
         }
 
-        public override void RemoveRange(IEnumerable<User> entities)
-        {
-            throw new NotImplementedException();
-        }
+        public override void RemoveRange(IEnumerable<User> entities) => myDbContext.Users.RemoveRange(entities);
 
         public override Task RemoveRangeAsync(IEnumerable<User> entities)
         {
-            throw new NotImplementedException();
+            foreach (var entity in entities)
+            {
+                myDbContext.Users.Remove(entity);
+            }
+            return Task.CompletedTask;
         }
 
         public override void RemoveRangeById(IEnumerable<int> ids)
         {
-            throw new NotImplementedException();
+            foreach (var id in ids)
+            {
+                myDbContext.Users.Remove(myDbContext.Users.First(x => x.Id == id));
+            }
         }
 
         public override Task RemoveRangeByIdAsync(IEnumerable<int> ids)
         {
-            throw new NotImplementedException();
+            foreach (var id in ids)
+            {
+                myDbContext.Users.Remove(myDbContext.Users.First(x => x.Id == id));
+            }
+            return Task.CompletedTask;
         }
 
-        public override void Update(User entity)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Update(User entity) => myDbContext.Users.Update(entity);
 
         public override Task UpdateAsync(User entity)
         {
-            throw new NotImplementedException();
+            myDbContext.Users.Update(entity);
+            return Task.CompletedTask;
         }
 
-        public override void UpdateRange(IEnumerable<User> entities)
-        {
-            throw new NotImplementedException();
-        }
+        public override void UpdateRange(IEnumerable<User> entitites) => myDbContext.Users.UpdateRange(entitites);
 
         public override Task UpdateRangeAsync(IEnumerable<User> entitites)
         {
-            throw new NotImplementedException();
+            myDbContext.Users.UpdateRange(entitites);
+            return Task.CompletedTask;
         }
     }
 }
