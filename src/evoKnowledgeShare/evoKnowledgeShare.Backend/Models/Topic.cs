@@ -5,12 +5,12 @@ namespace evoKnowledgeShare.Backend.Models
     public class Topic
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string Title { get; set; }
 
-        public Topic(int id, string title)
+        public Topic(Guid id, string title)
         {
             Id = id;
             Title = title;

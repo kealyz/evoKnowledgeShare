@@ -14,13 +14,9 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         #region Add section
 
-        public abstract void Add(T entity);
+        public abstract Task<T> AddAsync(T entity);
 
-        public abstract Task AddAsync(T entity);
-
-        public abstract void AddRange(IEnumerable<T> entities);
-
-        public abstract Task AddRangeAsync(IEnumerable<T> entities);
+        public abstract Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
 
         #endregion Add section
 
@@ -28,9 +24,9 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public abstract IEnumerable<T> GetAll();
 
-        public abstract T? GetById(int id);
+        public abstract T GetById(Guid id);
 
-        public abstract IEnumerable<T> GetRangeById(IEnumerable<int> ids);
+        public abstract IEnumerable<T> GetRangeById(IEnumerable<Guid> ids);
 
         #endregion Get section
 
@@ -38,19 +34,19 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public abstract void Remove(T entity);
 
-        public abstract void RemoveById(int id);
+        public abstract void RemoveById(Guid id);
 
         public abstract void RemoveRange(IEnumerable<T> entities);
 
-        public abstract void RemoveRangeById(IEnumerable<int> ids);
+        public abstract void RemoveRangeById(IEnumerable<Guid> ids);
 
         #endregion Remove section
 
         #region Update section
 
-        public abstract void Update(T entity);
+        public abstract T Update(T entity);
 
-        public abstract void UpdateRange(IEnumerable<T> entities);
+        public abstract IEnumerable<T> UpdateRange(IEnumerable<T> entities);
 
         #endregion Update section
 

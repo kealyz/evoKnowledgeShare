@@ -49,10 +49,9 @@ namespace evoKnowledgeShare.UnitTests.Services
         public async Task CreateHistory_ShouldCreateHistory()
         {
             var historyEntities = new List<History>();
-            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<History>())).Callback<History>((newHistoryEntity =>
-            {
-                historyEntities.Add(newHistoryEntity);
-            })).Returns(Task.CompletedTask);
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<History>())).ReturnsAsync(new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
+                "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001"));
+
             var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
                 "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
 

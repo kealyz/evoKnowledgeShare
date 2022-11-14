@@ -59,7 +59,7 @@ namespace evoKnowledgeShare.UnitTests.Services
                 notExpectedNote
             });
 
-            var note = myNoteService.GetNotesByUserId(expectedNote.UserId);
+            var note = myNoteService.GetByUserId(expectedNote.UserId);
 
             Assert.That(note.Count, Is.EqualTo(1));
             Assert.That(note.First, Is.EqualTo(expectedNote));
@@ -75,7 +75,7 @@ namespace evoKnowledgeShare.UnitTests.Services
                 notExpectedNote
             });
 
-            var note = myNoteService.GetNotesByTopicId(expectedNote.TopicId);
+            var note = myNoteService.GetByTopicId(expectedNote.TopicId);
 
             Assert.That(note.Count, Is.EqualTo(1));
             Assert.That(note.First, Is.EqualTo(expectedNote));
@@ -91,7 +91,7 @@ namespace evoKnowledgeShare.UnitTests.Services
                 notExpectedNote
             });
 
-            var note = myNoteService.GetNoteByDescription(expectedNote.Description);
+            var note = myNoteService.GetByDescription(expectedNote.Description);
 
             Assert.That(note, Is.EqualTo(expectedNote));
         }
@@ -106,26 +106,11 @@ namespace evoKnowledgeShare.UnitTests.Services
                 notExpectedNote
             });
 
-            var note = myNoteService.GetNoteByTitle(expectedNote.Title);
+            var note = myNoteService.GetByTitle(expectedNote.Title);
 
             Assert.That(note, Is.EqualTo(expectedNote));
         }
 
-        [Test]
-        public void NoteService_AddNote_ShouldAddNoteToRepository()
-        {
-            var note = new Note(Guid.NewGuid(), "11111111", 1, DateTimeOffset.Now, "Leiras1", "Title1");
-            var notes = new List<Note>();
-            myRepositoryMock.Setup(x => x.Add(It.IsAny<Note>())).Callback<Note>((note =>
-            {
-                notes.Add(note);
-            }));
-            myNoteService.AddNote(note);
-            myRepositoryMock.Verify(x => x.Add(note), Times.Once());
-            Assert.That(notes.Count == 1);
-            Assert.That(notes.ElementAt(0).Equals(note));
-
-        }
         [Test]
         public void NoteService_AddNotes_ShouldAddNotesToRepository()
         {
@@ -144,7 +129,7 @@ namespace evoKnowledgeShare.UnitTests.Services
                 }
             }));
 
-            myNoteService.AddNotes(noteList);
+            myNoteService.Add(noteList);
             myRepositoryMock.Verify(x => x.AddRange(noteList), Times.Once());
             Assert.That(actualNoteList.Count == 2);
             Assert.That(actualNoteList.ElementAt(0).Equals(note1));
@@ -184,7 +169,7 @@ namespace evoKnowledgeShare.UnitTests.Services
                 notes.Remove(note);
             }));
 
-            myNoteService.RemoveNote(note);
+            myNoteService.Remove(note);
             myRepositoryMock.Verify(x => x.Remove(note), Times.Once());
             Assert.That(notes.Count == 0);
         }
@@ -246,7 +231,7 @@ namespace evoKnowledgeShare.UnitTests.Services
                 notes=new List<Note> { note };
             }));
 
-            myNoteService.ModifyNote(note);
+            myNoteService.Update(note);
             myRepositoryMock.Verify(x => x.Update(note), Times.Once());
             Assert.That(notes.Count == 1);
             Assert.That(notes.Contains(note), Is.True);

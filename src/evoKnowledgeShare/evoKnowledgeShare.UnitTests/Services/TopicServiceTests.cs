@@ -50,7 +50,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             var actualTopic = myTopicService.GetById(expectedTopic.Id);
 
             Assert.That(Equals(actualTopic, expectedTopic));
-            Assert.That(actualTopic.Title, Is.EqualTo(expectedTopic.Title));
+            Assert.That(actualTopic?.Title, Is.EqualTo(expectedTopic.Title));
         }
 
         [Test]
@@ -91,17 +91,6 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         //ADD TESTS
-        [Test]
-        public void Topic_Add_ShouldCallAddOnce()
-        {
-            var addedTopic = new Topic(1, "Topic Test Title 1.");
-
-            myRepositoryMock.Setup(x => x.Add(It.IsAny<Topic>()));
-
-            myTopicService.Add(addedTopic);
-
-            myRepositoryMock.Verify(x => x.Add(addedTopic), Times.Once);
-        }
 
         [Test]
         public async Task Topic_Add_ShouldCallAddOnceAsync()
@@ -110,7 +99,7 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Topic>()));
 
-            myTopicService.AddAsync(addedTopic);
+            await myTopicService.AddAsync(addedTopic);
 
             myRepositoryMock.Verify(x => x.AddAsync(addedTopic), Times.Once);
         }

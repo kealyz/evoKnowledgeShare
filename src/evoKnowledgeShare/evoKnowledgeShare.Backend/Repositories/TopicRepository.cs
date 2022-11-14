@@ -9,25 +9,12 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
         }
 
-        public override void Add(Topic entity)
-        {
-            myDbContext.Topics.Add(entity);
-        }
-
         public override async Task AddAsync(Topic entity)
         {
             await myDbContext.Topics.AddAsync(entity);
         }
 
-        public override void AddRange(IEnumerable<Topic> entities)
-        {
-            foreach (var entity in entities)
-            {
-                myDbContext.Topics.Add(entity);
-            }
-        }
-
-        public override Task AddRangeAsync(IEnumerable<Topic> entities)
+        public override async Task AddRangeAsync(IEnumerable<Topic> entities)
         {
             throw new NotImplementedException();
         }
@@ -37,12 +24,12 @@ namespace evoKnowledgeShare.Backend.Repositories
             return myDbContext.Topics;
         }
 
-        public override Topic? GetById(int id)
+        public override Topic GetById(Guid id)
         {
             return myDbContext.Topics.FirstOrDefault(x => x.Id == id);
         }
 
-        public override IEnumerable<Topic> GetRangeById(IEnumerable<int> ids)
+        public override IEnumerable<Topic> GetRangeById(IEnumerable<Guid> ids)
         {
             return myDbContext.Topics.Where(x => ids.Any(y => x.Id == y));
         }
@@ -50,9 +37,10 @@ namespace evoKnowledgeShare.Backend.Repositories
         public override void Remove(Topic entity)
         {
             myDbContext.Topics.Remove(entity);
+            myDbContext.SaveChanges();
         }
 
-        public override void RemoveById(int id)
+        public override void RemoveById(Guid id)
         {
             var topicToRemove = myDbContext.Topics.FirstOrDefault(x => x.Id == id);
             if (topicToRemove is not null)
@@ -69,7 +57,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
-        public override void RemoveRangeById(IEnumerable<int> ids)
+        public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
             foreach(var id in ids)
             {
@@ -81,12 +69,14 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
-        public override void Update(Topic entity)
+        public override Topic Update(Topic topic_in)
         {
-            myDbContext.Update(entity);
+            Topic topic = myDbContext.Topics.Update(topic_in).Entity;
+            myDbContext.SaveChanges();
+            return topic;
         }
 
-        public override void UpdateRange(IEnumerable<Topic> entities)
+        public override IEnumerable<Topic> UpdateRange(IEnumerable<Topic> entities)
         {
             foreach (var entity in entities)
             {

@@ -5,7 +5,7 @@ namespace evoKnowledgeShare.Backend.Models
     public class User
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string UserName { get; set; }
@@ -16,7 +16,7 @@ namespace evoKnowledgeShare.Backend.Models
         [Required]
         public string LastName { get; set; }
 
-        public User(int id, string userName, string firstName, string lastName)
+        public User(Guid id, string userName, string firstName, string lastName)
         {
             Id = id;
             UserName = userName;

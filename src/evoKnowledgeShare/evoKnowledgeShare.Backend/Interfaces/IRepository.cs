@@ -3,44 +3,40 @@
     public interface IRepository<T>
     {
         #region Add section
-
-        void Add(T entity);
         
-        Task AddAsync(T entity);
-        
-        void AddRange(IEnumerable<T> entities);
+        Task<T> AddAsync(T entity);
 
-        Task AddRangeAsync(IEnumerable<T> entities);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
 
         #endregion Add section
 
         #region Get section
 
-        T? GetById(int id);
+        T GetById(Guid id);
 
-        IEnumerable<T> GetRangeById(IEnumerable<int> ids);
+        IEnumerable<T> GetRangeById(IEnumerable<Guid> ids);
 
         IEnumerable<T> GetAll();
-        
+
         #endregion Get section
 
         #region Remove section
 
         void Remove(T entity);
-        
-        void RemoveById(int id);
+
+        void RemoveById(Guid id);
 
         void RemoveRange(IEnumerable<T> entities);
-        
-        void RemoveRangeById(IEnumerable<int> ids);
+
+        void RemoveRangeById(IEnumerable<Guid> ids);
 
         #endregion Remove section
 
         #region Update section
 
-        void Update(T entity);
+        T Update(T entity);
 
-        void UpdateRange(IEnumerable<T> entities);
+        IEnumerable<T> UpdateRange(IEnumerable<T> entities);
 
         #endregion Update section
 

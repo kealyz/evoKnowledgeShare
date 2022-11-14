@@ -8,25 +8,14 @@ namespace evoKnowledgeShare.Backend.Repositories
         public NoteRepository(EvoKnowledgeDbContext dbContext) : base(dbContext)
         { }
 
-        public override void Add(Note entity)
-        {
-            myDbContext.Notes.Add(entity);
-        }
-
         public override async Task AddAsync(Note entity)
         {
             await myDbContext.Notes.AddAsync(entity);
         }
 
-        public override void AddRange(IEnumerable<Note> entities)
+        public override async Task AddRangeAsync(IEnumerable<Note> entities)
         {
-            myDbContext.Notes.AddRange(entities);
-        }
-
-        public override Task AddRangeAsync(IEnumerable<Note> entities)
-        {
-            myDbContext.Notes.AddRangeAsync(entities);
-            return Task.CompletedTask;
+            await myDbContext.Notes.AddRangeAsync(entities);
         }
 
         public override IEnumerable<Note> GetAll()
@@ -34,13 +23,13 @@ namespace evoKnowledgeShare.Backend.Repositories
             return myDbContext.Notes;
         }
 
-        public override Note GetById(int id)
+        public override Note GetById(Guid id)
         {
             throw new NotImplementedException();
             //Ez ide haszontalan?
         }
 
-        public override IEnumerable<Note> GetRangeById(IEnumerable<int> ids)
+        public override IEnumerable<Note> GetRangeById(IEnumerable<Guid> ids)
         {
             throw new NotImplementedException();
             //Ez ide haszontalan?
@@ -48,10 +37,11 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override void Remove(Note entity)
         {
-            myDbContext.Remove(entity);
+            myDbContext.Notes.Remove(entity);
+            myDbContext.SaveChanges();
         }
 
-        public override void RemoveById(int id)
+        public override void RemoveById(Guid id)
         {
             throw new NotImplementedException();
             //Ez ide haszontalan?
@@ -62,28 +52,20 @@ namespace evoKnowledgeShare.Backend.Repositories
             myDbContext.Notes.RemoveRange(entities);
         }
 
-        public override void RemoveRangeById(IEnumerable<int> ids)
+        public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
             throw new NotImplementedException();
             //Ez ide haszontalan?
         }
 
-        public override void Update(Note entity)
+        public override Note Update(Note note_in)
         {
-            foreach (var item in myDbContext.Notes)
-            {
-                if (item.NoteId == entity.NoteId)
-                {
-                    item.Title = entity.Title;
-                    item.TopicId = entity.TopicId;
-                    item.UserId = entity.UserId;
-                    item.CreatedAt = entity.CreatedAt;
-                    item.Description = entity.Description;
-                }
-            }
+            Note note = myDbContext.Notes.Update(note_in).Entity;
+            myDbContext.SaveChanges();
+            return note;
         }
 
-        public override void UpdateRange(IEnumerable<Note> entities)
+        public override IEnumerable<Note> UpdateRange(IEnumerable<Note> entities)
         {
             foreach (var entity in entities)
             {

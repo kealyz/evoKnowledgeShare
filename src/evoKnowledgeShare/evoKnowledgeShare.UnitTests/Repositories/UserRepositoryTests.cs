@@ -29,17 +29,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void UserRepository_Add_DefaultPositive()
-        {
-            var user = new User(1, "Lajos", "Lali", "L");
-
-            myRepository.Add(user);
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(1));
-        }
-
-        [Test]
         public async Task UserRepository_AddAsync_DefaultPositive()
         {
             var user = new User(1, "Lajos", "Lali", "L");
@@ -90,11 +79,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void UserRepository_GetById_ReturnSpecificUser()
+        public async Task UserRepository_GetById_ReturnSpecificUser()
         {
             int id = 1;
             var user = new User(id, "Lajos", "Lali", "l");
-            myRepository.Add(user);
+            await myRepository.AddAsync(user);
             myRepository.SaveChanges();
 
             var expectedUser = myRepository.GetById(id);
@@ -131,10 +120,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }*/
 
         [Test]
-        public void UserRepository_Remove_ShouldRemoveSpecificUser()
+        public async Task UserRepository_Remove_ShouldRemoveSpecificUser()
         {
             var user = new User(1, "Lajos", "Lali", "l");
-            myRepository.Add(user);
+            await myRepository.AddAsync(user);
             myRepository.SaveChanges();
 
             myRepository.Remove(user);
@@ -144,11 +133,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void UserRepository_RemoveById_ShouldRemoveSpecificUserById()
+        public async Task UserRepository_RemoveById_ShouldRemoveSpecificUserById()
         {
             int id = 1;
             var user = new User(id, "Lajos", "Lali", "l");
-            myRepository.Add(user);
+            await myRepository.AddAsync(user);
             myRepository.SaveChanges();
 
             myRepository.RemoveById(id);
@@ -185,10 +174,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void UserRepository_Update_ShouldUpdateSpecificUser()
+        public async Task UserRepository_Update_ShouldUpdateSpecificUser()
         {
             var user = new User(1, "Lajos", "Lali", "l");
-            myRepository.Add(user);
+            await myRepository.AddAsync(user);
             myRepository.SaveChanges();
             string newFirstName = "Lewis";
             user.FirstName = newFirstName;

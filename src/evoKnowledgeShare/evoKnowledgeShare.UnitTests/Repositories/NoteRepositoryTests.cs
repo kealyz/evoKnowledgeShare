@@ -8,8 +8,8 @@ namespace evoKnowledgeShare.UnitTests.Repositories
     [TestFixture]
     public class NoteRepositoryTests
     {
-        NoteRepository myRepository;
-        EvoKnowledgeDbContext myDbContext;
+        NoteRepository myRepository = default!;
+        EvoKnowledgeDbContext myDbContext = default!;
 
         private void SetUp(string name)
         {
@@ -20,18 +20,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             myRepository = new NoteRepository(myDbContext);
         }
 
-        [Test]
-        public void NoteRepository_Add_ShouldAddNoteToRepository()
-        {
-            SetUp("NoteRepository_Add_ShouldAddNoteToRepository");
-            var note = new Note(new Guid(), "a", 1, new DateTimeOffset(), "leiras", "cim");
-
-            myRepository.Add(note);
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Notes.Count(), Is.EqualTo(1));
-            Assert.That(myDbContext.Notes.Last().Equals(note));
-        }
         [Test]
         public async Task NoteRepository_AddAsync_ShouldAddNoteToRepository()
         {

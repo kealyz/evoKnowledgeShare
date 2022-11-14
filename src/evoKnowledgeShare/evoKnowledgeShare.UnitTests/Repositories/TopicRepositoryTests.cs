@@ -29,18 +29,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void Repository_Add_ShouldAddOneNewTopic()
-        {
-            var expectedTopic = new Topic(1, "Test Topic 1.");
-
-            myRepository.Add(expectedTopic);
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(1));
-            Assert.That(myDbContext.Topics.First(), Is.EqualTo(expectedTopic));
-        }
-
-        [Test]
         public async Task Repository_AddAsync_ShouldAddOneNewTopic()
         {
             var expectedTopic = new Topic(1, "Test Topic 1.");
@@ -210,11 +198,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void Repository_Update_ShouldUpdateOneTopic()
+        public async Task Repository_Update_ShouldUpdateOneTopic()
         {
             var topic = new Topic(1, "Test Topic 1.");
 
-            myRepository.Add(topic);
+            await myRepository.AddAsync(topic);
             myRepository.SaveChanges();
 
             string newTopicTitle = "Updated Test Topic 1.";
@@ -226,7 +214,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             var updatedTopic = myRepository.GetById(topic.Id);
 
-            Assert.That(updatedTopic.Title, Is.EqualTo(newTopicTitle));
+            Assert.That(updatedTopic?.Title, Is.EqualTo(newTopicTitle));
         }
 
         [Test]
