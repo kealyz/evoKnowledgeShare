@@ -4,19 +4,16 @@ on:
   push:
     branches: 
     - main
-    - refactor
     - Dev
     - Features/*
   pull_request:
     branches:
     - main
-    - refactor
     - Dev
     - Features/*
   pull_request_target:
     branches:
     - main
-    - refactor
     - Dev
     - Features/*
   workflow_dispatch:
