@@ -1,31 +1,15 @@
-﻿using evoKnowledgeShare.Backend.DataAccess;
-using evoKnowledgeShare.Backend.Models;
+﻿using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace evoKnowledgeShare.UnitTests.Repositories
 {
     [TestFixture]
-    public class UserRepositoryTests
+    public class UserRepositoryTests : RepositoryTestBase<User>
     {
-        UserRepository myRepository;
-        EvoKnowledgeDbContext myDbContext;
-
         [SetUp]
         public void Setup()
         {
-            DbContextOptions dbContextOptions = new DbContextOptionsBuilder<EvoKnowledgeDbContext>()
-                .UseInMemoryDatabase("InMemoryDB").Options;
-
-            myDbContext = new EvoKnowledgeDbContext(dbContextOptions);
             myRepository = new UserRepository(myDbContext);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            myDbContext.Database.EnsureDeleted();
-            myDbContext.Dispose();
         }
 
         [Test]
@@ -110,10 +94,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         {
             List<int> ids = new List<int>() { 1, 2 };
             var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-            myRepository.AddRange(users);
-            myRepository.SaveChanges();
+            Repository.AddRange(users);
+            Repository.SaveChanges();
 
-            var expectedUsers = await myRepository.GetRangeByIdAsync(ids);
+            var expectedUsers = await Repository.GetRangeByIdAsync(ids);
 
             Assert.That(expectedUsers, Does.Contain(users[0]));
             Assert.That(expectedUsers, Does.Contain(users[1]));

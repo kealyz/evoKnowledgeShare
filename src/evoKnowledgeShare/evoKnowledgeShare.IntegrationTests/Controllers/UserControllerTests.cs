@@ -1,55 +1,29 @@
-using evoKnowledgeShare.Backend;
-using evoKnowledgeShare.Backend.DataAccess;
 using evoKnowledgeShare.Backend.Models;
-
 using NUnit.Framework;
-
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
-using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace evoKnowledgeShare.IntegrationTests.Controllers
 {
-    public class UserControllerTests
+    [TestFixture]
+    public class UserControllerTests : ControllerTestBase
     {
-        private EvoKnowledgeDbContext myContext = default!;
-        private HttpClient myClient = default!;
-        private readonly User[] myUsers = new User[]
-        {
-            new User(1, "Mika", "Kalman", "Mikorka"),
-            new User(2, "Elag", "Agnes", "Elektrom"),
-            new User(3, "Csevi", "Virag", "Cserepes"),
-            new User(4, "Fuim", "Imre", "Futy"),
-            new User(5, "Arak", "Aron", "Akcios")
-        };
+        private User[] myUsers = default!;
 
         [SetUp]
         public void Setup()
         {
-            IWebHostBuilder builder = new WebHostBuilder()
-                .UseEnvironment("Testing")
-                .ConfigureTestServices(services => services.AddDbContext<EvoKnowledgeDbContext>(options => options.UseInMemoryDatabase("TestingDB")))
-                .UseStartup<Startup>();
-
-            TestServer server = new TestServer(builder);
-            myContext = server.Host.Services.GetRequiredService<EvoKnowledgeDbContext>();
-            myClient = server.CreateClient();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            myContext.Database.EnsureDeleted();
-            myContext.Dispose();
-            myClient.Dispose();
+            myUsers = new User[]
+            {
+                new User(Guid.NewGuid(), "Mika", "Kalman", "Mikorka"),
+                new User(Guid.NewGuid(), "Elag", "Agnes", "Elektrom"),
+                new User(Guid.NewGuid(), "Csevi", "Virag", "Cserepes"),
+                new User(Guid.NewGuid(), "Fuim", "Imre", "Futy"),
+                new User(Guid.NewGuid(), "Arak", "Aron", "Akcios")
+            };
         }
 
         [Test]

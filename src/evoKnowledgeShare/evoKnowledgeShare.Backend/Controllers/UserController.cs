@@ -28,7 +28,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             return Ok(myUserService.GetUserById(id));
         }
-        
+
         [HttpPost("Create")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -36,17 +36,29 @@ namespace evoKnowledgeShare.Backend.Controllers
         public async Task<IActionResult> CreateUserAsync([FromBody] User user)
         {
             User? result = await myUserService.CreateUserAsync(user);
-            return result is not null ? Created(nameof(CreateUserAsync),result) : BadRequest("User cannot be added.");
+            return result is not null ? Created(nameof(CreateUserAsync), result) : BadRequest("User cannot be added.");
         }
 
-        [HttpPost("Create")]
+        [HttpDelete("Delete")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteUser(Guid id)
         {
-            User result = myUserService.RemoveUserById(id);
-            return result is not null ? Created(nameof(CreateUserAsync), result) : BadRequest("User cannot be added.");
+            try
+            {
+                myUserService.RemoveUserById(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
     }
 }

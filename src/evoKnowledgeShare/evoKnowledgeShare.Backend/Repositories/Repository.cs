@@ -7,7 +7,7 @@ namespace evoKnowledgeShare.Backend.Repositories
     {
         protected readonly EvoKnowledgeDbContext myDbContext;
 
-        protected Repository(EvoKnowledgeDbContext dbContext)
+        internal Repository(EvoKnowledgeDbContext dbContext)
         {
             myDbContext = dbContext;
         }
