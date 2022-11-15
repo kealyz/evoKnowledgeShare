@@ -5,8 +5,9 @@ using Moq;
 
 namespace evoKnowledgeShare.UnitTests.Services
 {
-    public class TopicServiceTests:ServiceTestBase<Topic>
+    public class TopicServiceTests:ServiceTestBase<Topic> 
     {
+        protected TopicService myService = default!;
         List<Topic> myTopics;
 
         [SetUp]

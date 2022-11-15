@@ -13,7 +13,6 @@ namespace evoKnowledgeShare.UnitTests.Services
     [TestFixture]
     public abstract class ServiceTestBase<T> where T : class
     {
-        protected TopicService myService = default!;
         protected Mock<IRepository<T>> myRepositoryMock = default!;
 
         [SetUp]
