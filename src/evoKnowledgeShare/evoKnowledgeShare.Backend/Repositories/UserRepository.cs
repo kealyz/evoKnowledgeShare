@@ -8,9 +8,18 @@ namespace evoKnowledgeShare.Backend.Repositories
         public UserRepository(EvoKnowledgeDbContext dbContext) : base(dbContext)
         { }
 
-        public override async Task AddAsync(User entity) => await myDbContext.Users.AddAsync(entity);
+        public override async Task<User> AddAsync(User entity)
+        {
+            await myDbContext.Users.AddAsync(entity);
+            await myDbContext.SaveChangesAsync();
+            return myDbContext.Users.First(x => Equals(x, entity));
+        }
 
-        public override async Task AddRangeAsync(IEnumerable<User> entities) => await myDbContext.Users.AddRangeAsync(entities);
+        public override async Task<IEnumerable<User>> AddRangeAsync(IEnumerable<User> entities)
+        {
+            await myDbContext.Users.AddRangeAsync(entities);
+            return myDbContext.Users;
+        }
 
         public override IEnumerable<User> GetAll() => myDbContext.Users;
 
@@ -55,6 +64,10 @@ namespace evoKnowledgeShare.Backend.Repositories
             return user;
         }
 
-        public override IEnumerable<User> UpdateRange(IEnumerable<User> entitites) => myDbContext.Users.UpdateRange(entitites);
+        public override IEnumerable<User> UpdateRange(IEnumerable<User> entitites)
+        {
+            myDbContext.Users.UpdateRange(entitites);
+            return myDbContext.Users;
+        }
     }
 }

@@ -82,7 +82,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
             // Arrange
             Uri postUri = new Uri("/api/User/Create", UriKind.Relative);
-            User user = new User(1, "Mika", "Kalman", "Mikorka");
+            User user = new User(Guid.NewGuid(), "Mika", "Kalman", "Mikorka");
 
             // Action
             HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, user);

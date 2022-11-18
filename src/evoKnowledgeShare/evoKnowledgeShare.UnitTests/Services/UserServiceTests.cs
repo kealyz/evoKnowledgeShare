@@ -2,6 +2,7 @@ using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Moq;
+using System.Collections.Generic;
 
 namespace evoKnowledgeShare.UnitTests.Services
 {
@@ -29,6 +30,7 @@ namespace evoKnowledgeShare.UnitTests.Services
 
         }
 
+        #region Get Test Section
         [Test]
         public void UserService_GetAllUsers_ShouldReturnAll()
         {
@@ -38,12 +40,14 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public void UserService_GetUserById_ShouldReturnSpecificUser()
+        public void UserService_GetUserById_ShouldReturnSpecificUserById()
         {
             User user = myUserService.GetUserById(myUsers[0].Id);
 
             Assert.That(user, Is.EqualTo(myUsers[0]));
         }
+
+        #endregion Get Test Section
 
         [Test]
         public async Task UserService_CreateUserAsync_CreatesNewUser()
@@ -70,6 +74,27 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
+        public void UserService_UpdateRange_ShouldUpdateSpecificUsers()
+        {
+            IEnumerable<User> users = new List<User> { myUsers[0], myUsers[1] };
+            users.ElementAt(0).UserName = "Géza";
+            users.ElementAt(1).UserName = "Géza";
+            myRepositoryMock.Setup(x => x.UpdateRange(It.IsAny<IEnumerable<User>>())).Returns(users);
+
+            IEnumerable<User> actualUsers = myUserService.UpdateRange(users);
+
+            myRepositoryMock.Verify(x => x.UpdateRange(It.Is<IEnumerable<User>>(y => y.Equals(users))), Times.Once);
+            int i = 0;
+            foreach(var user in actualUsers)
+            {
+                Assert.That(user, Is.EqualTo(users.ElementAt(i)));
+                i++;
+            }
+        }
+
+        #region Remove Test Section
+
+        [Test]
         public void UserService_RemoveUser_ShouldRemoveSpecificUser()
         {
             myRepositoryMock.Setup(x => x.Remove(It.IsAny<User>()));
@@ -80,7 +105,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public void UserService_RemoveUserById_ShouldRemoveSpecificUser()
+        public void UserService_RemoveUserById_ShouldRemoveSpecificUserById()
         {
             myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<Guid>()));
 
@@ -98,5 +123,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.Throws<KeyNotFoundException>(() => myUserService.RemoveUserById(guid));
             myRepositoryMock.Verify(x => x.RemoveById(It.Is<Guid>(y => y.Equals(guid))), Times.Once);
         }
+
+        #endregion Remove Test Section
     }
 }

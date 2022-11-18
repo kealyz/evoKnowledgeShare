@@ -28,5 +28,7 @@ namespace evoKnowledgeShare.Backend.Services
 
         public User Update(User user) => myRepository.Update(user);
 
+        public IEnumerable<User> UpdateRange(IEnumerable<User> users) => myRepository.UpdateRange(users);
+
     }
 }
