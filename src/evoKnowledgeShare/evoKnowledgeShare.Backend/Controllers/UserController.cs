@@ -25,8 +25,9 @@ namespace evoKnowledgeShare.Backend.Controllers
 
         [HttpGet("User/{id}")]
         public IActionResult GetUserById(Guid id)
-        {
-            return Ok(myUserService.GetUserById(id));
+        {       
+            User result = myUserService.GetUserById(id);
+            return result is not null ? Ok(result) : Problem(statusCode: StatusCodes.Status404NotFound, title: "No user found.");
         }
 
         [HttpPost("Create")]
@@ -39,7 +40,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             return result is not null ? Created(nameof(CreateUserAsync), result) : BadRequest("User cannot be added.");
         }
 
-        [HttpDelete("Delete")]
+        [HttpDelete("Delete/{id}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -59,6 +60,16 @@ namespace evoKnowledgeShare.Backend.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPut("Update")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public IActionResult UpdateUser([FromBody] User user)
+        {
+
+            User result = myUserService.Update(user);
+            return result is not null ? Created(nameof(UpdateUser), result) : NotFound("User cannot be found.");
         }
     }
 }

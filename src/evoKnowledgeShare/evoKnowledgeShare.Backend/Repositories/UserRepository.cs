@@ -24,7 +24,7 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override IEnumerable<User> GetAll() => myDbContext.Users;
 
-        public override User GetById(Guid id) => myDbContext.Users.First(x => x.Id == id);
+        public override User GetById(Guid id) => myDbContext.Users.First(x => x.Id == id) ?? throw new InvalidOperationException();
 
         public override IEnumerable<User> GetRangeById(IEnumerable<Guid> ids) => myDbContext.Users.Where(x => ids.Any(y => x.Id.Equals(y)));
 

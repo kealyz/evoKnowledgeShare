@@ -65,6 +65,12 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         {
             Assert.That(myDbContext.Users, Does.Contain(myRepository.GetById(myUsers[0].Id)));
         }
+
+        [Test]
+        public void UserRepository_GetById_ShouldThrowInvalidOperationException()
+        {
+            Assert.Throws<InvalidOperationException>(() => myRepository.GetById(Guid.NewGuid()));
+        }
         
         [Test]
         public void UserRepository_GetRangeById_ReturnSpecificUsersByARangeOfId()
@@ -102,9 +108,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void UserRepository_RemoveById_ShouldThrowKeyNotFoundException()
         {
-            Guid guid = Guid.NewGuid();
-
-            Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveById(guid));
+            Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveById(Guid.NewGuid()));
         }
 
         [Test]
@@ -148,7 +152,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             int i = 0;
             foreach(var user in myUsers)
             {
-                user.UserName = "Admin";
+                user.UserName = "Admin" + i;
                 i++;
             }
 

@@ -1,6 +1,7 @@
 using evoKnowledgeShare.Backend.Models;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -57,7 +58,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task UserController_GetUserById_ReturnsUserWithId1()
+        public async Task UserController_GetUserById_ReturnsUserWithId()
         {
             // Arrange
             myContext.Users.AddRange(myUsers);
@@ -78,6 +79,20 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
+        public async Task UserController_GetUserById_UserNotFound_NoUserFound()
+        {
+            // Arrange
+            Uri getUri = new Uri($"/api/User/Users/{Guid.NewGuid()}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
         public async Task UserController_CreateUser_UserSuccessfullyCreated()
         {
             // Arrange
@@ -95,6 +110,92 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(actualUser!.Id, Is.EqualTo(user.Id));
             Assert.That(actualUser!.FirstName, Is.EqualTo(user.FirstName));
             Assert.That(actualUser!.LastName, Is.EqualTo(user.LastName));
+        }
+
+        [Test]
+        public async Task UserController_DeleteUser_UserSuccessfullyDeleted()
+        {
+            // Arrange
+            myContext.Users.AddRange(myUsers);
+            myContext.SaveChanges();
+            Uri deleteUri = new Uri($"/api/User/Delete/{myUsers[0].Id}", UriKind.Relative);
+            Uri getUri = new Uri($"/api/User/Users", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.DeleteAsync(deleteUri);
+            HttpResponseMessage getRemaining = await myClient.GetAsync(getUri);
+            List<User>? remainingUsers = await getRemaining.Content.ReadFromJsonAsync<List<User>>();
+
+            // Assert
+            Assert.That(remainingUsers, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            Assert.That(remainingUsers, !Does.Contain(myUsers[0]));
+        }
+
+        [Test]
+        public async Task UserController_DeleteUser_NoUsersFound()
+        {
+            // Arrange
+            Uri deleteUri = new Uri($"/api/User/Delete/{Guid.NewGuid()}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.DeleteAsync(deleteUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task UserController_DeleteUser_BadRequest()
+        {
+            // Arrange
+            Uri deleteUri = new Uri($"/api/User/Delete/{1}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.DeleteAsync(deleteUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        [Test]
+        public async Task UserController_UpdateUser_UserSuccessfullyUpdated()
+        {
+            // Arrange
+            myContext.AddRange(myUsers);
+            myContext.SaveChanges();
+            Uri putUri = new Uri("/api/User/Update", UriKind.Relative);
+            User putUser = new User(myUsers[0].Id, "TestUser", "Test", "User");
+
+            // Action
+            HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, putUser);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            User? actualUser = await response.Content.ReadFromJsonAsync<User>();
+
+            // Assert
+            Assert.That(actualUser, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(actualUser!.Id, Is.EqualTo(putUser.Id));
+            Assert.That(actualUser!.UserName, Is.EqualTo(putUser.UserName));
+            Assert.That(actualUser!.FirstName, Is.EqualTo(putUser.FirstName));
+            Assert.That(actualUser!.LastName, Is.EqualTo(putUser.LastName));
+        }
+
+        [Test]
+        public async Task UserController_UpdateUser_NoUsersFound()
+        {
+            // Arrange
+            Uri puttUri = new Uri("/api/Update", UriKind.Relative);
+            User putUser = new User(Guid.NewGuid(), "TestUser", "Test", "User");
+
+            // Action
+            HttpResponseMessage response = await myClient.PutAsJsonAsync(puttUri, putUser);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
     }
 }
