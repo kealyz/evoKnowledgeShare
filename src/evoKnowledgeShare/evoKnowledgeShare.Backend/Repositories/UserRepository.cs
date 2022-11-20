@@ -18,22 +18,15 @@ namespace evoKnowledgeShare.Backend.Repositories
         public override async Task<IEnumerable<User>> AddRangeAsync(IEnumerable<User> entities)
         {
             await myDbContext.Users.AddRangeAsync(entities);
-            return myDbContext.Users;
+            await myDbContext.SaveChangesAsync();
+            return myDbContext.Users.Where(user => entities.Any(entity => entity.Id == user.Id));
         }
 
         public override IEnumerable<User> GetAll() => myDbContext.Users;
 
         public override User GetById(Guid id) => myDbContext.Users.First(x => x.Id == id);
 
-        public override IEnumerable<User> GetRangeById(IEnumerable<Guid> ids)
-        {
-            List<User> users = new List<User>();
-            foreach (var id in ids)
-            {
-                users.Add(myDbContext.Users.First(x => x.Id == id));
-            }
-            return users;
-        }
+        public override IEnumerable<User> GetRangeById(IEnumerable<Guid> ids) => myDbContext.Users.Where(x => ids.Any(y => x.Id.Equals(y)));
 
         public override void Remove(User entity)
         {
@@ -45,15 +38,21 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             User? user = myDbContext.Users.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
             Remove(user);
+            myDbContext.SaveChanges();
         }
 
-        public override void RemoveRange(IEnumerable<User> entities) => myDbContext.Users.RemoveRange(entities);
+        public override void RemoveRange(IEnumerable<User> entities)
+        {
+            myDbContext.Users.RemoveRange(entities);
+            myDbContext.SaveChanges();
+        }
 
         public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
             foreach (var id in ids)
             {
                 myDbContext.Users.Remove(myDbContext.Users.First(x => x.Id == id));
+                myDbContext.SaveChanges();
             }
         }
 
@@ -64,10 +63,11 @@ namespace evoKnowledgeShare.Backend.Repositories
             return user;
         }
 
-        public override IEnumerable<User> UpdateRange(IEnumerable<User> entitites)
+        public override IEnumerable<User> UpdateRange(IEnumerable<User> entities)
         {
-            myDbContext.Users.UpdateRange(entitites);
-            return myDbContext.Users;
+            myDbContext.Users.UpdateRange(entities);
+            myDbContext.SaveChanges();
+            return myDbContext.Users.Where(user => entities.Any(entity => entity.Id == user.Id));
         }
     }
 }
