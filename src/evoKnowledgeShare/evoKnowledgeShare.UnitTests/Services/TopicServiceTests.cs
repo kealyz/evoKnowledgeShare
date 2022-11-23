@@ -5,14 +5,16 @@ using Moq;
 
 namespace evoKnowledgeShare.UnitTests.Services
 {
-    public class TopicServiceTests:ServiceTestBase<Topic> 
+    public class TopicServiceTests
     {
+        protected Mock<IRepository<Topic>> myRepositoryMock = default!;
         protected TopicService myService = default!;
         List<Topic> myTopics;
 
         [SetUp]
         public void SetUp() 
         {
+            myRepositoryMock = new Mock<IRepository<Topic>>(MockBehavior.Strict);
             myService = new TopicService(myRepositoryMock.Object);
             myTopics = new List<Topic> {
                 new Topic(Guid.NewGuid(), "Topic Test Title 1."),
