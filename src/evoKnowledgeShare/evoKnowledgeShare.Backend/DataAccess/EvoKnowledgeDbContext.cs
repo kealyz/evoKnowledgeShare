@@ -8,7 +8,7 @@ namespace evoKnowledgeShare.Backend.DataAccess
         public EvoKnowledgeDbContext(DbContextOptions options) : base(options)
         {
         }
-
+        public DbSet<History> Histories { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
 
         public DbSet<Topic> Topics { get; set; } = default!;

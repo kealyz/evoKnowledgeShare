@@ -18,7 +18,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public void GetAllHistories_ShouldReturnAll()
+        public void HistoryService_GetAll_ShouldReturnAll()
         {
             var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
                 "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
@@ -32,21 +32,21 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public void GetHistoryById_ShouldReturnSpecificHistory()
+        public void HistoryService_GetById_ShouldReturnSpecificHistory()
         {
             var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
                 "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
-            myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<History> { entity });
+            myRepositoryMock.Setup(x => x.GetById(entity.Id)).Returns(entity);
 
             var historyEntityById = myHistoryService.GetById(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"));
 
-            myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
+            myRepositoryMock.Verify(x => x.GetById(entity.Id), Times.Once);
             Assert.That(historyEntityById, Is.Not.Null);
             Assert.That(historyEntityById.Id.Equals(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24")));
         }
 
         [Test]
-        public async Task CreateHistory_ShouldCreateHistory()
+        public async Task HistoryService_Create_ShouldCreateHistory()
         {
             var historyEntities = new List<History>();
             myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<History>())).ReturnsAsync(new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
@@ -55,11 +55,11 @@ namespace evoKnowledgeShare.UnitTests.Services
             var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
                 "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
 
-            await myHistoryService.CreateHistory(entity);
+            var insertedEntity = await myHistoryService.CreateHistory(entity);
 
             myRepositoryMock.Verify(x => x.AddAsync(entity), Times.Once);
-            Assert.That(historyEntities.Count().Equals(1));
-            Assert.That(historyEntities.First(), Is.EqualTo(entity));
+
+            Assert.That(insertedEntity.Id.Equals(entity.Id));
         }
     }
 }
