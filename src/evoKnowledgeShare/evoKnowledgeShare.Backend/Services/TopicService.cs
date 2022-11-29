@@ -23,7 +23,7 @@ namespace evoKnowledgeShare.Backend.Services
         #endregion Get Section
 
         #region Add Section
-        public async Task AddAsync(Topic topic) => await myRepository.AddAsync(topic);
+        public async Task<Topic> AddAsync(Topic topic) => await myRepository.AddAsync(topic);
         #endregion Add Section
 
         #region Remove Section
