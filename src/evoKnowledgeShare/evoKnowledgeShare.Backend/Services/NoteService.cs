@@ -41,7 +41,7 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="title"></param>
         /// <returns>A <see cref="Note"/> if found</returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public Note GetByTitle(string title) => myRepository.GetAll().Where(x => x.Title == title).First();
+        public Note GetByTitle(string title) => myRepository.GetAll().FirstOrDefault(x => x.Title == title);
         #endregion Get Section
 
         #region Add Section

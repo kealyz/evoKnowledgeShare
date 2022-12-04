@@ -55,13 +55,13 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             await myDbContext.Notes.AddAsync(note);
             myDbContext.SaveChanges();
-            return myDbContext.Notes.First(x => x.NoteId == note.NoteId);
+            return myDbContext.Notes.FirstOrDefault(x => x.NoteId == note.NoteId);
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<Note> notes)
         {
-            List<Note> resultNotes = new List<Note>();
+            List<Note> resultNotes = new();
             foreach (Note note in notes)
                 resultNotes.Add(await AddAsync(note));
             return resultNotes;
@@ -79,7 +79,7 @@ namespace evoKnowledgeShare.Backend.Repositories
         /// <inheritdoc/>
         public override void RemoveById(Guid id)
         {
-            myDbContext.Notes.Remove(myDbContext.Notes.First(x=>x.NoteId==id));
+            myDbContext.Notes.Remove(myDbContext.Notes.FirstOrDefault(x=>x.NoteId==id));
             myDbContext.SaveChanges();
         }
 
