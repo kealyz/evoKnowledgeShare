@@ -1,42 +1,70 @@
 ﻿namespace evoKnowledgeShare.Backend.Interfaces
 {
-    public interface IRepository<T>
+    public interface IRepository<TEntity>
     {
         #region Add section
-        
-        Task<T> AddAsync(T entity);
 
-        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
+        /// <param name="entity"></param>
+        /// <returns><typeparamref name="TEntity"/> if added</returns>
+        Task<TEntity> AddAsync(TEntity entity);
+
+        /// <param name="entities"></param>
+        /// <returns>A list of <typeparamref name="TEntity"/> if added</returns>
+        Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities);
 
         #endregion Add section
 
         #region Get section
 
-        T GetById(Guid id);
+        
+        /// <param name="id"></param>
+        /// <returns><typeparamref name="TEntity"/> If found</returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        TEntity GetById(Guid id);
 
-        IEnumerable<T> GetRangeById(IEnumerable<Guid> ids);
+        /// <param name="ids"></param>
+        /// <returns>A list of <typeparamref name="TEntity"/> if found</returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        IEnumerable<TEntity> GetRangeById(IEnumerable<Guid> ids);
 
-        IEnumerable<T> GetAll();
+        /// <returns>All <typeparamref name="TEntity"/></returns>
+        ///<exception cref="KeyNotFoundException"></exception>
+        IEnumerable<TEntity> GetAll();
 
         #endregion Get section
 
         #region Remove section
 
-        void Remove(T entity);
+        /// <param name="entity"></param>
+        /// <exception cref="KeyNotFoundException"></exception>
+        void Remove(TEntity entity);
 
+        /// <param name="id"></param>
+        /// <exception cref="KeyNotFoundException"></exception>
         void RemoveById(Guid id);
 
-        void RemoveRange(IEnumerable<T> entities);
+        /// <param name="entities"></param>
+        /// <exception cref="KeyNotFoundException"></exception>
+        void RemoveRange(IEnumerable<TEntity> entities);
 
+        /// <param name="ids"></param>
+        /// <exception cref="KeyNotFoundException"></exception>
         void RemoveRangeById(IEnumerable<Guid> ids);
 
         #endregion Remove section
 
         #region Update section
 
-        T Update(T entity);
 
-        IEnumerable<T> UpdateRange(IEnumerable<T> entities);
+        /// <param name="entity"></param>
+        /// <returns><typeparamref name="TEntity"/> if modified</returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        TEntity Update(TEntity entity);
+
+        /// <param name="entity"></param>
+        /// <returns><typeparamref name="TEntity"/> if modified</returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        IEnumerable<TEntity> UpdateRange(IEnumerable<TEntity> entities);
 
         #endregion Update section
 

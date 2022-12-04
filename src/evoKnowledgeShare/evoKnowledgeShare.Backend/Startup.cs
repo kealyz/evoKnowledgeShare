@@ -28,9 +28,18 @@ namespace evoKnowledgeShare.Backend
             }
             Console.WriteLine("Adding controllers.");
             services.AddControllers();
-            Console.WriteLine("Adding services.");
+
+            Console.WriteLine("Adding repositories.");
             services.AddScoped<IRepository<User>, UserRepository>();
+            services.AddScoped<IRepository<Note>, NoteRepository>();
+            services.AddScoped<IRepository<Topic>, TopicRepository>();
+            //services.AddScoped<IRepository<History>, HistoryRepository>();
+
+            Console.WriteLine("Adding services.");
             services.AddScoped<UserService>();
+            services.AddScoped<NoteService>();
+            services.AddScoped<TopicService>();
+            services.AddScoped<HistoryService>();
             Console.WriteLine("Done.");
 
             services.AddEndpointsApiExplorer();

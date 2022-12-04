@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using evoKnowledgeShare.Backend.DTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace evoKnowledgeShare.Backend.Models
 {
     public class Note
     {
-        public Note(Guid noteId, string userId, int topicId, DateTimeOffset createdAt, string description, string title)
+        public Note(Guid noteId, Guid userId, int topicId, DateTimeOffset createdAt, string description, string title)
         {
             NoteId = noteId;
             UserId = userId;
@@ -13,11 +14,20 @@ namespace evoKnowledgeShare.Backend.Models
             Description = description;
             Title = title;
         }
+        public Note(NoteDTO noteDTO)
+        {
+            NoteId = Guid.NewGuid();
+            UserId = noteDTO.UserId;
+            TopicId = noteDTO.TopicId;
+            CreatedAt = noteDTO.CreatedAt;
+            Description = noteDTO.Description;
+            Title = noteDTO.Title;
+        }
         [Key]
         public Guid NoteId { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [Required]
         public int TopicId { get; set; }
