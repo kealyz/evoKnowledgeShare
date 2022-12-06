@@ -44,7 +44,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
         [Test]
-        public async Task NoteController_GetById_ShouldReturnWithOke()
+        public async Task NoteController_GetById_ShouldReturnWithOk()
         {
             Uri getUri = new($"/api/Note/{myNotes[0].NoteId}", UriKind.Relative);
 
