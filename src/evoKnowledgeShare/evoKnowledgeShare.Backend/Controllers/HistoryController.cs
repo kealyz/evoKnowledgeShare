@@ -1,4 +1,5 @@
-﻿using evoKnowledgeShare.Backend.Models;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -6,7 +7,7 @@ using System.Net.Mime;
 namespace evoKnowledgeShare.Backend.Controllers
 {
     [Route("api/[controller]")]
-    [Controller]
+    [ApiController]
     public class HistoryController : ControllerBase
     {
         private HistoryService myHistoryService;
@@ -33,9 +34,9 @@ namespace evoKnowledgeShare.Backend.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateHistoryAsync([FromBody] History history)
+        public async Task<IActionResult> CreateHistoryAsync([FromBody] HistoryDTO history)
         {
-            History? result = await myHistoryService.CreateHistory(history);
+            History? result = await myHistoryService.CreateHistory(new History(history));
             return result is not null ? Created(nameof(CreateHistoryAsync), result) : BadRequest("History cannot be added");
         }
     }
