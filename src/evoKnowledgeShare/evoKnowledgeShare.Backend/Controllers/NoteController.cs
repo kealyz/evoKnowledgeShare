@@ -26,7 +26,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NoContent();
             }
             catch (Exception)
             {
@@ -43,7 +43,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NoContent();
             }
             catch (Exception)
             {
@@ -59,7 +59,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NoContent();
             }
             catch (Exception)
             {
@@ -75,7 +75,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NoContent();
             }
             catch (Exception)
             {
@@ -91,7 +91,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NoContent();
             }
             catch (Exception)
             {
@@ -107,7 +107,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NoContent();
             }
             catch (Exception)
             {
