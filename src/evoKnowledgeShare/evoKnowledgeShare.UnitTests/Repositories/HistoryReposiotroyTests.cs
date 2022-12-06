@@ -23,7 +23,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             myDbContext = new EvoKnowledgeDbContext(dbContextOptions);
             myRepository = new HistoryRepository(myDbContext);
-
         }
 
         [Test]

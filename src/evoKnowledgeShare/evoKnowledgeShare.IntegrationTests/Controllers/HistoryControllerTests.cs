@@ -29,7 +29,6 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
-
         [Test]
         public async Task HistoryController_GetHistories_ReturnAllHistories()
         {
@@ -51,7 +50,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             HistoryDTO historyDTO = new HistoryDTO("Activity param", new DateTimeOffset(), "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
             HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, historyDTO);
             
-            //var r = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
             History history = await response.Content.ReadFromJsonAsync<History>();
 
             Assert.That(history, Is.Not.Null);

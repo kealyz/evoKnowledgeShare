@@ -18,7 +18,5 @@ namespace evoKnowledgeShare.Backend.DTO
             NoteId = noteId;
             UserId = userId;
         }
-
-        
     }
 }
