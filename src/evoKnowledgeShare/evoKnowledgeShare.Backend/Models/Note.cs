@@ -1,10 +1,12 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace evoKnowledgeShare.Backend.Models
 {
     public class Note
     {
+        public Note() { }
         public Note(Guid noteId, Guid userId, int topicId, DateTimeOffset createdAt, string description, string title)
         {
             NoteId = noteId;
@@ -22,6 +24,15 @@ namespace evoKnowledgeShare.Backend.Models
             CreatedAt = noteDTO.CreatedAt;
             Description = noteDTO.Description;
             Title = noteDTO.Title;
+        }
+        public Note(Note note)
+        {
+            NoteId = note.NoteId;
+            UserId = note.UserId;
+            TopicId = note.TopicId;
+            CreatedAt = note.CreatedAt;
+            Description = note.Description;
+            Title = note.Title;
         }
         [Key]
         public Guid NoteId { get; set; }
@@ -51,10 +62,17 @@ namespace evoKnowledgeShare.Backend.Models
                    TopicId == note.TopicId &&
                    CreatedAt.Equals(note.CreatedAt) &&
                    Description == note.Description &&
-                   Title == note.Title;                   ;
-                
+                   Title == note.Title; 
         }
-
+        public bool NoteFieldsMatch(object? obj)
+        {
+            return obj is Note note &&
+                   UserId == note.UserId &&
+                   TopicId == note.TopicId &&
+                   CreatedAt.Equals(note.CreatedAt) &&
+                   Description == note.Description &&
+                   Title == note.Title;
+        }
         public override int GetHashCode()
         {
             return HashCode.Combine(NoteId, UserId, TopicId, CreatedAt, Description, Title);

@@ -139,8 +139,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         #endregion Add Section
 
         #region Remove Section
-        [HttpDelete("delete")]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpDelete("delete/{note}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -160,8 +159,7 @@ namespace evoKnowledgeShare.Backend.Controllers
                 return BadRequest();
             }
         }
-        [HttpDelete("deleteById")]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpDelete("deleteById/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -189,6 +187,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         public IActionResult Update([FromBody] Note note)
         {
             Note? result = myNoteService.Update(note);
+            
             return result is not null ? Ok(result) : BadRequest("Note cannot be modified.");
         }
         #endregion Modify Section

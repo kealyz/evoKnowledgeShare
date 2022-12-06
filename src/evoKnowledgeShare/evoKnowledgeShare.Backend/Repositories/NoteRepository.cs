@@ -63,7 +63,10 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             List<Note> resultNotes = new();
             foreach (Note note in notes)
+            {
                 resultNotes.Add(await AddAsync(note));
+            }
+            myDbContext.SaveChanges();
             return resultNotes;
         }
         #endregion Add Section

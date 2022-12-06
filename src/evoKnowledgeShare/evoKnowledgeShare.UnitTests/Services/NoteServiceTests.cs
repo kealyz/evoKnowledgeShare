@@ -123,13 +123,12 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public async Task NoteService_AddAsync_CreatesNote()
         {
-            var note = myNotes[0];
-            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Note>())).ReturnsAsync(note);
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Note>())).ReturnsAsync(myNotes[0]);
 
-            Note actualNote = await myNoteService.AddAsync(note);
+            Note actualNote = await myNoteService.AddAsync(myNotes[0]);
 
-            myRepositoryMock.Verify(x => x.AddAsync(It.Is<Note>(y => y.Equals(note))), Times.Once);
-            Assert.That(actualNote, Is.EqualTo(note));
+            myRepositoryMock.Verify(x => x.AddAsync(It.Is<Note>(y => y.Equals(myNotes[0]))), Times.Once);
+            Assert.That(actualNote, Is.EqualTo(myNotes[0]));
         }
         [Test]
         public async Task NoteService_AddRangeAsync_CreatesNotes()
@@ -187,14 +186,12 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public void NoteService_Update_ShouldChangeTheValuesOfOldNoteToNew()
         {
+            myRepositoryMock.Setup(x => x.Update(It.IsAny<Note>())).Returns(myNotes[0]);
 
-            Note note = myNotes[0];
-            myRepositoryMock.Setup(x => x.Update(It.IsAny<Note>())).Returns(note);
+            Note actualNote = myNoteService.Update(myNotes[0]);
 
-            Note actualNote = myNoteService.Update(note);
-
-            myRepositoryMock.Verify(x => x.Update(It.Is<Note>(y => y.Equals(note))), Times.Once);
-            Assert.That(actualNote, Is.EqualTo(note));
+            myRepositoryMock.Verify(x => x.Update(It.Is<Note>(y => y.Equals(myNotes[0]))), Times.Once);
+            Assert.That(actualNote, Is.EqualTo(myNotes[0]));
 
         }
         #endregion Modify Section
