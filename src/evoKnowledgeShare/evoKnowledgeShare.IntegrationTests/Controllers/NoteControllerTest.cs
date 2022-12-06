@@ -26,17 +26,15 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
                 new Note(Guid.NewGuid(), Guid.NewGuid(), 4, DateTimeOffset.Now, "Python fejlesztes", "Kigyo vagy"),
                 new Note(Guid.NewGuid(), Guid.NewGuid(), 5, DateTimeOffset.Now, "C es C++ fejlesztes", "Kezd az alapoktol")
             };
+            myContext.Notes.AddRange(myNotes);
+            myContext.SaveChanges();
         }
 
         #region Get Section
         [Test]
         public async Task NoteController_GetNotes_ShouldReturnWithOk()
         {
-            // Arrange
-            myContext.Notes.AddRange(myNotes);
-            myContext.SaveChanges();
-
-            Uri getUri = new Uri("/api/Note/all", UriKind.Relative);
+            Uri getUri = new("/api/Note/all", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -48,11 +46,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [Test]
         public async Task NoteController_GetById_ShouldReturnWithOke()
         {
-            // Arrange
-            myContext.Notes.AddRange(myNotes);
-            myContext.SaveChanges();
-
-            Uri getUri = new Uri($"/api/Note/{myNotes[0].NoteId}", UriKind.Relative);
+            Uri getUri = new($"/api/Note/{myNotes[0].NoteId}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -64,11 +58,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [Test]
         public async Task NoteController_GetByUserId_ShouldReturnWithOk()
         {
-            // Arrange
-            myContext.Notes.AddRange(myNotes);
-            myContext.SaveChanges();
-
-            Uri getUri = new Uri($"/api/Note/byUserId/{myNotes[0].UserId}", UriKind.Relative);
+            Uri getUri = new($"/api/Note/byUserId/{myNotes[0].UserId}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -80,11 +70,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [Test]
         public async Task NoteController_GetByTopicId_ShouldReturnWithOk()
         {
-            // Arrange
-            myContext.Notes.AddRange(myNotes);
-            myContext.SaveChanges();
-
-            Uri getUri = new Uri($"/api/Note/byTopicId/{myNotes[0].TopicId}", UriKind.Relative);
+            Uri getUri = new($"/api/Note/byTopicId/{myNotes[0].TopicId}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -96,11 +82,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [Test]
         public async Task NoteController_GetByDescription_ShouldReturnWithOk()
         {
-            // Arrange
-            myContext.Notes.AddRange(myNotes);
-            myContext.SaveChanges();
-
-            Uri getUri = new Uri($"/api/Note/byDescription/{myNotes[1].Description}", UriKind.Relative);
+            Uri getUri = new($"/api/Note/byDescription/{myNotes[1].Description}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -113,11 +95,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [Test]
         public async Task NoteController_GetByTitle_ShouldReturnWithOk()
         {
-            // Arrange
-            myContext.Notes.AddRange(myNotes);
-            myContext.SaveChanges();
-
-            Uri getUri = new Uri($"/api/Note/byTitle/{myNotes[1].Title}", UriKind.Relative);
+            Uri getUri = new($"/api/Note/byTitle/{myNotes[1].Title}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
