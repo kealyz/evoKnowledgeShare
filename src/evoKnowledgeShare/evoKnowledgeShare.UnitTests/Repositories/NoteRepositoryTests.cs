@@ -20,56 +20,43 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 new Note(Guid.NewGuid(), Guid.NewGuid(), 4, DateTimeOffset.Now, "Python fejlesztes", "Kigyo vagy"),
                 new Note(Guid.NewGuid(), Guid.NewGuid(), 5, DateTimeOffset.Now, "C es C++ fejlesztes", "Kezd az alapoktol")
             };
+            myDbContext.Notes.Add(myNotes[0]);
+            myDbContext.Notes.Add(myNotes[1]);
+            myDbContext.SaveChanges();
         }
 
         #region Get Section
         [Test]
         public void NoteRepository_GetAll_ShouldReturnAllNotes()
         {
-            var note1 = myNotes[0];
-            var note2 = myNotes[1];
-            myDbContext.Notes.Add(note1);
-            myDbContext.Notes.Add(note2);
-            myDbContext.SaveChanges();
-
             var actual = myRepository.GetAll();
 
             
             Assert.Multiple(() =>
             {
                 Assert.That(actual.Count, Is.EqualTo(2));
-                Assert.That(actual, Does.Contain(note1));
-                Assert.That(actual, Does.Contain(note2));
+                Assert.That(actual, Does.Contain(myNotes[0]));
+                Assert.That(actual, Does.Contain(myNotes[1]));
             });
         }
 
         [Test]
         public void NoteRepository_GetById_ShouldReturnSpecificNote()
         {
-            var note1 = myNotes[0];
-            myDbContext.Notes.Add(note1);
-            myDbContext.SaveChanges();
+            var actual = myRepository.GetById(myNotes[0].NoteId);
 
-            var actual = myRepository.GetById(note1.NoteId);
-
-            Assert.That(actual, Is.EqualTo(note1));
+            Assert.That(actual, Is.EqualTo(myNotes[0]));
         }
         [Test]
         public void NoteRepository_GetByIdRange_ShouldReturnSpecificNotes()
         {
-            var note1 = myNotes[0];
-            var note2 = myNotes[1];
-            myDbContext.Notes.Add(note1);
-            myDbContext.Notes.Add(note2);
-            myDbContext.SaveChanges();
-
-            List<Guid> guids = new() { note1.NoteId, note2.NoteId };
+            List<Guid> guids = new() { myNotes[0].NoteId, myNotes[1].NoteId };
             var actual = myRepository.GetRangeById(guids);
 
             Assert.Multiple(() =>
             {
-                Assert.That(actual, Does.Contain(note1));
-                Assert.That(actual, Does.Contain(note2));
+                Assert.That(actual, Does.Contain(myNotes[0]));
+                Assert.That(actual, Does.Contain(myNotes[1]));
                 Assert.That(actual.Count(), Is.EqualTo(2));
             });
         }
@@ -79,32 +66,28 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public async Task NoteRepository_AddAsync_ShouldAddNoteToRepository()
         {
-            Note expectedNote = myNotes[0];
-
-            var actualNote = await myRepository.AddAsync(expectedNote);
+            var actualNote = await myRepository.AddAsync(myNotes[3]);
             myDbContext.SaveChanges();
 
             Assert.Multiple(() =>
             {
-                Assert.That(myDbContext.Notes.Count(), Is.EqualTo(1));
-                Assert.That(actualNote, Is.EqualTo(expectedNote));
-                Assert.That(myDbContext.Notes, Does.Contain(expectedNote));
+                Assert.That(myDbContext.Notes.Count(), Is.EqualTo(3));
+                Assert.That(actualNote, Is.EqualTo(myNotes[3]));
+                Assert.That(myDbContext.Notes, Does.Contain(myNotes[3]));
             });
         }
         [Test]
         public async Task NoteRepository_AddRangeAsync_ShouldAddNotesToRepository()
         {
-            Note expectedNote1 = myNotes[0];
-            Note expectedNote2 = myNotes[1];
-            IEnumerable<Note> expectedNotes = new[] { expectedNote1, expectedNote2 };
+            IEnumerable<Note> expectedNotes = new[] { myNotes[2], myNotes[3] };
 
             var actualNotes = await myRepository.AddRangeAsync(expectedNotes);
             myDbContext.SaveChanges();
 
             Assert.Multiple(() =>
             {
-                Assert.That(actualNotes, Does.Contain(expectedNote1));
-                Assert.That(actualNotes, Does.Contain(expectedNote2));
+                Assert.That(actualNotes, Does.Contain(myNotes[2]));
+                Assert.That(actualNotes, Does.Contain(myNotes[3]));
             });
         }
         #endregion Add Section
@@ -112,20 +95,16 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_Remove_ShouldRemoveOneNote()
         {
-            Note note = myNotes[0];
-            myDbContext.Notes.Add(note);
-            myDbContext.SaveChanges();
-
             int noteCount = myDbContext.Notes.Count();
 
-            myRepository.Remove(note);
+            myRepository.Remove(myNotes[0]);
             myDbContext.SaveChanges();
             int expectedNoteCount = myDbContext.Notes.Count();
 
             Assert.Multiple(() =>
             {
-                Assert.That(myDbContext.Notes.Count(), Is.EqualTo(0));
-                Assert.That(myDbContext.Notes.Contains(note), Is.False);
+                Assert.That(myDbContext.Notes.Count(), Is.EqualTo(1));
+                Assert.That(myDbContext.Notes.Contains(myNotes[0]), Is.False);
                 Assert.That(noteCount - 1, Is.EqualTo(expectedNoteCount));
             });
         }
@@ -133,20 +112,16 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_RemoveById_ShouldRemoveOneNote()
         {
-            Note note = myNotes[0];
-            myDbContext.Notes.Add(note);
-            myDbContext.SaveChanges();
-
             int noteCount = myDbContext.Notes.Count();
 
-            myRepository.RemoveById(note.NoteId);
+            myRepository.RemoveById(myNotes[0].NoteId);
             myDbContext.SaveChanges();
             int expectedNoteCount = myDbContext.Notes.Count();
             
             Assert.Multiple(() =>
             {
-                Assert.That(myDbContext.Notes.Count(), Is.EqualTo(0));
-                Assert.That(myDbContext.Notes.Contains(note), Is.False);
+                Assert.That(myDbContext.Notes.Count(), Is.EqualTo(1));
+                Assert.That(myDbContext.Notes.Contains(myNotes[0]), Is.False);
                 Assert.That(noteCount - 1, Is.EqualTo(expectedNoteCount));
             });
         }
@@ -154,12 +129,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_RemoveRange_ShouldRemoveOneNote()
         {
-            Note note = myNotes[0];
-            Note note2 = myNotes[1];
-            IEnumerable<Note> notes = new[] { note, note2 };
-            myDbContext.Notes.Add(note);
-            myDbContext.Notes.Add(note2);
-            myDbContext.SaveChanges();
+            IEnumerable<Note> notes = new[] { myNotes[0], myNotes[1] };
 
             int noteCount = myDbContext.Notes.Count();
 
@@ -170,8 +140,8 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             Assert.Multiple(() =>
             {
                 Assert.That(myDbContext.Notes.Count(), Is.EqualTo(0));
-                Assert.That(myDbContext.Notes.Contains(note), Is.False);
-                Assert.That(myDbContext.Notes.Contains(note2), Is.False);
+                Assert.That(myDbContext.Notes.Contains(myNotes[0]), Is.False);
+                Assert.That(myDbContext.Notes.Contains(myNotes[1]), Is.False);
                 Assert.That(noteCount - notes.Count(), Is.EqualTo(expectedNoteCount));
             });
         }
@@ -179,12 +149,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_RemoveRangeById_ShouldRemoveOneNote()
         {
-            Note note = myNotes[0];
-            Note note2 = myNotes[1];
-            IEnumerable<Guid> notes = new[] { note.NoteId, note2.NoteId };
-            myDbContext.Notes.Add(note);
-            myDbContext.Notes.Add(note2);
-            myDbContext.SaveChanges();
+            IEnumerable<Guid> notes = new[] { myNotes[0].NoteId, myNotes[1].NoteId };
 
             int noteCount = myDbContext.Notes.Count();
 
@@ -195,8 +160,8 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             Assert.Multiple(() =>
             {
                 Assert.That(myDbContext.Notes.Count(), Is.EqualTo(0));
-                Assert.That(myDbContext.Notes.Contains(note), Is.False);
-                Assert.That(myDbContext.Notes.Contains(note2), Is.False);
+                Assert.That(myDbContext.Notes.Contains(myNotes[0]), Is.False);
+                Assert.That(myDbContext.Notes.Contains(myNotes[1]), Is.False);
                 Assert.That(noteCount - notes.Count(), Is.EqualTo(expectedNoteCount));
             });
         }
@@ -205,18 +170,14 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_Update_ShouldUpdateNoteInRepository()
         {
-            var note = myNotes[0];
-            myDbContext.Notes.Add(note);
-            myDbContext.SaveChanges();
-
             string newNoteDescription = "C sharp fejlesztes";
 
-            note.Title = newNoteDescription;
+            myNotes[0].Title = newNoteDescription;
 
-            myRepository.Update(note);
+            myRepository.Update(myNotes[0]);
             myDbContext.SaveChanges();
 
-            var updatedNote = myDbContext.Notes.First(x => x.NoteId == note.NoteId);
+            var updatedNote = myDbContext.Notes.First(x => x.NoteId == myNotes[0].NoteId);
 
             Assert.That(updatedNote.Title, Is.EqualTo(newNoteDescription));
 
@@ -224,24 +185,18 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_UpdateRange_ShouldUpdateNoteInRepository()
         {
-            var note = myNotes[0];
-            var note2 = myNotes[1];
-            myDbContext.Notes.Add(note);
-            myDbContext.Notes.Add(note2);
-            myDbContext.SaveChanges();
-
             string newNoteDescriptiontoNote1 = "C sharp fejlesztes";
             string newNoteDescriptiontoNote2 = "Fejlesztes Java-ban";
 
-            note.Title = newNoteDescriptiontoNote1;
-            note2.Title = newNoteDescriptiontoNote2;
+            myNotes[0].Title = newNoteDescriptiontoNote1;
+            myNotes[1].Title = newNoteDescriptiontoNote2;
 
-            List<Note> notes = new() { note, note2 };
+            List<Note> notes = new() { myNotes[0], myNotes[1] };
             myRepository.UpdateRange(notes);
             myDbContext.SaveChanges();
 
-            var updatedNote = myDbContext.Notes.First(x => x.NoteId == note.NoteId);
-            var updatedNote2 = myDbContext.Notes.First(x => x.NoteId == note2.NoteId);
+            var updatedNote = myDbContext.Notes.First(x => x.NoteId == myNotes[0].NoteId);
+            var updatedNote2 = myDbContext.Notes.First(x => x.NoteId == myNotes[1].NoteId);
 
             Assert.Multiple(() =>
             {
