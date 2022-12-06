@@ -27,7 +27,7 @@
         /// <exception cref="KeyNotFoundException"></exception>
         IEnumerable<TEntity> GetRangeById(IEnumerable<Guid> ids);
 
-        /// <returns>All <typeparamref name="TEntity"/></returns>
+        /// <returns>All <typeparamref name="TEntity"/> or an empty list</returns>
         ///<exception cref="KeyNotFoundException"></exception>
         IEnumerable<TEntity> GetAll();
 

@@ -19,7 +19,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             IEnumerable<Note> notes = myDbContext.Notes;
             if (notes == null)
             {
-                throw new KeyNotFoundException();
+                return Enumerable.Empty<Note>();
             }
             return notes;
         }
