@@ -69,10 +69,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
         [Test]
         public void NoteRepository_GetByIdRange_ShouldReturnSpecificNotes()
@@ -125,10 +122,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
         [Test]
         public async Task NoteRepository_AddRangeAsync_ShouldAddNotesToRepository()
@@ -158,10 +152,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
         #endregion Add Section
         #region Remove Section
@@ -192,10 +183,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
         [Test]
         public void NoteRepository_RemoveById_ShouldRemoveOneNote()
@@ -224,10 +212,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
 
         [Test]
@@ -261,10 +246,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
 
         [Test]
@@ -298,10 +280,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
         #endregion Remove Section
         #region Modify Section
@@ -331,10 +310,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
         [Test]
         public void NoteRepository_UpdateRange_ShouldUpdateNoteInRepository()
@@ -370,10 +346,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.Pass();
             }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            Assert.Fail();
         }
         #endregion Modify Section
     }
