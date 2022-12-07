@@ -18,9 +18,9 @@ namespace evoKnowledgeShare.Backend.Services
         public IEnumerable<Note> GetAll() => myRepository.GetAll();
 
         /// <param name="id"></param>
-        /// <returns><see cref="Note"/> If found</returns>
+        /// <returns>A <see cref="Note"/> if found, else null</returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public Note GetById(Guid guid) => myRepository.GetById(guid);
+        public Note? GetById(Guid guid) => myRepository.GetById(guid);
         
         /// <param name="id"></param>
         /// <returns>A list of <see cref="Note"/> if found</returns>
@@ -34,14 +34,14 @@ namespace evoKnowledgeShare.Backend.Services
 
 
         /// <param name="description"></param>
-        /// <returns>A <see cref="Note"/> if found</returns>
+        /// <returns>A <see cref="Note"/> if found, else null</returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public Note GetByDescription(string description) => myRepository.GetAll().FirstOrDefault(x => x.Description == description);
+        public Note? GetByDescription(string description) => myRepository.GetAll().FirstOrDefault(x => x.Description == description);
 
         /// <param name="title"></param>
-        /// <returns>A <see cref="Note"/> if found</returns>
+        /// <returns>A <see cref="Note"/> if found, else null</returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public Note GetByTitle(string title) => myRepository.GetAll().FirstOrDefault(x => x.Title == title);
+        public Note? GetByTitle(string title) => myRepository.GetAll().FirstOrDefault(x => x.Title == title);
         #endregion Get Section
 
         #region Add Section

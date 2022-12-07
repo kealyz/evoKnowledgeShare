@@ -17,13 +17,8 @@ namespace evoKnowledgeShare.Backend.Repositories
         public override IEnumerable<Note> GetAll()
         {
             IEnumerable<Note> notes = myDbContext.Notes;
-            if (notes == null)
-            {
-                return Enumerable.Empty<Note>();
-            }
             return notes;
         }
-
         
         ///<inheritdoc/>
         public override Note GetById(Guid id)
@@ -40,10 +35,6 @@ namespace evoKnowledgeShare.Backend.Repositories
         public override IEnumerable<Note> GetRangeById(IEnumerable<Guid> guids)
         {
             IEnumerable<Note> notes = myDbContext.Notes.Where(x => guids.Any(y => x.NoteId == y));
-            if (notes == null)
-            {
-                throw new KeyNotFoundException();
-            }
             return notes;
         }
 
@@ -51,23 +42,38 @@ namespace evoKnowledgeShare.Backend.Repositories
         #region Add Section
 
         /// <inheritdoc/>
-        public override async Task<Note> AddAsync(Note note)
+        public override async Task<Note?> AddAsync(Note note)
         {
-            await myDbContext.Notes.AddAsync(note);
-            myDbContext.SaveChanges();
-            return myDbContext.Notes.FirstOrDefault(x => x.NoteId == note.NoteId);
+            try
+            {
+                await myDbContext.Notes.AddAsync(note);
+                myDbContext.SaveChanges();
+                return myDbContext.Notes.FirstOrDefault(x => x.NoteId == note.NoteId);
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException();
+            }
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<Note> notes)
         {
-            List<Note> resultNotes = new();
-            foreach (Note note in notes)
+            try
             {
-                resultNotes.Add(await AddAsync(note));
+                List<Note?> resultNotes = new();
+                foreach (Note note in notes)
+                {
+                    resultNotes.Add(await AddAsync(note));
+                }
+                myDbContext.SaveChanges();
+                return resultNotes;
             }
-            myDbContext.SaveChanges();
-            return resultNotes;
+            catch (ArgumentException)
+            {
+                throw new ArgumentException();
+            }
+            
         }
         #endregion Add Section
         #region Remove Section
@@ -75,36 +81,62 @@ namespace evoKnowledgeShare.Backend.Repositories
         /// <inheritdoc/>
         public override void Remove(Note note)
         {
-            myDbContext.Notes.Remove(note);
-            myDbContext.SaveChanges();
+            try
+            {
+                myDbContext.Notes.Remove(note);
+                myDbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
 
         /// <inheritdoc/>
         public override void RemoveById(Guid id)
         {
-            myDbContext.Notes.Remove(myDbContext.Notes.FirstOrDefault(x=>x.NoteId==id));
-            myDbContext.SaveChanges();
+            try
+            {
+                Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id);
+                myDbContext.Notes.Remove(note);
+                myDbContext.SaveChanges();
+            }
+            catch (ArgumentNullException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
 
         /// <inheritdoc/>
         public override void RemoveRange(IEnumerable<Note> entities)
         {
-            myDbContext.Notes.RemoveRange(entities);
-            myDbContext.SaveChanges();
+            try
+            {
+                myDbContext.Notes.RemoveRange(entities);
+                myDbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
 
         /// <inheritdoc/>
         public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
-            foreach (Guid id in ids)
+            try
             {
-                var note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id);
-                if (note!=null)
+                foreach (Guid id in ids)
                 {
+                    Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id);
                     myDbContext.Notes.Remove(note);
                 }
+                myDbContext.SaveChanges();
             }
-            myDbContext.SaveChanges();
+            catch (ArgumentNullException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
         #endregion Remove Section
         #region Modify Section
@@ -112,21 +144,35 @@ namespace evoKnowledgeShare.Backend.Repositories
         /// <inheritdoc/>
         public override Note Update(Note note)
         {
-            Note resultNote = myDbContext.Notes.Update(note).Entity;
-            myDbContext.SaveChanges();
-            return resultNote;
+            try
+            {
+                Note resultNote = myDbContext.Notes.Update(note).Entity;
+                myDbContext.SaveChanges();
+                return resultNote;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
 
         /// <inheritdoc/>
         public override IEnumerable<Note> UpdateRange(IEnumerable<Note> notes)
         {
-            List<Note> resultNotes=new();
-            foreach (Note note in notes)
+            try
             {
-                resultNotes.Add(myDbContext.Notes.Update(note).Entity);
+                List<Note> resultNotes = new();
+                foreach (Note note in notes)
+                {
+                    resultNotes.Add(myDbContext.Notes.Update(note).Entity);
+                }
+                myDbContext.SaveChanges();
+                return resultNotes;
             }
-            myDbContext.SaveChanges();
-            return resultNotes;
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
         #endregion Modify Section
     }

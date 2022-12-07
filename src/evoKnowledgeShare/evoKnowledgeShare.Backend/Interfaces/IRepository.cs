@@ -6,10 +6,12 @@
 
         /// <param name="entity"></param>
         /// <returns><typeparamref name="TEntity"/> if added</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<TEntity> AddAsync(TEntity entity);
 
         /// <param name="entities"></param>
         /// <returns>A list of <typeparamref name="TEntity"/> if added</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities);
 
         #endregion Add section
@@ -23,7 +25,7 @@
         TEntity GetById(Guid id);
 
         /// <param name="ids"></param>
-        /// <returns>A list of <typeparamref name="TEntity"/> if found</returns>
+        /// <returns>A list of <typeparamref name="TEntity"/> if found or an empty list if not found</returns>
         /// <exception cref="KeyNotFoundException"></exception>
         IEnumerable<TEntity> GetRangeById(IEnumerable<Guid> ids);
 
