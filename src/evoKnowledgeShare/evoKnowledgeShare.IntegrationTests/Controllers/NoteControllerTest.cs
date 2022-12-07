@@ -147,18 +147,18 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         #endregion Add Section
 
         #region Remove Section
-        [Test]
-        public async Task NoteController_Remove_ShouldRemoveNote()
-        {
-            // Arrange
-            Uri removeUri = new($"/api/Note/delete/{myNotes[0]}", UriKind.Relative);
-            Guid guid = myNotes[0].NoteId;
-            // Action
-            HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
+        //[Test]
+        //public async Task NoteController_Remove_ShouldRemoveNote()
+        //{
+        //    // Arrange
+        //    Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
+        //    Guid guid = myNotes[0].NoteId;
+        //    // Action
+        //    HttpResponseMessage response = await myClient. DeleteAsync(removeUri);
 
-            // Assert
-            Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
-        }
+        //    // Assert
+        //    Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
+        //}
         [Test]
         public async Task NoteController_RemoveById_ShouldRemoveNote()
         {

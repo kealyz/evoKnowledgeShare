@@ -51,7 +51,6 @@ namespace evoKnowledgeShare.Backend.Services
         public async Task<Note> AddAsync(Note note)
         {
             await myRepository.AddAsync(note);
-            await myRepository.SaveChangesAsync();
             return await Task.FromResult(note);
         }
 
