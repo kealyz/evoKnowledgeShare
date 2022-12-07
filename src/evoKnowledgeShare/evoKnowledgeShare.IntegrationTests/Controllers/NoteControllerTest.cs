@@ -219,18 +219,37 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         #endregion Add Section
 
         #region Remove Section
-        //[Test]
-        //public async Task NoteController_Remove_ShouldRemoveNote()
-        //{
-        //    // Arrange
-        //    Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
-        //    Guid guid = myNotes[0].NoteId;
-        //    // Action
-        //    HttpResponseMessage response = await myClient. DeleteAsync(removeUri);
+        [Test]
+        public async Task NoteController_Remove_ShouldRemoveNote()
+        {
+            // Arrange
+            Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
+            // Action
+            HttpRequestMessage requestMessage = new(HttpMethod.Delete, removeUri);
+            requestMessage.Content = JsonContent.Create(myNotes[0]);
+            
+            HttpResponseMessage response = await myClient.SendAsync(requestMessage);
 
-        //    // Assert
-        //    Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
-        //}
+            // Assert
+            Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == myNotes[0].NoteId) == null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+        [Test]
+        public async Task NoteController_Remove_ShouldReturnWithNotFound()
+        {
+            // Arrange
+            Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
+            myNotes[0].NoteId = Guid.NewGuid();
+            // Action
+            HttpRequestMessage requestMessage = new(HttpMethod.Delete, removeUri);
+            requestMessage.Content = JsonContent.Create(myNotes[0]);
+
+            HttpResponseMessage response = await myClient.SendAsync(requestMessage);
+
+            // Assert
+            Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == myNotes[0].NoteId) == null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
         [Test]
         public async Task NoteController_RemoveById_ShouldRemoveNoteAndReturnWithOk()
         {

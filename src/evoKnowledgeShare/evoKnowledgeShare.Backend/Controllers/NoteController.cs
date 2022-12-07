@@ -155,7 +155,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             try
             {
                 myNoteService.Remove(note);
-                return NoContent();
+                return Ok();
             }
             catch (KeyNotFoundException)
             {

@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Repositories;
 using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 
 namespace evoKnowledgeShare.UnitTests.Repositories
 {
@@ -48,7 +49,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             Assert.That(actual.Count, Is.EqualTo(0));
         }
-
         [Test]
         public void NoteRepository_GetById_ShouldReturnSpecificNote()
         {
@@ -61,15 +61,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         {
             myDbContext.Notes.RemoveRange(new List<Note> { myNotes[0], myNotes[1] });
             myDbContext.SaveChanges();
-            try
+            Assert.Throws<KeyNotFoundException>(() =>
             {
-                var actual = myRepository.GetById(myNotes[0].NoteId);
-            }
-            catch (KeyNotFoundException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+                myRepository.GetById(myNotes[0].NoteId);
+            });
         }
         [Test]
         public void NoteRepository_GetByIdRange_ShouldReturnSpecificNotes()
@@ -112,17 +107,13 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             });
         }
         [Test]
-        public async Task NoteRepository_AddAsync_ShouldReturnWithArgumentException()
+        public void NoteRepository_AddAsync_ShouldReturnWithArgumentException()
         {
-            try
+            IEnumerable<Note> expectedNotes = new[] { myNotes[1], myNotes[2] };
+            Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var actualNote = await myRepository.AddAsync(myNotes[0]);
-            }
-            catch (ArgumentException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+                await myRepository.AddAsync(myNotes[0]);
+            });
         }
         [Test]
         public async Task NoteRepository_AddRangeAsync_ShouldAddNotesToRepository()
@@ -138,21 +129,14 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 Assert.That(actualNotes, Does.Contain(myNotes[3]));
             });
         }
-
         [Test]
-        public async Task NoteRepository_AddRangeAsync_ShouldReturnWithArgumentException()
+        public void NoteRepository_AddRangeAsync_ShouldReturnWithArgumentException()
         {
-            try
+            IEnumerable<Note> expectedNotes = new[] { myNotes[1], myNotes[2] };
+            Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-
-                IEnumerable<Note> expectedNotes = new[] { myNotes[1], myNotes[2] };
                 await myRepository.AddRangeAsync(expectedNotes);
-            }
-            catch (ArgumentException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+            });
         }
         #endregion Add Section
         #region Remove Section
@@ -175,15 +159,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_Remove_ShouldReturnWithKeyNotFoundException()
         {
-            try
+            Assert.Throws<KeyNotFoundException>(() =>
             {
                 myRepository.Remove(myNotes[4]);
-            }
-            catch (KeyNotFoundException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+            });
         }
         [Test]
         public void NoteRepository_RemoveById_ShouldRemoveOneNote()
@@ -204,15 +183,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_RemoveById_ShouldReturnWithKeyNotFoundException()
         {
-            try
+            Assert.Throws<KeyNotFoundException>(() =>
             {
                 myRepository.RemoveById(myNotes[4].NoteId);
-            }
-            catch (KeyNotFoundException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+            });
         }
 
         [Test]
@@ -237,16 +211,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_RemoveRange_ShouldReturnWithKeyNotFoundException()
         {
-            try
+            IEnumerable<Note> notes = new[] { myNotes[2], myNotes[3] };
+            Assert.Throws<KeyNotFoundException>(() =>
             {
-                IEnumerable<Note> notes = new[] { myNotes[2], myNotes[3] };
                 myRepository.RemoveRange(notes);
-            }
-            catch (KeyNotFoundException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+            });
         }
 
         [Test]
@@ -271,16 +240,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_RemoveRangeById_ShouldRemoveWithKeyNotFoundException()
         {
-            try
+            List<Guid> noteGuids = new() { myNotes[2].NoteId, myNotes[3].NoteId };
+            Assert.Throws<KeyNotFoundException>(() =>
             {
-                List<Guid> noteGuids = new() { myNotes[2].NoteId, myNotes[3].NoteId };
                 myRepository.RemoveRangeById(noteGuids);
-            }
-            catch (KeyNotFoundException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+            });
         }
         #endregion Remove Section
         #region Modify Section
@@ -302,15 +266,10 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_Update_ShouldReturnWithKeyNotFoundException()
         {
-            try
+            Assert.Throws<KeyNotFoundException>(() =>
             {
                 myRepository.Update(myNotes[2]);
-            }
-            catch (KeyNotFoundException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+            });
         }
         [Test]
         public void NoteRepository_UpdateRange_ShouldUpdateNoteInRepository()
@@ -337,16 +296,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_UpdateRange_ShouldReturnWithKeyNotFoundException()
         {
-            try
+            List<Note> notes = new() { myNotes[1], myNotes[2] };
+            Assert.Throws<KeyNotFoundException>(() =>
             {
-                List<Note> notes = new() { myNotes[1], myNotes[2] };
                 myRepository.UpdateRange(notes);
-            }
-            catch (KeyNotFoundException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
+            });
         }
         #endregion Modify Section
     }

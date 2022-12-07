@@ -97,11 +97,10 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             try
             {
-                Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id);
-                myDbContext.Notes.Remove(note);
-                myDbContext.SaveChanges();
+                Note note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
+                Remove(note);
             }
-            catch (ArgumentNullException)
+            catch (KeyNotFoundException)
             {
                 throw new KeyNotFoundException();
             }
