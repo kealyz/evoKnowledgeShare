@@ -146,6 +146,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
+        /* Pl. környezeti hibákra van fenntartva
         [Test]
         public async Task UserController_DeleteUser_BadRequest()
         {
@@ -158,7 +159,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-        }
+        }*/
 
         [Test]
         public async Task UserController_UpdateUser_UserSuccessfullyUpdated()
@@ -187,15 +188,45 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_UpdateUser_NoUsersFound()
         {
             // Arrange
-            Uri puttUri = new Uri("/api/Update", UriKind.Relative);
+            Uri putUri = new Uri("/api/Update", UriKind.Relative);
             User putUser = new User(Guid.NewGuid(), "TestUser", "Test", "User");
 
             // Action
-            HttpResponseMessage response = await myClient.PutAsJsonAsync(puttUri, putUser);
+            HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, putUser);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task UserController_UpdateRange_UsersSuccessfullyUpdated()
+        {
+            // Arrange
+            myContext.Users.AddRange(myUsers);
+            myContext.SaveChanges();
+            Uri putUri = new Uri("/api/User/UpdateRange", UriKind.Relative);
+            Uri getUri = new Uri($"/api/User/Users", UriKind.Relative);
+            User[] putUsers = new User[]
+            {
+                new User(myUsers[1].Id, "TestUser1", "Test", "User"),
+                new User(myUsers[2].Id, "TestUser2", "Test", "User")
+            };
+
+            // Action
+            HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, putUsers);
+            HttpResponseMessage getUpdatedUsers = await myClient.GetAsync(getUri);
+            Console.WriteLine(await getUpdatedUsers.Content.ReadAsStringAsync());
+            List<User>? updatedUsers = await getUpdatedUsers.Content.ReadFromJsonAsync<List<User>>();
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(updatedUsers![1].Id, Is.EqualTo(putUsers[0].Id));
+            Assert.That(updatedUsers![1].FirstName, Is.EqualTo(putUsers[0].FirstName));
+            Assert.That(updatedUsers![1].LastName, Is.EqualTo(putUsers[0].LastName));
+            Assert.That(updatedUsers![2].Id, Is.EqualTo(putUsers[1].Id));
+            Assert.That(updatedUsers![2].FirstName, Is.EqualTo(putUsers[1].FirstName));
+            Assert.That(updatedUsers![2].LastName, Is.EqualTo(putUsers[1].LastName));
         }
     }
 }

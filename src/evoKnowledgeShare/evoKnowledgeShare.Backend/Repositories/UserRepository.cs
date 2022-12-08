@@ -1,5 +1,6 @@
 ﻿using evoKnowledgeShare.Backend.DataAccess;
 using evoKnowledgeShare.Backend.Models;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
@@ -12,7 +13,7 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             await myDbContext.Users.AddAsync(entity);
             await myDbContext.SaveChangesAsync();
-            return myDbContext.Users.First(x => Equals(x, entity));
+            return myDbContext.Users.FirstOrDefault(x => Equals(x, entity)) ?? throw new NullReferenceException();
         }
 
         public override async Task<IEnumerable<User>> AddRangeAsync(IEnumerable<User> entities)
@@ -24,50 +25,47 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override IEnumerable<User> GetAll() => myDbContext.Users;
 
-        public override User GetById(Guid id) => myDbContext.Users.First(x => x.Id == id) ?? throw new InvalidOperationException();
+        public override User GetById(Guid id) => myDbContext.Users.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
+        //testet rá
 
         public override IEnumerable<User> GetRangeById(IEnumerable<Guid> ids) => myDbContext.Users.Where(x => ids.Any(y => x.Id.Equals(y)));
 
-        public override void Remove(User entity)
-        {
-            myDbContext.Users.Remove(entity);
-            myDbContext.SaveChanges();
-        }
+        public override void Remove(User entity) => myDbContext.Users.Remove(entity);
 
         public override void RemoveById(Guid id)
         {
             User? user = myDbContext.Users.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
-            Remove(user);
-            myDbContext.SaveChanges();
+            myDbContext.Remove(user);
         }
 
-        public override void RemoveRange(IEnumerable<User> entities)
-        {
-            myDbContext.Users.RemoveRange(entities);
-            myDbContext.SaveChanges();
-        }
+        public override void RemoveRange(IEnumerable<User> entities) => myDbContext.Users.RemoveRange(entities);
 
         public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
-            foreach (var id in ids)
+            try
             {
-                myDbContext.Users.Remove(myDbContext.Users.First(x => x.Id == id));
-                myDbContext.SaveChanges();
+                foreach (Guid id in ids)
+                {
+                    User? user = myDbContext.Users.FirstOrDefault(x => x.Id == id);
+                    myDbContext.Users.Remove(user);
+                }
+            }
+            catch(ArgumentNullException)
+            {
+                throw new KeyNotFoundException();
             }
         }
 
         public override User Update(User user_in)
         {
             User user = myDbContext.Users.Update(user_in).Entity;
-            myDbContext.SaveChanges();
             return user;
         }
 
         public override IEnumerable<User> UpdateRange(IEnumerable<User> entities)
         {
             myDbContext.Users.UpdateRange(entities);
-            myDbContext.SaveChanges();
-            return myDbContext.Users.Where(user => entities.Any(entity => entity.Id == user.Id));
+            return myDbContext.Users.Where(user => entities.Any(entity => entity == user));
         }
     }
 }
