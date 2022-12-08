@@ -1,4 +1,5 @@
-﻿using evoKnowledgeShare.Backend.Models;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -126,18 +127,17 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
         public async Task TopicController_CreateTopic_TopicSuccessfullyCreated() {
             // Arrange
             Uri postUri = new Uri("/api/Topic/Create", UriKind.Relative);
-            Topic topic = new Topic(myTopics[0].Id, myTopics[0].Title);
+            TopicDTO topicDTO = new TopicDTO(myTopics[0].Title);
 
             // Action
-            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, topic);
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, topicDTO);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
             Topic? actualTopic = await response.Content.ReadFromJsonAsync<Topic>();
 
             // Assert
             Assert.That(actualTopic, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-            Assert.That(actualTopic!.Id, Is.EqualTo(topic.Id));
-            Assert.That(actualTopic!.Title, Is.EqualTo(topic.Title));
+            Assert.That(actualTopic!.Title, Is.EqualTo(topicDTO.Title));
         }
         #endregion Add Test Section
 
