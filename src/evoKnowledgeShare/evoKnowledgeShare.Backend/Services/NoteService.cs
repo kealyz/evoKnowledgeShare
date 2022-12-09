@@ -25,7 +25,7 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="id"></param>
         /// <returns>A list of <see cref="Note"/> if found</returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public IEnumerable<Note> GetByUserId(Guid id) => myRepository.GetAll().Where(x => x.UserId == id).ToList();
+        public IEnumerable<Note> GetRangeByUserId(Guid id) => myRepository.GetAll().Where(x => x.UserId == id).ToList();
 
         /// <param name="id"></param>
         /// <returns>A list of <see cref="Note"/> if found</returns>
@@ -51,7 +51,6 @@ namespace evoKnowledgeShare.Backend.Services
         public async Task<Note> AddAsync(Note note)
         {
             await myRepository.AddAsync(note);
-            await myRepository.SaveChangesAsync();
             return await Task.FromResult(note);
         }
 

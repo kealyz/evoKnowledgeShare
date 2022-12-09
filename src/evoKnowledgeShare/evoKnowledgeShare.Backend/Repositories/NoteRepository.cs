@@ -17,12 +17,12 @@ namespace evoKnowledgeShare.Backend.Repositories
         public override IEnumerable<Note> GetAll()
         {
             IEnumerable<Note> notes = myDbContext.Notes;
-            if (notes == null)
+            if (!notes.Any())
             {
                 return Enumerable.Empty<Note>();
             }
             return notes;
-        }
+        }   
 
         
         ///<inheritdoc/>
@@ -40,9 +40,9 @@ namespace evoKnowledgeShare.Backend.Repositories
         public override IEnumerable<Note> GetRangeById(IEnumerable<Guid> guids)
         {
             IEnumerable<Note> notes = myDbContext.Notes.Where(x => guids.Any(y => x.NoteId == y));
-            if (notes == null)
+            if (!notes.Any())
             {
-                throw new KeyNotFoundException();
+                return Enumerable.Empty<Note>();
             }
             return notes;
         }

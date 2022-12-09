@@ -61,7 +61,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             };
             myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
 
-            var note = myNoteService.GetByUserId(expectedNote.UserId);
+            var note = myNoteService.GetRangeByUserId(expectedNote.UserId);
 
             myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
             Assert.That(note.Count, Is.EqualTo(1));

@@ -55,7 +55,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                return Ok(myNoteService.GetByUserId(userId));
+                return Ok(myNoteService.GetRangeByUserId(userId));
             }
             catch (KeyNotFoundException)
             {
