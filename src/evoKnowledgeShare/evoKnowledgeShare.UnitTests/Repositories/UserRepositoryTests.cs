@@ -1,5 +1,6 @@
 ﻿using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Repositories;
+using System.Collections;
 
 namespace evoKnowledgeShare.UnitTests.Repositories
 {
@@ -30,7 +31,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             await myRepository.AddAsync(user);
 
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(4));
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()+1));
             Assert.That(myDbContext.Users, Does.Contain(user));
         }
 
@@ -43,7 +44,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             await myRepository.AddRangeAsync(users);
 
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(5));
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()+2));
             CollectionAssert.IsSupersetOf(myDbContext.Users, users);
         }
 
@@ -54,32 +55,33 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void UserRepository_GetAll_ReturnAllUsers()
         {
-            IEnumerable<User> expectedUsers = myRepository.GetAll();
+            IEnumerable<User> actualUsers = myRepository.GetAll();
 
-            Assert.That(expectedUsers.Count, Is.EqualTo(3));
-            CollectionAssert.AreEquivalent(myDbContext.Users, expectedUsers);
+            Assert.That(actualUsers.Count, Is.EqualTo(myDbContext.Users.Count()));
+            CollectionAssert.AreEquivalent(myDbContext.Users, actualUsers);
         }
 
         [Test]
         public void UserRepository_GetById_ReturnSpecificUserById()
         {
-            Assert.That(myDbContext.Users, Does.Contain(myRepository.GetById(myUsers[0].Id)));
+            User user = myRepository.GetById(myUsers[0].Id);
+
+            Assert.That(myDbContext.Users, Does.Contain(user));
         }
 
         [Test]
         public void UserRepository_GetById_ShouldThrowInvalidOperationException()
         {
-            Assert.Throws<InvalidOperationException>(() => myRepository.GetById(Guid.NewGuid()));
+            Assert.Throws<KeyNotFoundException>(() => myRepository.GetById(Guid.NewGuid()));
         }
         
         [Test]
         public void UserRepository_GetRangeById_ReturnSpecificUsersByARangeOfId()
         {
-            IEnumerable<User> expectedUsers = myRepository.GetRangeById(myUsers.Select(x => x.Id).Take(2));
+            IEnumerable<User> actualUsers = myRepository.GetRangeById(myUsers.Select(x => x.Id).Take(2));
 
-            Assert.That(expectedUsers.Count, Is.EqualTo(2));
-            CollectionAssert.IsSupersetOf(myDbContext.Users, expectedUsers);
-            Assert.That(expectedUsers, !Does.Contain(myUsers[2]));
+            Assert.That(actualUsers.Count, Is.EqualTo(myDbContext.Users.Count()-1));
+            CollectionAssert.IsSupersetOf(myDbContext.Users, actualUsers);
         }
 
         #endregion Get Test Section
@@ -90,18 +92,20 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         public void UserRepository_Remove_ShouldRemoveSpecificUser()
         {
             myRepository.Remove(myUsers[1]);
+            myRepository.SaveChanges();
 
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(2));
-            Assert.That(myDbContext.Users, !Does.Contain(myUsers[1]));
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-1));
+            CollectionAssert.DoesNotContain(myDbContext.Users, myUsers[1]);
         }
         
         [Test]
         public void UserRepository_RemoveById_ShouldRemoveSpecificUserById()
         {
             myRepository.RemoveById(myUsers[1].Id);
+            myRepository.SaveChanges();
 
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(2));
-            Assert.That(myDbContext.Users, !Does.Contain(myUsers[1]));
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-1));
+            CollectionAssert.DoesNotContain(myDbContext.Users, myUsers[1]);
 
         }
 
@@ -115,9 +119,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         public void UserRepository_RemoveRange_ShouldRemoveSpecificUsers()
         {
             IEnumerable<User> users = myUsers.Take(2);
-            myRepository.RemoveRange(users);
 
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(1));
+            myRepository.RemoveRange(users);
+            myRepository.SaveChanges();
+
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-2));
             CollectionAssert.IsNotSupersetOf(myDbContext.Users, users);
         }
         
@@ -127,9 +133,17 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             IEnumerable<Guid> ids = myUsers.Select(x => x.Id).Take(2);
 
             myRepository.RemoveRangeById(ids);
+            myDbContext.SaveChanges();
 
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(1));
-            Assert.That(myDbContext.Users, !Does.Contain(myUsers.Where(x => ids.Any(id => x.Id == id))));
+            Assert.That(myDbContext.Users.Count(), Is.EqualTo(myUsers.Count()-2));
+            CollectionAssert.DoesNotContain(myDbContext.Users, myUsers.Take(2));
+        }
+
+        [Test]
+        public void UserRepository_RemoveRangeById_ShouldThrowKeyNotFoundException()
+        {
+            Guid[] ids = { Guid.NewGuid(), Guid.NewGuid() };
+            Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveRangeById(ids));
         }
 
         #endregion Remove Test Section
@@ -142,21 +156,21 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             myUsers[0].UserName = "Admin";
 
             myRepository.Update(myUsers[0]);
+            myRepository.SaveChanges();
 
-            Assert.That(myDbContext.Users, Does.Contain(myUsers[0]));
+            CollectionAssert.Contains(myDbContext.Users, myUsers[0]);
         }
 
         [Test]
         public void UserRepository_UpdateRange_ShouldUpdateRange()
         {
-            int i = 0;
-            foreach(var user in myUsers)
+            for (int i = 0; i < myUsers.Count; i++)
             {
-                user.UserName = "Admin" + i;
-                i++;
+                myUsers[i].UserName = $"Admin{i}";
             }
 
             myRepository.UpdateRange(myUsers);
+            myRepository.SaveChanges();
 
             CollectionAssert.AreEquivalent(myDbContext.Users, myUsers);
         }

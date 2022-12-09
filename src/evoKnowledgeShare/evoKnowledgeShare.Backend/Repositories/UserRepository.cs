@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.DataAccess;
 using evoKnowledgeShare.Backend.Models;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
@@ -30,12 +31,24 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override IEnumerable<User> GetRangeById(IEnumerable<Guid> ids) => myDbContext.Users.Where(x => ids.Any(y => x.Id.Equals(y)));
 
-        public override void Remove(User entity) => myDbContext.Users.Remove(entity);
+        public override void Remove(User entity)
+        {
+            try
+            {
+                myDbContext.Users.Remove(entity);
+                myDbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
+            }
+        }
 
         public override void RemoveById(Guid id)
         {
             User? user = myDbContext.Users.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
             myDbContext.Remove(user);
+            myDbContext.SaveChanges();
         }
 
         public override void RemoveRange(IEnumerable<User> entities) => myDbContext.Users.RemoveRange(entities);
