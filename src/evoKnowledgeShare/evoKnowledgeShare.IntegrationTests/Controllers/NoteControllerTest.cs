@@ -35,7 +35,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [Test]
         public async Task NoteController_GetNotes_ShouldReturnWithOk()
         {
-            Uri getUri = new("/api/Note/all", UriKind.Relative);
+            Uri getUri = new("/api/Note/", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -50,7 +50,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             myContext.Notes.RemoveRange(myNotes);
             myContext.SaveChanges();
 
-            Uri getUri = new("/api/Note/all", UriKind.Relative);
+            Uri getUri = new("/api/Note/", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -183,9 +183,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task NoteController_AddAsync_ShouldAddNoteAndReturnWithCreated()
         {
             // Arrange
-            Uri postUri = new("/api/Note/create", UriKind.Relative);
+            Uri postUri = new("/api/Note/", UriKind.Relative);
             Note note = new(Guid.NewGuid(), Guid.NewGuid(), 6, DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
-
 
             // Action
             HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, note);
@@ -223,7 +222,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task NoteController_Remove_ShouldRemoveNote()
         {
             // Arrange
-            Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
+            Uri removeUri = new($"/api/Note/", UriKind.Relative);
             // Action
             HttpRequestMessage requestMessage = new(HttpMethod.Delete, removeUri);
             requestMessage.Content = JsonContent.Create(myNotes[0]);
@@ -238,7 +237,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task NoteController_Remove_ShouldReturnWithNotFound()
         {
             // Arrange
-            Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
+            Uri removeUri = new($"/api/Note/", UriKind.Relative);
             myNotes[0].NoteId = Guid.NewGuid();
             // Action
             HttpRequestMessage requestMessage = new(HttpMethod.Delete, removeUri);
@@ -254,7 +253,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task NoteController_RemoveById_ShouldRemoveNoteAndReturnWithOk()
         {
             // Arrange
-            Uri removeUri = new($"/api/Note/deleteById/{myNotes[0].NoteId}", UriKind.Relative);
+            Uri removeUri = new($"/api/Note/ById/{myNotes[0].NoteId}", UriKind.Relative);
             Guid guid = myNotes[0].NoteId;
             // Action
             HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
@@ -267,7 +266,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task NoteController_RemoveById_ShouldReturnWithNotFound()
         {
             // Arrange
-            Uri removeUri = new($"/api/Note/deleteById/{Guid.NewGuid()}", UriKind.Relative);
+            Uri removeUri = new($"/api/Note/ById/{Guid.NewGuid()}", UriKind.Relative);
             Guid guid = myNotes[0].NoteId;
             // Action
             HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
@@ -285,7 +284,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
 
             // Action
-            Uri updateUri = new("/api/Note/Update", UriKind.Relative);
+            Uri updateUri = new("/api/Note/", UriKind.Relative);
             myNotes[0].Title = "Updated Title";
 
             HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, myNotes[0]);
@@ -302,7 +301,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
 
             // Action
-            Uri updateUri = new("/api/Note/Update", UriKind.Relative);
+            Uri updateUri = new("/api/Note/", UriKind.Relative);
             Note note=new(Guid.NewGuid(), Guid.NewGuid(), 1, DateTimeOffset.Now, "Paint ismeretek megszerzese", "Paint>Photoshop");
 
             HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, note);

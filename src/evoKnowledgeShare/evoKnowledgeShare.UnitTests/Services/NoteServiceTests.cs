@@ -48,7 +48,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(note, Is.EqualTo(myNotes[0]));
         }
         [Test]
-        public void NoteService_getByUserId_ShouldReturnSpecificNote()
+        public void NoteService_getRangeByUserId_ShouldReturnSpecificNote()
         {
             var listOfNotes = new List<Note>
             {
@@ -57,7 +57,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             };
             myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
 
-            var note = myNoteService.GetByUserId(expectedNote.UserId);
+            var note = myNoteService.GetRangeByUserId(myNotes[0].UserId);
 
             myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
             Assert.That(note.Count, Is.EqualTo(1));
@@ -73,7 +73,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             };
             myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
 
-            var note = myNoteService.GetByTopicId(myNotes[0].TopicId);
+            var note = myNoteService.GetRangeBytTopicId(myNotes[0].TopicId);
 
             myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
             Assert.That(note.Count, Is.EqualTo(1));

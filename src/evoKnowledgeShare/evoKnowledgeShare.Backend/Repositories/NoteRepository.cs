@@ -50,37 +50,23 @@ namespace evoKnowledgeShare.Backend.Repositories
         #region Add Section
 
         /// <inheritdoc/>
-        public override async Task<Note?> AddAsync(Note note)
+        public override async Task<Note> AddAsync(Note note)
         {
-            try
-            {
-                await myDbContext.Notes.AddAsync(note);
-                myDbContext.SaveChanges();
-                return myDbContext.Notes.FirstOrDefault(x => x.NoteId == note.NoteId);
-            }
-            catch (ArgumentException)
-            {
-                throw new ArgumentException();
-            }
+            await myDbContext.Notes.AddAsync(note);
+            myDbContext.SaveChanges();
+            return await Task.FromResult(note);
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<Note> notes)
         {
-            try
+            List<Note> resultNotes = new();
+            foreach (Note note in notes)
             {
-                List<Note?> resultNotes = new();
-                foreach (Note note in notes)
-                {
-                    resultNotes.Add(await AddAsync(note));
-                }
-                myDbContext.SaveChanges();
-                return resultNotes;
+                resultNotes.Add(await AddAsync(note));
             }
-            catch (ArgumentException)
-            {
-                throw new ArgumentException();
-            }
+            myDbContext.SaveChanges();
+            return resultNotes;
             
         }
         #endregion Add Section
@@ -106,9 +92,10 @@ namespace evoKnowledgeShare.Backend.Repositories
             try
             {
                 Note note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
-                Remove(note);
+                myDbContext.Notes.Remove(note);
+                myDbContext.SaveChanges();
             }
-            catch (KeyNotFoundException)
+            catch (DbUpdateConcurrencyException)
             {
                 throw new KeyNotFoundException();
             }
@@ -135,12 +122,12 @@ namespace evoKnowledgeShare.Backend.Repositories
             {
                 foreach (Guid id in ids)
                 {
-                    Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id);
+                    Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
                     myDbContext.Notes.Remove(note);
                 }
                 myDbContext.SaveChanges();
             }
-            catch (ArgumentNullException)
+            catch (DbUpdateConcurrencyException)
             {
                 throw new KeyNotFoundException();
             }

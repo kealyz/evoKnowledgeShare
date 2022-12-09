@@ -17,13 +17,13 @@ namespace evoKnowledgeShare.Backend.Controllers
         }
 
         #region Get Section
-        [HttpGet("all")]
+        [HttpGet("")]
         public IActionResult GetNotes()
         {
             try
             {
                 IEnumerable<Note> notes =myNoteService.GetAll();
-                if (notes != null && notes.Any())
+                if (notes.Any())
                 {
                     return Ok(notes);
                 }
@@ -40,7 +40,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                Note? note=myNoteService.GetById(noteId);
+                Note note=myNoteService.GetById(noteId);
                 return Ok(note);
             }
             catch (KeyNotFoundException)
@@ -57,9 +57,14 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                return Ok(myNoteService.GetRangeByUserId(userId));
+                IEnumerable<Note> notes = myNoteService.GetRangeByUserId(userId);
+                if (notes.Any())
+                {
+                    return Ok(notes);
+                }
+                else return NotFound();
             }
-            catch (KeyNotFoundException)
+            catch (ArgumentException)
             {
                 return NoContent();
             }
@@ -73,12 +78,16 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                IEnumerable<Note> notes = myNoteService.GetByTopicId(topicId);
-                if (notes != null && notes.Any())
+                IEnumerable<Note> notes = myNoteService.GetRangeBytTopicId(topicId);
+                if (notes.Any())
                 {
                     return Ok(notes);
                 }
                 else return NotFound();
+            }
+            catch (ArgumentNullException)
+            {
+                return NoContent() ;
             }
             catch (Exception)
             {
@@ -90,12 +99,11 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                Note? note = myNoteService.GetByDescription(description);
-                if (note != null)
-                {
-                    return Ok(note);
-                }
-                else return NotFound();
+                return Ok(myNoteService.GetByDescription(description));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
             }
             catch (Exception)
             {
@@ -107,12 +115,11 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                Note? note = myNoteService.GetByTitle(title);
-                if (note != null)
-                {
-                    return Ok(note);
-                }
-                else return NotFound();
+                return Ok(myNoteService.GetByTitle(title));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound() ;
             }
             catch (Exception)
             {
@@ -122,13 +129,13 @@ namespace evoKnowledgeShare.Backend.Controllers
         #endregion Get Section
 
         #region Add Section
-        [HttpPost("create")]
+        [HttpPost("")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddAsync([FromBody] Note note)
         {
-            Note? result = await myNoteService.AddAsync(note);
+            Note result = await myNoteService.AddAsync(note);
             return result is not null ? Created(nameof(AddAsync), result) : BadRequest("Note cannot be added.");
         }
         [HttpPost("createRange")]
@@ -144,7 +151,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         #endregion Add Section
 
         #region Remove Section
-        [HttpDelete("delete")]
+        [HttpDelete("")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -165,7 +172,7 @@ namespace evoKnowledgeShare.Backend.Controllers
                 return BadRequest();
             }
         }
-        [HttpDelete("deleteById/{id}")]
+        [HttpDelete("ById/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -188,13 +195,13 @@ namespace evoKnowledgeShare.Backend.Controllers
         #endregion Remove Section
 
         #region Modify Section
-        [HttpPut("update")]
+        [HttpPut("")]
         [Consumes(MediaTypeNames.Application.Json)]
         public IActionResult Update([FromBody] Note note)
         {
             try
             {
-                Note? result = myNoteService.Update(note);
+                Note result = myNoteService.Update(note);
                 return result is not null ? Ok(result) : BadRequest("Note cannot be modified.");
             }
             catch (KeyNotFoundException)
