@@ -18,3 +18,14 @@
 | History |                                      |                          |                     |                      |
 |         | api/History/Histories                | api/History/Create       |                     |                      |
 |         | api/History/History/{id}             |                          |                     |                      |
+
+
+## ActionResults
+
+CREATE -> Created
+
+UPDATE -> OK
+
+DELTE -> NoContent
+
+GET -> OK

@@ -219,7 +219,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
         #region Remove Section
         [Test]
-        public async Task NoteController_Remove_ShouldRemoveNote()
+        public async Task NoteController_Remove_ShouldRemoveNoteAndReturnWithNoContent()
         {
             // Arrange
             Uri removeUri = new($"/api/Note/", UriKind.Relative);
@@ -231,7 +231,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == myNotes[0].NoteId) == null);
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
         [Test]
         public async Task NoteController_Remove_ShouldReturnWithNotFound()
@@ -250,7 +250,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
         [Test]
-        public async Task NoteController_ById_ShouldRemoveNoteAndReturnWithOk()
+        public async Task NoteController_ById_ShouldRemoveNoteAndReturnWithNoContent()
         {
             // Arrange
             Uri removeUri = new($"/api/Note/byId/{myNotes[0].NoteId}", UriKind.Relative);
@@ -259,7 +259,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
 
             // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
             Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
         }
         [Test]
