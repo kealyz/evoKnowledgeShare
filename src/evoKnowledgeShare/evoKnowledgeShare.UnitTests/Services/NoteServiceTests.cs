@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace evoKnowledgeShare.UnitTests.Services
@@ -27,102 +28,92 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public void NoteService_GetAll_ShouldReturnAll()
         {
-            var expectedNote = myNotes[0];
             myRepositoryMock.Setup(x => x.GetAll()).Returns(new List<Note>
             {
-                expectedNote
+                myNotes[0]
             });
 
             var actualNotes = myNoteService.GetAll();
 
             Assert.That(actualNotes.Count, Is.EqualTo(1));
-            Assert.That(actualNotes.First, Is.EqualTo(expectedNote));
+            Assert.That(actualNotes.First, Is.EqualTo(myNotes[0]));
         }
         [Test]
         public void NoteService_GetNoteById_ShouldReturnASpecificNote()
         {
-            var expectedNote = myNotes[0];
-            var notExpectedNote = myNotes[1];
-            myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Returns(expectedNote);
-            var note = myNoteService.GetById(expectedNote.NoteId);
+            myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Returns(myNotes[0]);
+            var note = myNoteService.GetById(myNotes[0].NoteId);
 
-            myRepositoryMock.Verify(x => x.GetById(It.Is<Guid>(y => y.Equals(expectedNote.NoteId))), Times.Once);
-            Assert.That(note, Is.EqualTo(expectedNote));
+            myRepositoryMock.Verify(x => x.GetById(It.Is<Guid>(y => y.Equals(myNotes[0].NoteId))), Times.Once);
+            Assert.That(note, Is.EqualTo(myNotes[0]));
         }
         [Test]
         public void NoteService_getByUserId_ShouldReturnSpecificNote()
         {
-            var expectedNote = myNotes[0];
-            var notExpectedNote = myNotes[1];
             var listOfNotes = new List<Note>
             {
-                expectedNote,
-                notExpectedNote
+                myNotes[0],
+                myNotes[1]
             };
             myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
 
-            var note = myNoteService.GetRangeByUserId(expectedNote.UserId);
+            var note = myNoteService.GetByUserId(expectedNote.UserId);
 
             myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
             Assert.That(note.Count, Is.EqualTo(1));
-            Assert.That(note.First, Is.EqualTo(expectedNote));
+            Assert.That(note.First, Is.EqualTo(myNotes[0]));
         }
         [Test]
         public void NoteService_getByTopicId_ShouldReturnSpecificNote()
         {
-            var expectedNote = myNotes[0];
-            var notExpectedNote = myNotes[1];
             var listOfNotes = new List<Note>
             {
-                expectedNote,
-                notExpectedNote
+                myNotes[0],
+                myNotes[1]
             };
             myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
 
-            var note = myNoteService.GetByTopicId(expectedNote.TopicId);
+            var note = myNoteService.GetByTopicId(myNotes[0].TopicId);
 
             myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
             Assert.That(note.Count, Is.EqualTo(1));
-            Assert.That(note.First, Is.EqualTo(expectedNote));
+            Assert.That(note.First, Is.EqualTo(myNotes[0]));
         }
         [Test]
         public void NoteService_getByDescription_ShouldReturnSpecificNote()
         {
-            var expectedNote = myNotes[0];
-            var notExpectedNote = myNotes[1];
             var listOfNotes = new List<Note>
             {
-                expectedNote,
-                notExpectedNote
+                myNotes[0],
+                myNotes[1]
             };
             myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
 
-            var note = myNoteService.GetByDescription(expectedNote.Description);
+            var note = myNoteService.GetByDescription(myNotes[0].Description);
 
             myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
-            Assert.That(note, Is.EqualTo(expectedNote));
+            Assert.That(note, Is.EqualTo(myNotes[0]));
         }
         [Test]
         public void NoteService_getByTitle_ShouldReturnSpecificNote()
         {
-            var expectedNote = myNotes[0];
-            var notExpectedNote = myNotes[1];
             var listOfNotes = new List<Note>
             {
-                expectedNote,
-                notExpectedNote
+                myNotes[0],
+                myNotes[1]
             };
             myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
 
-            var note = myNoteService.GetByTitle(expectedNote.Title);
+            var note = myNoteService.GetByTitle(myNotes[0].Title);
 
-            Assert.That(note, Is.EqualTo(expectedNote));
+            Assert.That(note, Is.EqualTo(myNotes[0]));
         }
         #endregion Get Section
         #region Add Section
         [Test]
         public async Task NoteService_AddAsync_CreatesNote()
         {
+
             myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Note>())).ReturnsAsync(myNotes[0]);
 
             Note actualNote = await myNoteService.AddAsync(myNotes[0]);
@@ -133,12 +124,10 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public async Task NoteService_AddRangeAsync_CreatesNotes()
         {
-            var note = myNotes[0];
-            var note2 = myNotes[1];
             var notesList = new List<Note>()
             {
-                note,
-                note2
+                myNotes[0],
+                myNotes[1]
             };
             myRepositoryMock.Setup(x => x.AddRangeAsync(It.IsAny<List<Note>>())).ReturnsAsync(notesList);
 
@@ -153,8 +142,10 @@ namespace evoKnowledgeShare.UnitTests.Services
         public void NoteService_Remove_ShouldRemoveNoteFromRepository()
         {
             var note = myNotes[0];
-            var notes = new List<Note>();
-            notes.Add(note);
+            var notes = new List<Note>
+            {
+                myNotes[0]
+            };
             myRepositoryMock.Setup(x => x.Remove(It.IsAny<Note>())).Callback<Note>((note =>
             {
                 notes.Remove(note);
@@ -167,12 +158,11 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public void NoteService_RemoveById_ShouldRemoveNoteFromRepository()
         {
-            var note = myNotes[0];
             var notes = new List<Note>
             {
-                note
+                myNotes[0]
             };
-            var noteId = note.NoteId;
+            var noteId = myNotes[0].NoteId;
 
             myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<Guid>()));
 

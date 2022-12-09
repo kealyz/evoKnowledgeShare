@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Repositories;
 using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 
 namespace evoKnowledgeShare.UnitTests.Repositories
 {
@@ -39,13 +40,31 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 Assert.That(actual, Does.Contain(myNotes[1]));
             });
         }
+        [Test]
+        public void NoteRepository_GetAll_ShouldReturnAnEmptyList()
+        {
+            myDbContext.Notes.RemoveRange(new List<Note> { myNotes[0], myNotes[1] });
+            myDbContext.SaveChanges();
+            var actual = myRepository.GetAll();
 
+            Assert.That(actual.Count, Is.EqualTo(0));
+        }
         [Test]
         public void NoteRepository_GetById_ShouldReturnSpecificNote()
         {
             var actual = myRepository.GetById(myNotes[0].NoteId);
 
             Assert.That(actual, Is.EqualTo(myNotes[0]));
+        }
+        [Test]
+        public void NoteRepository_GetById_ShouldReturnKeyNotFoundException()
+        {
+            myDbContext.Notes.RemoveRange(new List<Note> { myNotes[0], myNotes[1] });
+            myDbContext.SaveChanges();
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepository.GetById(myNotes[0].NoteId);
+            });
         }
         [Test]
         public void NoteRepository_GetByIdRange_ShouldReturnSpecificNotes()
@@ -59,6 +78,17 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 Assert.That(actual, Does.Contain(myNotes[1]));
                 Assert.That(actual.Count(), Is.EqualTo(2));
             });
+        }
+        [Test]
+        public void NoteRepository_GetByIdRange_ShouldReturnAnEmptyList()
+        {
+            myDbContext.Notes.RemoveRange(new List<Note> { myNotes[0], myNotes[1] });
+            myDbContext.SaveChanges();
+            List<Guid> guids = new() { myNotes[0].NoteId, myNotes[1].NoteId };
+
+            var actual = myRepository.GetRangeById(guids);
+
+            Assert.That(actual.Count(), Is.EqualTo(0));
         }
 
         #endregion Get Section
@@ -77,6 +107,15 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             });
         }
         [Test]
+        public void NoteRepository_AddAsync_ShouldReturnWithArgumentException()
+        {
+            IEnumerable<Note> expectedNotes = new[] { myNotes[1], myNotes[2] };
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await myRepository.AddAsync(myNotes[0]);
+            });
+        }
+        [Test]
         public async Task NoteRepository_AddRangeAsync_ShouldAddNotesToRepository()
         {
             IEnumerable<Note> expectedNotes = new[] { myNotes[2], myNotes[3] };
@@ -88,6 +127,15 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.That(actualNotes, Does.Contain(myNotes[2]));
                 Assert.That(actualNotes, Does.Contain(myNotes[3]));
+            });
+        }
+        [Test]
+        public void NoteRepository_AddRangeAsync_ShouldReturnWithArgumentException()
+        {
+            IEnumerable<Note> expectedNotes = new[] { myNotes[1], myNotes[2] };
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await myRepository.AddRangeAsync(expectedNotes);
             });
         }
         #endregion Add Section
@@ -108,7 +156,14 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 Assert.That(noteCount - 1, Is.EqualTo(expectedNoteCount));
             });
         }
-
+        [Test]
+        public void NoteRepository_Remove_ShouldReturnWithKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepository.Remove(myNotes[4]);
+            });
+        }
         [Test]
         public void NoteRepository_RemoveById_ShouldRemoveOneNote()
         {
@@ -125,9 +180,17 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 Assert.That(noteCount - 1, Is.EqualTo(expectedNoteCount));
             });
         }
+        [Test]
+        public void NoteRepository_RemoveById_ShouldReturnWithKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepository.RemoveById(myNotes[4].NoteId);
+            });
+        }
 
         [Test]
-        public void NoteRepository_RemoveRange_ShouldRemoveOneNote()
+        public void NoteRepository_RemoveRange_ShouldRemoveNotes()
         {
             IEnumerable<Note> notes = new[] { myNotes[0], myNotes[1] };
 
@@ -145,9 +208,18 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 Assert.That(noteCount - notes.Count(), Is.EqualTo(expectedNoteCount));
             });
         }
+        [Test]
+        public void NoteRepository_RemoveRange_ShouldReturnWithKeyNotFoundException()
+        {
+            IEnumerable<Note> notes = new[] { myNotes[2], myNotes[3] };
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepository.RemoveRange(notes);
+            });
+        }
 
         [Test]
-        public void NoteRepository_RemoveRangeById_ShouldRemoveOneNote()
+        public void NoteRepository_RemoveRangeById_ShouldRemoveNotes()
         {
             IEnumerable<Guid> notes = new[] { myNotes[0].NoteId, myNotes[1].NoteId };
 
@@ -163,6 +235,15 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 Assert.That(myDbContext.Notes.Contains(myNotes[0]), Is.False);
                 Assert.That(myDbContext.Notes.Contains(myNotes[1]), Is.False);
                 Assert.That(noteCount - notes.Count(), Is.EqualTo(expectedNoteCount));
+            });
+        }
+        [Test]
+        public void NoteRepository_RemoveRangeById_ShouldRemoveWithKeyNotFoundException()
+        {
+            List<Guid> noteGuids = new() { myNotes[2].NoteId, myNotes[3].NoteId };
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepository.RemoveRangeById(noteGuids);
             });
         }
         #endregion Remove Section
@@ -181,6 +262,14 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             Assert.That(updatedNote.Title, Is.EqualTo(newNoteDescription));
 
+        }
+        [Test]
+        public void NoteRepository_Update_ShouldReturnWithKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepository.Update(myNotes[2]);
+            });
         }
         [Test]
         public void NoteRepository_UpdateRange_ShouldUpdateNoteInRepository()
@@ -202,6 +291,15 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             {
                 Assert.That(updatedNote.Title, Is.EqualTo(newNoteDescriptiontoNote1));
                 Assert.That(updatedNote2.Title, Is.EqualTo(newNoteDescriptiontoNote2));
+            });
+        }
+        [Test]
+        public void NoteRepository_UpdateRange_ShouldReturnWithKeyNotFoundException()
+        {
+            List<Note> notes = new() { myNotes[1], myNotes[2] };
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepository.UpdateRange(notes);
             });
         }
         #endregion Modify Section

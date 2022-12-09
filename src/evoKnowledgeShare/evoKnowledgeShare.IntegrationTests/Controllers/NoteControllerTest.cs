@@ -45,6 +45,20 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
         [Test]
+        public async Task NoteController_GetNotes_ShouldReturnWithNoContent()
+        {
+            myContext.Notes.RemoveRange(myNotes);
+            myContext.SaveChanges();
+
+            Uri getUri = new("/api/Note/all", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }
+        [Test]
         public async Task NoteController_GetById_ShouldReturnWithOk()
         {
             Uri getUri = new($"/api/Note/{myNotes[0].NoteId}", UriKind.Relative);
@@ -55,6 +69,17 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+        [Test]
+        public async Task NoteController_GetById_ShouldReturnWithNotFound()
+        {
+            Uri getUri = new($"/api/Note/{Guid.NewGuid()}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
         [Test]
         public async Task NoteController_GetByUserId_ShouldReturnWithOk()
@@ -69,6 +94,17 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
         [Test]
+        public async Task NoteController_GetByUserId_ShouldReturnWithNotFound()
+        {
+            Uri getUri = new($"/api/Note/byUserId/{Guid.NewGuid()}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+        [Test]
         public async Task NoteController_GetByTopicId_ShouldReturnWithOk()
         {
             Uri getUri = new($"/api/Note/byTopicId/{myNotes[0].TopicId}", UriKind.Relative);
@@ -79,6 +115,18 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+        [Test]
+        public async Task NoteController_GetByTopicId_ShouldReturnWitNotFound()
+        {
+            Uri getUri = new($"/api/Note/byTopicId/{8}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
         [Test]
         public async Task NoteController_GetByDescription_ShouldReturnWithOk()
@@ -92,7 +140,18 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
+        [Test]
+        public async Task NoteController_GetByDescription_ShouldReturnWitNotFound()
+        {
+            Uri getUri = new($"/api/Note/byDescription/Description_Test", UriKind.Relative);
 
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
         [Test]
         public async Task NoteController_GetByTitle_ShouldReturnWithOk()
         {
@@ -104,6 +163,18 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+        [Test]
+        public async Task NoteController_GetByTitle_ShouldReturnWithNotFound()
+        {
+            Uri getUri = new($"/api/Note/byTitle/Title_Test", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
         #endregion Get Section
 
@@ -126,6 +197,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(actualNote!.NoteId, Is.EqualTo(note.NoteId));
             Assert.That(actualNote!.Title, Is.EqualTo(note.Title));
         }
+
         [Test]
         public async Task NoteController_AddRangeAsync_ShouldAddNotesAndReturnWithCreated()
         {
@@ -151,16 +223,35 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task NoteController_Remove_ShouldRemoveNote()
         {
             // Arrange
-            Uri removeUri = new($"/api/Note/delete/{myNotes[0]}", UriKind.Relative);
-            Guid guid = myNotes[0].NoteId;
+            Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
             // Action
-            HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
+            HttpRequestMessage requestMessage = new(HttpMethod.Delete, removeUri);
+            requestMessage.Content = JsonContent.Create(myNotes[0]);
+            
+            HttpResponseMessage response = await myClient.SendAsync(requestMessage);
 
             // Assert
-            Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
+            Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == myNotes[0].NoteId) == null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
         [Test]
-        public async Task NoteController_RemoveById_ShouldRemoveNote()
+        public async Task NoteController_Remove_ShouldReturnWithNotFound()
+        {
+            // Arrange
+            Uri removeUri = new($"/api/Note/delete", UriKind.Relative);
+            myNotes[0].NoteId = Guid.NewGuid();
+            // Action
+            HttpRequestMessage requestMessage = new(HttpMethod.Delete, removeUri);
+            requestMessage.Content = JsonContent.Create(myNotes[0]);
+
+            HttpResponseMessage response = await myClient.SendAsync(requestMessage);
+
+            // Assert
+            Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == myNotes[0].NoteId) == null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+        [Test]
+        public async Task NoteController_RemoveById_ShouldRemoveNoteAndReturnWithOk()
         {
             // Arrange
             Uri removeUri = new($"/api/Note/deleteById/{myNotes[0].NoteId}", UriKind.Relative);
@@ -169,35 +260,57 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
 
             // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.IsTrue(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
+        }
+        [Test]
+        public async Task NoteController_RemoveById_ShouldReturnWithNotFound()
+        {
+            // Arrange
+            Uri removeUri = new($"/api/Note/deleteById/{Guid.NewGuid()}", UriKind.Relative);
+            Guid guid = myNotes[0].NoteId;
+            // Action
+            HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.IsFalse(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
         }
         #endregion Remove Section
 
         #region Modify Section
 
         [Test]
-        public async Task TopicController_UpdateTopic_TopicSuccessfullyUpdated()
+        public async Task NoteController_Update_ShouldReturnWithOkAndWithTheUpdatedNote()
         {
-            // Arrange
-            Uri postUri = new("/api/Note/Create", UriKind.Relative);
-            Note note = new(Guid.NewGuid(), Guid.NewGuid(), 6, DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
-
 
             // Action
-            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, note);
             Uri updateUri = new("/api/Note/Update", UriKind.Relative);
-            note.Title = "Updated Title";
+            myNotes[0].Title = "Updated Title";
+
+            HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, myNotes[0]);
+            Note? actualNote = await updateResponse.Content.ReadFromJsonAsync<Note>();
+
+            // Assert
+            Assert.That(actualNote, Is.Not.Null);
+            Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(actualNote!.NoteId, Is.EqualTo(myNotes[0].NoteId));
+            Assert.That(actualNote!.Title, Is.EqualTo(myNotes[0].Title));
+        }
+        [Test]
+        public async Task NoteController_Update_ShouldReturnWithNotFound()
+        {
+
+            // Action
+            Uri updateUri = new("/api/Note/Update", UriKind.Relative);
+            Note note=new(Guid.NewGuid(), Guid.NewGuid(), 1, DateTimeOffset.Now, "Paint ismeretek megszerzese", "Paint>Photoshop");
 
             HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, note);
             Note? actualNote = await updateResponse.Content.ReadFromJsonAsync<Note>();
 
             // Assert
-            Assert.That(actualNote, Is.Not.Null);
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-            Assert.That(actualNote!.NoteId, Is.EqualTo(note.NoteId));
-            Assert.That(actualNote!.Title, Is.EqualTo(note.Title));
+            Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
-
         #endregion Modify Section
 
     }

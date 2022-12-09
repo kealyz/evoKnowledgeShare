@@ -22,11 +22,12 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                return Ok(myNoteService.GetAll());
-            }
-            catch (KeyNotFoundException)
-            {
-                return NoContent();
+                IEnumerable<Note> notes =myNoteService.GetAll();
+                if (notes != null && notes.Any())
+                {
+                    return Ok(notes);
+                }
+                else return NoContent();
             }
             catch (Exception)
             {
@@ -39,11 +40,12 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                return Ok(myNoteService.GetById(noteId));
+                Note? note=myNoteService.GetById(noteId);
+                return Ok(note);
             }
             catch (KeyNotFoundException)
             {
-                return NoContent();
+                return NotFound();
             }
             catch (Exception)
             {
@@ -71,11 +73,12 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                return Ok(myNoteService.GetByTopicId(topicId));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NoContent();
+                IEnumerable<Note> notes = myNoteService.GetByTopicId(topicId);
+                if (notes != null && notes.Any())
+                {
+                    return Ok(notes);
+                }
+                else return NotFound();
             }
             catch (Exception)
             {
@@ -87,11 +90,12 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                return Ok(myNoteService.GetByDescription(description));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NoContent();
+                Note? note = myNoteService.GetByDescription(description);
+                if (note != null)
+                {
+                    return Ok(note);
+                }
+                else return NotFound();
             }
             catch (Exception)
             {
@@ -103,11 +107,12 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                return Ok(myNoteService.GetByTitle(title));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NoContent();
+                Note? note = myNoteService.GetByTitle(title);
+                if (note != null)
+                {
+                    return Ok(note);
+                }
+                else return NotFound();
             }
             catch (Exception)
             {
@@ -139,16 +144,17 @@ namespace evoKnowledgeShare.Backend.Controllers
         #endregion Add Section
 
         #region Remove Section
-        [HttpDelete("delete/{note}")]
+        [HttpDelete("delete")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Remove(Note note)
+        public IActionResult Remove([FromBody] Note note)
         {
             try
             {
                 myNoteService.Remove(note);
-                return NoContent();
+                return Ok();
             }
             catch (KeyNotFoundException)
             {
@@ -168,7 +174,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             try
             {
                 myNoteService.RemoveById(id);
-                return NoContent();
+                return Ok();
             }
             catch (KeyNotFoundException)
             {
@@ -186,9 +192,19 @@ namespace evoKnowledgeShare.Backend.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         public IActionResult Update([FromBody] Note note)
         {
-            Note? result = myNoteService.Update(note);
-            
-            return result is not null ? Ok(result) : BadRequest("Note cannot be modified.");
+            try
+            {
+                Note? result = myNoteService.Update(note);
+                return result is not null ? Ok(result) : BadRequest("Note cannot be modified.");
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
         #endregion Modify Section
     }

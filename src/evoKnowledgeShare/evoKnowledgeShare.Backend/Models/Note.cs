@@ -25,15 +25,6 @@ namespace evoKnowledgeShare.Backend.Models
             Description = noteDTO.Description;
             Title = noteDTO.Title;
         }
-        public Note(Note note)
-        {
-            NoteId = note.NoteId;
-            UserId = note.UserId;
-            TopicId = note.TopicId;
-            CreatedAt = note.CreatedAt;
-            Description = note.Description;
-            Title = note.Title;
-        }
         [Key]
         public Guid NoteId { get; set; }
 
