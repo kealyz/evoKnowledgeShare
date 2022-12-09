@@ -1,3 +1,4 @@
+using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Models;
 using NUnit.Framework;
 using System;
@@ -5,6 +6,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace evoKnowledgeShare.IntegrationTests.Controllers
@@ -25,14 +28,14 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
                 new User(Guid.NewGuid(), "Fuim", "Imre", "Futy"),
                 new User(Guid.NewGuid(), "Arak", "Aron", "Akcios")
             };
+            myContext.Users.AddRange(myUsers);
+            myContext.SaveChanges();
         }
 
         [Test]
         public async Task UserController_GetUsers_ReturnsAllUsers()
         {
             // Arrange
-            myContext.Users.AddRange(myUsers);
-            myContext.SaveChanges();
             Uri getUri = new Uri("/api/User/Users", UriKind.Relative);
 
             // Action
@@ -47,6 +50,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_GetUsers_NoUsersFound()
         {
             // Arrange
+            myContext.Database.EnsureDeleted();
             Uri getUri = new Uri("/api/User/Users", UriKind.Relative);
 
             // Action
@@ -61,8 +65,6 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_GetUserById_ReturnsUserWithId()
         {
             // Arrange
-            myContext.Users.AddRange(myUsers);
-            myContext.SaveChanges();
             Uri getUri = new Uri($"/api/User/User/{myUsers[0].Id}", UriKind.Relative);
 
             // Action
@@ -79,10 +81,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task UserController_GetUserById_UserNotFound_NoUserFound()
+        public async Task UserController_GetUserById_NoUserFound()
         {
             // Arrange
-            Uri getUri = new Uri($"/api/User/Users/{Guid.NewGuid()}", UriKind.Relative);
+            Uri getUri = new Uri($"/api/User/User/{Guid.NewGuid()}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -93,47 +95,98 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
+        public async Task UserController_GetUserRangeById_ReturnsUserRangeWithIds()
+        {
+            // Arrange
+            Guid[] ids = { myUsers[0].Id, myUsers[1].Id };
+            Uri getUri = new Uri($"/api/User/UserRange/{ids}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(getUri, ids);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            List<User>? actualUsers = await response.Content.ReadFromJsonAsync<List<User>>();
+            //var actualUsers = JsonSerializer.Deserialize<List<User>>(await response.Content.ReadAsStreamAsync());
+            //var actualUsers = response.Content.ReadFromJsonAsync<List<User>>().Result;
+
+            // Assert
+            CollectionAssert.Contains(myContext.Users, actualUsers![0]);
+            CollectionAssert.Contains(myContext.Users, actualUsers![1]);
+        }
+
+        [Test]
         public async Task UserController_CreateUser_UserSuccessfullyCreated()
         {
             // Arrange
             Uri postUri = new Uri("/api/User/Create", UriKind.Relative);
-            User user = new User(Guid.NewGuid(), "Mika", "Kalman", "Mikorka");
+            UserDTO userDTO = new UserDTO("Mika", "Kalman", "Mikorka");
 
             // Action
-            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, user);
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, userDTO);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
             User? actualUser = await response.Content.ReadFromJsonAsync<User>();
 
             // Assert
             Assert.That(actualUser, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-            Assert.That(actualUser!.Id, Is.EqualTo(user.Id));
-            Assert.That(actualUser!.FirstName, Is.EqualTo(user.FirstName));
-            Assert.That(actualUser!.LastName, Is.EqualTo(user.LastName));
+            Assert.That(actualUser!.UserName, Is.EqualTo(userDTO.UserName));
+            Assert.That(actualUser!.FirstName, Is.EqualTo(userDTO.FirstName));
+            Assert.That(actualUser!.LastName, Is.EqualTo(userDTO.LastName));
+
         }
 
         [Test]
         public async Task UserController_DeleteUser_UserSuccessfullyDeleted()
         {
             // Arrange
-            myContext.Users.AddRange(myUsers);
-            myContext.SaveChanges();
-            Uri deleteUri = new Uri($"/api/User/Delete/{myUsers[0].Id}", UriKind.Relative);
-            Uri getUri = new Uri($"/api/User/Users", UriKind.Relative);
+            Uri deleteUri = new Uri($"/api/User/Delete", UriKind.Relative);
 
             // Action
-            HttpResponseMessage response = await myClient.DeleteAsync(deleteUri);
-            HttpResponseMessage getRemaining = await myClient.GetAsync(getUri);
-            List<User>? remainingUsers = await getRemaining.Content.ReadFromJsonAsync<List<User>>();
+            HttpRequestMessage requestMessage = new(HttpMethod.Delete, deleteUri);
+            requestMessage.Content = JsonContent.Create(myUsers[0]);
+
+            HttpResponseMessage response = await myClient.SendAsync(requestMessage);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.That(remainingUsers, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-            Assert.That(remainingUsers, !Does.Contain(myUsers[0]));
+            CollectionAssert.DoesNotContain(myContext.Users, myUsers[0]);
         }
 
         [Test]
-        public async Task UserController_DeleteUser_NoUsersFound()
+        public async Task UserController_DeleteUser_NoUserFound()
+        {
+            // Arrange
+            Uri deleteUri = new Uri($"/api/User/Delete", UriKind.Relative);
+            myUsers[0].Id = Guid.NewGuid();
+
+            // Action
+            HttpRequestMessage requestMessage = new(HttpMethod.Delete, deleteUri);
+            requestMessage.Content = JsonContent.Create(myUsers[0]);
+
+            HttpResponseMessage response = await myClient.SendAsync(requestMessage);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task UserController_DeleteUserById_UserSuccessfullyDeleted()
+        {
+            // Arrange
+            Uri deleteUri = new Uri($"/api/User/Delete/{myUsers[0].Id}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.DeleteAsync(deleteUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            CollectionAssert.DoesNotContain(myContext.Users, myUsers[0]);
+        }
+
+        [Test]
+        public async Task UserController_DeleteUserById_NoUserFound()
         {
             // Arrange
             Uri deleteUri = new Uri($"/api/User/Delete/{Guid.NewGuid()}", UriKind.Relative);
@@ -165,23 +218,21 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_UpdateUser_UserSuccessfullyUpdated()
         {
             // Arrange
-            myContext.AddRange(myUsers);
-            myContext.SaveChanges();
             Uri putUri = new Uri("/api/User/Update", UriKind.Relative);
-            User putUser = new User(myUsers[0].Id, "TestUser", "Test", "User");
+            myUsers[0].UserName = "Admin";
 
             // Action
-            HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, putUser);
+            HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, myUsers[0]);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
             User? actualUser = await response.Content.ReadFromJsonAsync<User>();
 
             // Assert
             Assert.That(actualUser, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-            Assert.That(actualUser!.Id, Is.EqualTo(putUser.Id));
-            Assert.That(actualUser!.UserName, Is.EqualTo(putUser.UserName));
-            Assert.That(actualUser!.FirstName, Is.EqualTo(putUser.FirstName));
-            Assert.That(actualUser!.LastName, Is.EqualTo(putUser.LastName));
+            Assert.That(actualUser!.UserName, Is.EqualTo(myUsers[0].UserName));
+            Assert.That(actualUser!.FirstName, Is.EqualTo(myUsers[0].FirstName));
+            Assert.That(actualUser!.LastName, Is.EqualTo(myUsers[0].LastName));
+            CollectionAssert.Contains(myContext.Users, myUsers[0]);
         }
 
         [Test]
@@ -203,30 +254,19 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_UpdateRange_UsersSuccessfullyUpdated()
         {
             // Arrange
-            myContext.Users.AddRange(myUsers);
-            myContext.SaveChanges();
             Uri putUri = new Uri("/api/User/UpdateRange", UriKind.Relative);
-            Uri getUri = new Uri($"/api/User/Users", UriKind.Relative);
-            User[] putUsers = new User[]
-            {
-                new User(myUsers[1].Id, "TestUser1", "Test", "User"),
-                new User(myUsers[2].Id, "TestUser2", "Test", "User")
-            };
+            myUsers[0].UserName = "Admin0";
+            myUsers[1].UserName = "Admin1";
+            User[] putUsers = new User[] { myUsers[0], myUsers[1] };
 
             // Action
             HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, putUsers);
-            HttpResponseMessage getUpdatedUsers = await myClient.GetAsync(getUri);
-            Console.WriteLine(await getUpdatedUsers.Content.ReadAsStringAsync());
-            List<User>? updatedUsers = await getUpdatedUsers.Content.ReadFromJsonAsync<List<User>>();
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-            Assert.That(updatedUsers![1].Id, Is.EqualTo(putUsers[0].Id));
-            Assert.That(updatedUsers![1].FirstName, Is.EqualTo(putUsers[0].FirstName));
-            Assert.That(updatedUsers![1].LastName, Is.EqualTo(putUsers[0].LastName));
-            Assert.That(updatedUsers![2].Id, Is.EqualTo(putUsers[1].Id));
-            Assert.That(updatedUsers![2].FirstName, Is.EqualTo(putUsers[1].FirstName));
-            Assert.That(updatedUsers![2].LastName, Is.EqualTo(putUsers[1].LastName));
+            CollectionAssert.Contains(myContext.Users, myUsers[0]);
+            CollectionAssert.Contains(myContext.Users, myUsers[1]);
         }
     }
 }
