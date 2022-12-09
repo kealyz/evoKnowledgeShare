@@ -172,7 +172,7 @@ namespace evoKnowledgeShare.Backend.Controllers
                 return BadRequest();
             }
         }
-        [HttpDelete("ById/{id}")]
+        [HttpDelete("byId/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
