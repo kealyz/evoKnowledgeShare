@@ -1,4 +1,5 @@
-﻿using evoKnowledgeShare.Backend.Interfaces;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 
 namespace evoKnowledgeShare.Backend.Services
@@ -23,7 +24,10 @@ namespace evoKnowledgeShare.Backend.Services
         #endregion Get Section
 
         #region Add Section
-        public async Task<Topic> AddAsync(Topic topic) => await myRepository.AddAsync(topic);
+        public async Task<Topic> AddAsync(TopicDTO topicDTO) {
+            Topic topic = new Topic(Guid.NewGuid(), topicDTO.Title);
+            return await myRepository.AddAsync(topic); 
+        }
         #endregion Add Section
 
         #region Remove Section

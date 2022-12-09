@@ -1,4 +1,5 @@
-﻿using evoKnowledgeShare.Backend.Models;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -28,8 +29,8 @@ namespace evoKnowledgeShare.Backend.Controllers {
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateTopicAsync([FromBody] Topic topic) {
-            Topic? result = await myTopicService.AddAsync(topic);
+        public async Task<IActionResult> CreateTopicAsync([FromBody] TopicDTO topicDTO) {
+            Topic? result = await myTopicService.AddAsync(topicDTO);
             return result is not null ? Created(nameof(CreateTopicAsync), result) : BadRequest("Topic cannot be added.");
         }
 
