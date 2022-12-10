@@ -1,13 +1,13 @@
 using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Models;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace evoKnowledgeShare.IntegrationTests.Controllers
@@ -36,7 +36,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_GetUsers_ReturnsAllUsers()
         {
             // Arrange
-            Uri getUri = new Uri("/api/User/Users", UriKind.Relative);
+            Uri getUri = new Uri("/api/User", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -51,7 +51,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
             // Arrange
             myContext.Database.EnsureDeleted();
-            Uri getUri = new Uri("/api/User/Users", UriKind.Relative);
+            Uri getUri = new Uri("/api/User", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -62,10 +62,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task UserController_GetUserById_ReturnsUserWithId()
+        public async Task UserController_GetUserById_ReturnsUserById()
         {
             // Arrange
-            Uri getUri = new Uri($"/api/User/User/{myUsers[0].Id}", UriKind.Relative);
+            Uri getUri = new Uri($"/api/User/{myUsers[0].Id}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -84,7 +84,37 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_GetUserById_NoUserFound()
         {
             // Arrange
-            Uri getUri = new Uri($"/api/User/User/{Guid.NewGuid()}", UriKind.Relative);
+            Uri getUri = new Uri($"/api/User/{Guid.NewGuid()}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task UserController_GetUserByUserName_ReturnsUserByUserName()
+        {
+            // Arrange
+            Uri getUri = new Uri($"api/User/ByUserName/{myUsers[0].UserName}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            User? actualUser = await response.Content.ReadFromJsonAsync<User>();
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            CollectionAssert.Contains(myContext.Users, actualUser);
+        }
+
+        [Test]
+        public async Task UserController_GetUserByUserName_NoUserFound()
+        {
+            // Arrange
+            Uri getUri = new Uri($"api/User/ByUserName/Admin", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -99,10 +129,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
             // Arrange
             Guid[] ids = { myUsers[0].Id, myUsers[1].Id };
-            Uri getUri = new Uri($"/api/User/UserRange/{ids}", UriKind.Relative);
+            Uri postUri = new Uri($"/api/User/UserRange/{ids}", UriKind.Relative);
 
             // Action
-            HttpResponseMessage response = await myClient.PostAsJsonAsync(getUri, ids);
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, ids);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
             List<User>? actualUsers = await response.Content.ReadFromJsonAsync<List<User>>();
             //var actualUsers = JsonSerializer.Deserialize<List<User>>(await response.Content.ReadAsStreamAsync());
@@ -117,7 +147,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_CreateUser_UserSuccessfullyCreated()
         {
             // Arrange
-            Uri postUri = new Uri("/api/User/Create", UriKind.Relative);
+            Uri postUri = new Uri("/api/User", UriKind.Relative);
             UserDTO userDTO = new UserDTO("Mika", "Kalman", "Mikorka");
 
             // Action
@@ -138,7 +168,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_DeleteUser_UserSuccessfullyDeleted()
         {
             // Arrange
-            Uri deleteUri = new Uri($"/api/User/Delete", UriKind.Relative);
+            Uri deleteUri = new Uri($"/api/User", UriKind.Relative);
 
             // Action
             HttpRequestMessage requestMessage = new(HttpMethod.Delete, deleteUri);
@@ -156,7 +186,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_DeleteUser_NoUserFound()
         {
             // Arrange
-            Uri deleteUri = new Uri($"/api/User/Delete", UriKind.Relative);
+            Uri deleteUri = new Uri($"/api/User", UriKind.Relative);
             myUsers[0].Id = Guid.NewGuid();
 
             // Action
@@ -174,7 +204,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_DeleteUserById_UserSuccessfullyDeleted()
         {
             // Arrange
-            Uri deleteUri = new Uri($"/api/User/Delete/{myUsers[0].Id}", UriKind.Relative);
+            Uri deleteUri = new Uri($"/api/User/{myUsers[0].Id}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.DeleteAsync(deleteUri);
@@ -189,7 +219,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_DeleteUserById_NoUserFound()
         {
             // Arrange
-            Uri deleteUri = new Uri($"/api/User/Delete/{Guid.NewGuid()}", UriKind.Relative);
+            Uri deleteUri = new Uri($"/api/User/{Guid.NewGuid()}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.DeleteAsync(deleteUri);
@@ -218,7 +248,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         public async Task UserController_UpdateUser_UserSuccessfullyUpdated()
         {
             // Arrange
-            Uri putUri = new Uri("/api/User/Update", UriKind.Relative);
+            Uri putUri = new Uri("/api/User", UriKind.Relative);
             myUsers[0].UserName = "Admin";
 
             // Action
@@ -236,10 +266,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task UserController_UpdateUser_NoUsersFound()
+        public async Task UserController_UpdateUser_CreatedButDoesNotUpdate()
         {
             // Arrange
-            Uri putUri = new Uri("/api/Update", UriKind.Relative);
+            Uri putUri = new Uri("/api/User", UriKind.Relative);
             User putUser = new User(Guid.NewGuid(), "TestUser", "Test", "User");
 
             // Action
@@ -247,7 +277,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(myContext.Users.Count, Is.EqualTo(myUsers.Count()));
         }
 
         [Test]

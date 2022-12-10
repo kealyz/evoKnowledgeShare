@@ -3,7 +3,6 @@ using evoKnowledgeShare.Backend.Services;
 using evoKnowledgeShare.Backend.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
-using System.Collections.Generic;
 
 namespace evoKnowledgeShare.Backend.Controllers
 {
@@ -18,15 +17,16 @@ namespace evoKnowledgeShare.Backend.Controllers
             this.myUserService = myUserService;
         }
 
-        [HttpGet("Users")]
+        [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUsers()
         {
             IEnumerable<User> result = myUserService.Get();
             return result.Any() ? Ok(result) : Problem(statusCode: StatusCodes.Status404NotFound, title: "No users found.");
         }
 
-        [HttpGet("User/{id}")]
+        [HttpGet("{id}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -44,6 +44,16 @@ namespace evoKnowledgeShare.Backend.Controllers
 
         }
 
+        [HttpGet("ByUserName/{username}")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetUserByUserName(string username)
+        {
+            User? result = myUserService.GetUserByUserName(username);
+            return result is not null ? Ok(result) : NotFound();
+        }
+
         [HttpPost("UserRange/{ids}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,11 +61,14 @@ namespace evoKnowledgeShare.Backend.Controllers
         public IActionResult GetUserRangeById([FromBody] IEnumerable<Guid> ids)
         {
             IEnumerable<User> result = myUserService.GetUserRangeById(ids);
-            //return result is not null ? Ok(result) : NotFound();
-            return Ok(result);
+            if (result.Any())
+            {
+                return Ok(result);
+            }
+            else return NotFound();
         }
 
-        [HttpPost("Create")]
+        [HttpPost("")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,7 +78,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             return result is not null ? Created(nameof(CreateUserAsync), result) : BadRequest("User cannot be added.");
         }
 
-        [HttpDelete("Delete")]
+        [HttpDelete("")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,7 +100,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
         }
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("{id}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -109,7 +122,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
         }
 
-        [HttpPut("Update")]
+        [HttpPut("")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
