@@ -39,6 +39,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(actualNotes.First, Is.EqualTo(myNotes[0]));
         }
         [Test]
+        public void NoteService_GetAll_ShouldReturnEmptyList()
+        {
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(Enumerable.Empty<Note>);
+            var actualNotes = myNoteService.GetAll();
+
+            Assert.That(actualNotes.Count, Is.EqualTo(0));
+            Assert.That(actualNotes,Is.Empty);
+        }
+        [Test]
         public void NoteService_GetNoteById_ShouldReturnASpecificNote()
         {
             myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Returns(myNotes[0]);

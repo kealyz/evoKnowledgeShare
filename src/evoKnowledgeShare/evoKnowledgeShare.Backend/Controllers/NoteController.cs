@@ -135,8 +135,15 @@ namespace evoKnowledgeShare.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddAsync([FromBody] Note note)
         {
-            Note result = await myNoteService.AddAsync(note);
-            return result is not null ? Created(nameof(AddAsync), result) : BadRequest("Note cannot be added.");
+            try
+            {
+                Note result = await myNoteService.AddAsync(note);
+                return Created(nameof(AddAsync), result);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest("Note cannot be added.");
+            }
         }
         [HttpPost("createRange")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -144,8 +151,15 @@ namespace evoKnowledgeShare.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddRangeAsync([FromBody] IEnumerable<Note> notes)
         {
-            IEnumerable<Note> result = await myNoteService.AddRangeAsync(notes);
-            return result is not null ? Created(nameof(AddRangeAsync), result) : BadRequest("Note cannot be added.");
+            try
+            {
+                IEnumerable<Note> result = await myNoteService.AddRangeAsync(notes);
+                return Created(nameof(AddRangeAsync), result);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest("Note cannot be added.");
+            }
         }
 
         #endregion Add Section
@@ -202,7 +216,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             try
             {
                 Note result = myNoteService.Update(note);
-                return result is not null ? Ok(result) : BadRequest("Note cannot be modified.");
+                return Ok(result);
             }
             catch (KeyNotFoundException)
             {

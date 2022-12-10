@@ -295,6 +295,9 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(actualNote!.NoteId, Is.EqualTo(myNotes[0].NoteId));
             Assert.That(actualNote!.Title, Is.EqualTo(myNotes[0].Title));
+            Assert.That(actualNote!.Title, Is.EqualTo("Updated Title"));
+            Assert.That(myNotes[0].Title, Is.EqualTo("Updated Title"));
+
         }
         [Test]
         public async Task NoteController_Update_ShouldReturnWithNotFound()

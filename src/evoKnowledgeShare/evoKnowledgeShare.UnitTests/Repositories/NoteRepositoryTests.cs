@@ -109,7 +109,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void NoteRepository_AddAsync_ShouldReturnWithArgumentException()
         {
-            IEnumerable<Note> expectedNotes = new[] { myNotes[1], myNotes[2] };
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 await myRepository.AddAsync(myNotes[0]);

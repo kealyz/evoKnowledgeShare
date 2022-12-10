@@ -92,18 +92,34 @@ namespace evoKnowledgeShare.Backend.Services
         ///<summary>Adds a <see cref="Note"/> entity to the database.</summary>
         /// <param name="note"></param>
         /// <returns>Task <see cref="Note"/> if added</returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<Note> AddAsync(Note note)
         {
-            await myRepository.AddAsync(note);
-            return await Task.FromResult(note);
+            try
+            {
+                await myRepository.AddAsync(note);
+                return await Task.FromResult(note);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
         }
 
         /// <param name="note"></param>
         /// <returns>Task list of <see cref="Note"/> if added</returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<Note> notes)
         {
-            await myRepository.AddRangeAsync(notes);
-            return await Task.FromResult(notes);
+            try
+            {
+                await myRepository.AddRangeAsync(notes);
+                return await Task.FromResult(notes);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
         }
         #endregion Add Section
 

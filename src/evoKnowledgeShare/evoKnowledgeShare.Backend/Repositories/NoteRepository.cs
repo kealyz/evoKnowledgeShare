@@ -52,21 +52,35 @@ namespace evoKnowledgeShare.Backend.Repositories
         /// <inheritdoc/>
         public override async Task<Note> AddAsync(Note note)
         {
-            await myDbContext.Notes.AddAsync(note);
-            myDbContext.SaveChanges();
-            return await Task.FromResult(note);
+            try
+            {
+                await myDbContext.Notes.AddAsync(note);
+                myDbContext.SaveChanges();
+                return await Task.FromResult(note);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<Note> notes)
         {
-            List<Note> resultNotes = new();
-            foreach (Note note in notes)
+            try
             {
-                resultNotes.Add(await AddAsync(note));
+                List<Note> resultNotes = new();
+                foreach (Note note in notes)
+                {
+                    resultNotes.Add(await AddAsync(note));
+                }
+                myDbContext.SaveChanges();
+                return resultNotes;
             }
-            myDbContext.SaveChanges();
-            return resultNotes;
+            catch (ArgumentException)
+            {
+                throw;
+            }
             
         }
         #endregion Add Section

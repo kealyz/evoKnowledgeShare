@@ -7,11 +7,13 @@
         ///<summary>It adds a <typeparamref name="TEntity"/> to database (from param)</summary>
         /// <param name="entity"></param>
         /// <returns><typeparamref name="TEntity"/> if added</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<TEntity> AddAsync(TEntity entity);
 
         ///<summary>Adds a list of <typeparamref name="TEntity"/> to database (from param)</summary>
         /// <param name="entities"></param>
         /// <returns>A list of <typeparamref name="TEntity"/> if added</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities);
 
         #endregion Add section
