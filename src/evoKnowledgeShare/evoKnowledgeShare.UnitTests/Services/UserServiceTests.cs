@@ -45,6 +45,13 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             Assert.That(user, Is.EqualTo(myUsers[0]));
         }
+        [Test]
+        public void UserService_GetUserByUserName_ShouldReturnSpecificUserByUserName()
+        {
+            User? user = myUserService.GetUserByUserName(myUsers[0].UserName);
+
+            Assert.That(user, Is.EqualTo(myUsers[0]));
+        }
 
         #endregion Get Test Section
 
