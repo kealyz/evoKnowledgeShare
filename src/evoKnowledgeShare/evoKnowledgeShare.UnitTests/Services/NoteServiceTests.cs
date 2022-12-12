@@ -57,14 +57,19 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(note, Is.EqualTo(myNotes[0]));
         }
         [Test]
+        public void NoteService_GetNoteById_ShouldReturnKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Throws(new KeyNotFoundException());
+                var note = myNoteService.GetById(myNotes[0].NoteId);
+            });
+        }
+        [Test]
         public void NoteService_getRangeByUserId_ShouldReturnSpecificNote()
         {
-            var listOfNotes = new List<Note>
-            {
-                myNotes[0],
-                myNotes[1]
-            };
-            myRepositoryMock.Setup(x => x.GetAll()).Returns(listOfNotes);
+
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(myNotes);
 
             var note = myNoteService.GetRangeByUserId(myNotes[0].UserId);
 
@@ -73,7 +78,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(note.First, Is.EqualTo(myNotes[0]));
         }
         [Test]
-        public void NoteService_getByTopicId_ShouldReturnSpecificNote()
+        public void NoteService_getRangeByUserId_ShouldReturnEmptyList()
+        {
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(myNotes);
+            var actualNotes = myNoteService.GetRangeByUserId(Guid.NewGuid());
+            Assert.That(actualNotes.Count, Is.EqualTo(0));
+            Assert.That(actualNotes, Is.Empty);
+        }
+        [Test]
+        public void NoteService_getRangeByTopicId_ShouldReturnSpecificNote()
         {
             var listOfNotes = new List<Note>
             {
@@ -87,6 +100,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             myRepositoryMock.Verify(x => x.GetAll(), Times.Once);
             Assert.That(note.Count, Is.EqualTo(1));
             Assert.That(note.First, Is.EqualTo(myNotes[0]));
+        }
+        [Test]
+        public void NoteService_getRangeByTopicId_ShouldReturnEmptyList()
+        {
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(myNotes);
+            var actualNotes = myNoteService.GetRangeBytTopicId(11);
+
+            Assert.That(actualNotes.Count, Is.EqualTo(0));
+            Assert.That(actualNotes, Is.Empty);
         }
         [Test]
         public void NoteService_getByDescription_ShouldReturnSpecificNote()
@@ -104,6 +126,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(note, Is.EqualTo(myNotes[0]));
         }
         [Test]
+        public void NoteService_GetByDescription_ShouldReturnKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepositoryMock.Setup(x => x.GetAll()).Returns(myNotes);
+                var note = myNoteService.GetByDescription("Not existing test description");
+            });
+        }
+        [Test]
         public void NoteService_getByTitle_ShouldReturnSpecificNote()
         {
             var listOfNotes = new List<Note>
@@ -116,6 +147,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             var note = myNoteService.GetByTitle(myNotes[0].Title);
 
             Assert.That(note, Is.EqualTo(myNotes[0]));
+        }
+        [Test]
+        public void NoteService_getByTitle_ShouldReturnKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myRepositoryMock.Setup(x => x.GetAll()).Returns(myNotes);
+                var note = myNoteService.GetByTitle("Not existing test title");
+            });
         }
         #endregion Get Section
         #region Add Section
@@ -131,6 +171,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(actualNote, Is.EqualTo(myNotes[0]));
         }
         [Test]
+        public async Task NoteService_AddAsync_ThrowsArgumentException()
+        {
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Note>())).Throws(new ArgumentException());
+            Assert.ThrowsAsync<ArgumentException>(async() =>
+            {
+                await myNoteService.AddAsync(myNotes[0]);
+            });
+        }
+        [Test]
         public async Task NoteService_AddRangeAsync_CreatesNotes()
         {
             var notesList = new List<Note>()
@@ -144,6 +193,20 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             myRepositoryMock.Verify(x => x.AddRangeAsync(It.Is<List<Note>>(y => y.Equals(notesList))), Times.Once);
             Assert.That(actualNotes, Is.EqualTo(notesList));
+        }
+        [Test]
+        public async Task NoteService_AddRangeAsync_ThrowsArgumentException()
+        {
+            var notesList = new List<Note>()
+            {
+                myNotes[0],
+                myNotes[1]
+            };
+            myRepositoryMock.Setup(x => x.AddRangeAsync(It.IsAny<List<Note>>())).Throws(new ArgumentException());
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await myNoteService.AddRangeAsync(notesList);
+            });
         }
         #endregion Add Section
         #region Remove Section
@@ -165,6 +228,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(notes, Is.Empty);
         }
         [Test]
+        public void NoteService_Remove_ThrowsKeyNotFoundException()
+        {
+            myRepositoryMock.Setup(x=>x.Remove(It.IsAny<Note>())).Throws<KeyNotFoundException>();
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myNoteService.Remove(new Note());
+            });
+        }
+        [Test]
         public void NoteService_RemoveById_ShouldRemoveNoteFromRepository()
         {
             var notes = new List<Note>
@@ -180,6 +252,15 @@ namespace evoKnowledgeShare.UnitTests.Services
             myRepositoryMock.Verify(x => x.RemoveById(noteId), Times.Once);
 
         }
+        [Test]
+        public void NoteService_RemoveById_ThrowsKeyNotFoundException()
+        {
+            myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<Guid>())).Throws<KeyNotFoundException>();
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myNoteService.RemoveById(Guid.NewGuid());
+            });
+        }
         #endregion Remove Section
         #region Modify Section
         [Test]
@@ -192,6 +273,16 @@ namespace evoKnowledgeShare.UnitTests.Services
             myRepositoryMock.Verify(x => x.Update(It.Is<Note>(y => y.Equals(myNotes[0]))), Times.Once);
             Assert.That(actualNote, Is.EqualTo(myNotes[0]));
 
+        }
+        [Test]
+        public void NoteService_Update_ShouldThrowKeyNotFoundException()
+        {
+            myRepositoryMock.Setup(x=>x.Update(It.IsAny<Note>())).Throws<KeyNotFoundException>();
+
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                myNoteService.Update(new Note());
+            });
         }
         #endregion Modify Section
     }

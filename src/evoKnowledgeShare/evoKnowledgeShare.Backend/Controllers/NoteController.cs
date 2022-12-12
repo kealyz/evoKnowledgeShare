@@ -53,7 +53,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
         }
         [HttpGet("byUserId/{userId}")]
-        public IActionResult GetByUserId(Guid userId)
+        public IActionResult GetRangeByUserId(Guid userId)
         {
             try
             {
@@ -64,17 +64,13 @@ namespace evoKnowledgeShare.Backend.Controllers
                 }
                 else return NotFound();
             }
-            catch (ArgumentException)
-            {
-                return NoContent();
-            }
             catch (Exception)
             {
                 return BadRequest();
             }
         }
         [HttpGet("byTopicId/{topicId}")]
-        public IActionResult GetByTopicId(int topicId)
+        public IActionResult GetRangeByTopicId(int topicId)
         {
             try
             {
@@ -84,10 +80,6 @@ namespace evoKnowledgeShare.Backend.Controllers
                     return Ok(notes);
                 }
                 else return NotFound();
-            }
-            catch (ArgumentNullException)
-            {
-                return NoContent() ;
             }
             catch (Exception)
             {
@@ -143,6 +135,9 @@ namespace evoKnowledgeShare.Backend.Controllers
             catch (ArgumentException)
             {
                 return BadRequest("Note cannot be added.");
+            }catch(Exception)
+            {
+                return BadRequest();
             }
         }
         [HttpPost("createRange")]

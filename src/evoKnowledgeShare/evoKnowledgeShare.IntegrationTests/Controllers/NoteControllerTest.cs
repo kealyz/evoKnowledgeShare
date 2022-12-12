@@ -9,6 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using evoKnowledgeShare.Backend.Interfaces;
+using evoKnowledgeShare.Backend.Services;
+using Moq;
 
 namespace evoKnowledgeShare.IntegrationTests.Controllers
 {
@@ -196,6 +199,20 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(actualNote!.NoteId, Is.EqualTo(note.NoteId));
             Assert.That(actualNote!.Title, Is.EqualTo(note.Title));
         }
+        [Test]
+        public async Task NoteController_AddAsync_ShouldReturnWithBadRequest()
+        {
+            // Arrange
+            Uri postUri = new("/api/Note/", UriKind.Relative);
+            Guid guid = myNotes[2].NoteId;
+            Note note = new(guid, Guid.NewGuid(), 6, DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
+
+            // Action
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, note);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
 
         [Test]
         public async Task NoteController_AddRangeAsync_ShouldAddNotesAndReturnWithCreated()
@@ -214,6 +231,19 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Assert
             Assert.That(actualNotes, Is.Not.Empty);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+        }
+        [Test]
+        public async Task NoteController_AddRangeAsync_ShouldReturnWithBadRequest()
+        {
+            // Arrange
+            Uri postUri = new("/api/Note/createRange", UriKind.Relative);
+            IEnumerable<Note> notes = new[] { myNotes[0], myNotes[1] };
+
+            // Action
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, notes);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
         #endregion Add Section
 

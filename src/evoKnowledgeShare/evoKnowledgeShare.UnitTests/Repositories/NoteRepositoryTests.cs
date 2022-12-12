@@ -67,7 +67,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             });
         }
         [Test]
-        public void NoteRepository_GetByIdRange_ShouldReturnSpecificNotes()
+        public void NoteRepository_GetRangeById_ShouldReturnSpecificNotes()
         {
             List<Guid> guids = new() { myNotes[0].NoteId, myNotes[1].NoteId };
             var actual = myRepository.GetRangeById(guids);
@@ -80,7 +80,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             });
         }
         [Test]
-        public void NoteRepository_GetByIdRange_ShouldReturnAnEmptyList()
+        public void NoteRepository_GetRangeById_ShouldReturnAnEmptyList()
         {
             myDbContext.Notes.RemoveRange(new List<Note> { myNotes[0], myNotes[1] });
             myDbContext.SaveChanges();

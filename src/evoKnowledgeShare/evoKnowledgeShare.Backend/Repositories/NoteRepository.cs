@@ -103,16 +103,9 @@ namespace evoKnowledgeShare.Backend.Repositories
         /// <inheritdoc/>
         public override void RemoveById(Guid id)
         {
-            try
-            {
-                Note note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
-                myDbContext.Notes.Remove(note);
-                myDbContext.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new KeyNotFoundException();
-            }
+            Note note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
+            myDbContext.Notes.Remove(note);
+            myDbContext.SaveChanges();
         }
 
         /// <inheritdoc/>
@@ -132,19 +125,12 @@ namespace evoKnowledgeShare.Backend.Repositories
         /// <inheritdoc/>
         public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
-            try
+            foreach (Guid id in ids)
             {
-                foreach (Guid id in ids)
-                {
-                    Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
-                    myDbContext.Notes.Remove(note);
-                }
-                myDbContext.SaveChanges();
+                Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
+                myDbContext.Notes.Remove(note);
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new KeyNotFoundException();
-            }
+            myDbContext.SaveChanges();
         }
         #endregion Remove Section
         #region Modify Section

@@ -27,43 +27,28 @@ namespace evoKnowledgeShare.Backend.Services
         ///<summary>Returns all <see cref="Note"/> type datas from database if their userId match with the given.</summary>
         /// <param name="id"></param>
         /// <returns>A list of <see cref="Note"/> if found, else an empty list</returns>
-        /// <exception cref="ArgumentNullException"></exception>
         public IEnumerable<Note> GetRangeByUserId(Guid id)
         {
-            try
+            IEnumerable<Note> notes = myRepository.GetAll().Where(x => x.UserId == id).ToList();
+            if (!notes.Any())
             {
-                IEnumerable<Note> notes = myRepository.GetAll().Where(x => x.UserId == id).ToList();
-                if (!notes.Any())
-                {
-                    return Enumerable.Empty<Note>();
-                }
-                return notes;
+                return Enumerable.Empty<Note>();
             }
-            catch (ArgumentNullException)
-            {
-                throw;
-            }
+            return notes;
+            
         }
 
         ///<summary>Returns all <see cref="Note"/> type datas from database if their topicId match with the given.</summary>
         /// <param name="id"></param>
         /// <returns>A list of <see cref="Note"/> if found, else an empty list</returns>
-        /// <exception cref="ArgumentNullException"></exception>
         public IEnumerable<Note> GetRangeBytTopicId(int id)
         {
-            try
+            IEnumerable<Note> notes = myRepository.GetAll().Where(x => x.TopicId == id).ToList();
+            if (!notes.Any())
             {
-                IEnumerable<Note> notes = myRepository.GetAll().Where(x => x.TopicId == id).ToList();
-                if (!notes.Any())
-                {
-                    return Enumerable.Empty<Note>();
-                }
-                return notes;
+                return Enumerable.Empty<Note>();
             }
-            catch (ArgumentNullException)
-            {
-                throw;
-            }
+            return notes;
         } 
 
         ///<summary>Returns a specific <see cref="Note"/> by it's description.</summary>
