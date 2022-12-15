@@ -22,7 +22,13 @@ namespace evoKnowledgeShare.Backend.Controllers {
 
         [HttpGet("TopicID/{id}")]
         public IActionResult GetTopicsById(Guid id) {
-            return Ok(myTopicService.GetById(id));
+            try {
+                return Ok(myTopicService.GetById(id));
+            } catch (ArgumentNullException) {
+                throw;
+            } catch (InvalidOperationException) {
+                throw;
+            }
         }
 
         [HttpPost("Create")]
