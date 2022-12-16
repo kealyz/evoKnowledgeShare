@@ -1,6 +1,5 @@
 ﻿using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Repositories;
-using System.Collections;
 
 namespace evoKnowledgeShare.UnitTests.Repositories
 {
@@ -22,34 +21,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             myRepository.AddRangeAsync(myUsers);
         }
 
-        #region Add Test Section
-
-        [Test]
-        public async Task UserRepository_AddAsync_ShouldAddAUserAsync()
-        {
-            User user = new User(Guid.NewGuid(), "TestUser3", "User3", "UserLastName3");
-
-            await myRepository.AddAsync(user);
-
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()+1));
-            Assert.That(myDbContext.Users, Does.Contain(user));
-        }
-
-        [Test]
-        public async Task UserRepository_AddRangeAsync_ShouldAddARangeOfUsersAsync()
-        {
-            IEnumerable<User> users = new List<User>() { 
-                new User(Guid.NewGuid(), "TestUser3", "User3", "UserLastName3"), 
-                new User(Guid.NewGuid(), "TestUser4", "User4", "UserLastName4") };
-
-            await myRepository.AddRangeAsync(users);
-
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()+2));
-            CollectionAssert.IsSupersetOf(myDbContext.Users, users);
-        }
-
-        #endregion Add Test Section
-
         #region Get Test Section
 
         [Test]
@@ -70,7 +41,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void UserRepository_GetById_ShouldThrowInvalidOperationException()
+        public void UserRepository_GetById_ShouldThrowKeyNotFoundExceptionn()
         {
             Assert.Throws<KeyNotFoundException>(() => myRepository.GetById(Guid.NewGuid()));
         }
@@ -86,6 +57,47 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
         #endregion Get Test Section
 
+        #region Add Test Section
+
+        [Test]
+        public async Task UserRepository_AddAsync_ShouldAddAUserAsync()
+        {
+            User user = new User(Guid.NewGuid(), "TestUser3", "User3", "UserLastName3");
+
+            await myRepository.AddAsync(user);
+
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count() + 1));
+            Assert.That(myDbContext.Users, Does.Contain(user));
+        }
+
+        [Test]
+        public async Task UserRepository_AddAsync_ShouldThrowArgumentException()
+        {
+            Assert.ThrowsAsync<ArgumentException>(() => myRepository.AddAsync(myUsers[0]));
+        }
+
+        [Test]
+        public async Task UserRepository_AddRangeAsync_ShouldAddARangeOfUsersAsync()
+        {
+            IEnumerable<User> users = new List<User>() {
+                new User(Guid.NewGuid(), "TestUser3", "User3", "UserLastName3"),
+                new User(Guid.NewGuid(), "TestUser4", "User4", "UserLastName4") };
+
+            await myRepository.AddRangeAsync(users);
+
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count() + 2));
+            CollectionAssert.IsSupersetOf(myDbContext.Users, users);
+        }
+
+        [Test]
+        public async Task UserRepository_AddRangeAsync_ShouldThrowArgumentException()
+        {
+            User[] userList = new User[] { myUsers[0], myUsers[1] };
+            Assert.ThrowsAsync<ArgumentException>(() => myRepository.AddRangeAsync(userList));
+        }
+
+        #endregion Add Test Section
+
         #region Remove Test Section
 
         [Test]
@@ -97,7 +109,15 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-1));
             CollectionAssert.DoesNotContain(myDbContext.Users, myUsers[1]);
         }
-        
+
+        [Test]
+        public void UserRepository_Remove_ShouldThrowKeyNotFoundException()
+        {
+            User user = new User(Guid.NewGuid(), "", "", "");
+
+            Assert.Throws<KeyNotFoundException>(() => myRepository.Remove(user));
+        }
+
         [Test]
         public void UserRepository_RemoveById_ShouldRemoveSpecificUserById()
         {
@@ -126,7 +146,13 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-2));
             CollectionAssert.IsNotSupersetOf(myDbContext.Users, users);
         }
-        
+        [Test]
+        public void UserRepository_RemoveRange_ShouldThrowKeyNotFoundException()
+        {
+            User[] users = { new User(Guid.NewGuid(), "", "", ""), myUsers[0] };
+            Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveRange(users));
+        }
+
         [Test]
         public void UserRepository_RemoveRangeById_ShouldRemoveSpecificUsers()
         {
@@ -142,7 +168,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void UserRepository_RemoveRangeById_ShouldThrowKeyNotFoundException()
         {
-            Guid[] ids = { Guid.NewGuid(), Guid.NewGuid() };
+            Guid[] ids = { Guid.NewGuid(), myUsers[0].Id };
             Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveRangeById(ids));
         }
 
@@ -162,6 +188,14 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
+        public void UserRepository_Update_ShouldThrowKeyNotFoundException()
+        {
+            User user = new User(Guid.NewGuid(), "", "", "");
+
+            Assert.Throws<KeyNotFoundException>(() => myRepository.Update(user));
+        }
+
+        [Test]
         public void UserRepository_UpdateRange_ShouldUpdateRange()
         {
             for (int i = 0; i < myUsers.Count; i++)
@@ -173,6 +207,13 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             myRepository.SaveChanges();
 
             CollectionAssert.AreEquivalent(myDbContext.Users, myUsers);
+        }
+
+        [Test]
+        public void UserRepository_UpdateRange_ShouldThrowKeyNotFoundException()
+        {
+            User[] users = { new User(Guid.NewGuid(),"","",""), myUsers[0] };
+            Assert.Throws<KeyNotFoundException>(() => myRepository.UpdateRange(users));
         }
 
         #endregion Update Test Section
