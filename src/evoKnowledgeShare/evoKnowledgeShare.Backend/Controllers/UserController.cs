@@ -29,8 +29,8 @@ namespace evoKnowledgeShare.Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUserById(Guid id)
         {
@@ -51,8 +51,8 @@ namespace evoKnowledgeShare.Backend.Controllers
         }
 
         [HttpGet("ByUserName/{username}")]
-        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUserByUserName(string username)
         {
@@ -78,6 +78,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         [HttpPost("UserRange/{ids}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUserRangeById([FromBody] IEnumerable<Guid> ids)
         {
@@ -171,7 +172,8 @@ namespace evoKnowledgeShare.Backend.Controllers
 
         [HttpPut("")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult UpdateUser([FromBody] User user)
         {
@@ -193,7 +195,8 @@ namespace evoKnowledgeShare.Backend.Controllers
 
         [HttpPut("UpdateRange")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult UpdateRange([FromBody] IEnumerable<User> users)
         {       

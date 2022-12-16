@@ -41,7 +41,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public void UserRepository_GetById_ShouldThrowKeyNotFoundExceptionn()
+        public void UserRepository_GetById_ShouldThrowKeyNotFoundException()
         {
             Assert.Throws<KeyNotFoundException>(() => myRepository.GetById(Guid.NewGuid()));
         }
@@ -55,11 +55,19 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             CollectionAssert.IsSupersetOf(myDbContext.Users, actualUsers);
         }
 
-        #endregion Get Test Section
-
-        #region Add Test Section
-
         [Test]
+        public void UserRepository_GetRangeById_ShouldThrowKeyNotFoundException()
+        {
+            Guid[] ids = new Guid[] { myUsers[0].Id, Guid.NewGuid() };
+
+            Assert.Throws<KeyNotFoundException>(() => myRepository.GetRangeById(ids));
+        }
+
+            #endregion Get Test Section
+
+            #region Add Test Section
+
+            [Test]
         public async Task UserRepository_AddAsync_ShouldAddAUserAsync()
         {
             User user = new User(Guid.NewGuid(), "TestUser3", "User3", "UserLastName3");
@@ -93,6 +101,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         public async Task UserRepository_AddRangeAsync_ShouldThrowArgumentException()
         {
             User[] userList = new User[] { myUsers[0], myUsers[1] };
+
             Assert.ThrowsAsync<ArgumentException>(() => myRepository.AddRangeAsync(userList));
         }
 
@@ -113,7 +122,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void UserRepository_Remove_ShouldThrowKeyNotFoundException()
         {
-            User user = new User(Guid.NewGuid(), "", "", "");
+            User user = new User(Guid.NewGuid(), "A", "A", "A");
 
             Assert.Throws<KeyNotFoundException>(() => myRepository.Remove(user));
         }
@@ -149,7 +158,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void UserRepository_RemoveRange_ShouldThrowKeyNotFoundException()
         {
-            User[] users = { new User(Guid.NewGuid(), "", "", ""), myUsers[0] };
+            User[] users = { new User(Guid.NewGuid(), "A", "A", "A"), myUsers[0] };
             Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveRange(users));
         }
 
@@ -190,7 +199,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void UserRepository_Update_ShouldThrowKeyNotFoundException()
         {
-            User user = new User(Guid.NewGuid(), "", "", "");
+            User user = new User(Guid.NewGuid(), "A", "A", "A");
 
             Assert.Throws<KeyNotFoundException>(() => myRepository.Update(user));
         }
@@ -212,7 +221,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void UserRepository_UpdateRange_ShouldThrowKeyNotFoundException()
         {
-            User[] users = { new User(Guid.NewGuid(),"","",""), myUsers[0] };
+            User[] users = { new User(Guid.NewGuid(),"A","A","A"), myUsers[0] };
             Assert.Throws<KeyNotFoundException>(() => myRepository.UpdateRange(users));
         }
 

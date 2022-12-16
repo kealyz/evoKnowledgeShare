@@ -19,7 +19,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             {
                 new User(Guid.NewGuid(),"TestUser","User","UserLastName"),
                 new User(Guid.NewGuid(),"TestUser2","User2","UserLastName2"),
-                new User(Guid.NewGuid(), "Helo", "szia", "")
+                new User(Guid.NewGuid(), "Helo", "szia", "A")
             };
 
             myRepositoryMock = new Mock<IRepository<User>>(MockBehavior.Strict);

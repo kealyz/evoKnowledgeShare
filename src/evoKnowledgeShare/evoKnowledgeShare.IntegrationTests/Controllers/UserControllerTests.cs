@@ -32,6 +32,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             myContext.SaveChanges();
         }
 
+        #region Get Test Section
+
         [Test]
         public async Task UserController_GetUsers_ReturnsAllUsers()
         {
@@ -124,6 +126,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
+        #endregion Get Test Section
+
+        #region Post Test Section
+
         [Test]
         public async Task UserController_GetUserRangeById_ReturnsUserRangeWithIds()
         {
@@ -176,16 +182,11 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(actualUser!.UserName, Is.EqualTo(userDTO.UserName));
             Assert.That(actualUser!.FirstName, Is.EqualTo(userDTO.FirstName));
             Assert.That(actualUser!.LastName, Is.EqualTo(userDTO.LastName));
-
         }
 
-        /*[Test]
-        public async Task UserController_CreateUser_UserAlreadyExistInDatabase()
-        {
-            // Arrange
-            // Action
-            // Assert
-        }*/
+        #endregion Post Test Section
+
+        #region Delete Test Section
 
         [Test]
         public async Task UserController_DeleteUser_UserSuccessfullyDeleted()
@@ -267,6 +268,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }*/
 
+        #endregion Delete Test Section
+
+        #region Put Test Section
+
         [Test]
         public async Task UserController_UpdateUser_UserSuccessfullyUpdated()
         {
@@ -281,7 +286,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(actualUser, Is.Not.Null);
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(actualUser!.UserName, Is.EqualTo(myUsers[0].UserName));
             Assert.That(actualUser!.FirstName, Is.EqualTo(myUsers[0].FirstName));
             Assert.That(actualUser!.LastName, Is.EqualTo(myUsers[0].LastName));
@@ -323,12 +328,12 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             CollectionAssert.Contains(myContext.Users, myUsers[1]);
         }
 
-        /*[Test]
+        [Test]
         public async Task UserController_UpdateRange_NoUserFound()
         {
             // Arrange
             Uri putUri = new Uri("/api/User/UpdateRange", UriKind.Relative);
-            User[] putUsers = new User[] { new User(Guid.NewGuid(), "", "", ""), myUsers[1] };
+            User[] putUsers = new User[] { new User(Guid.NewGuid(), "A", "A", "A"), myUsers[1] };
 
             // Action
             HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, putUsers);
@@ -336,6 +341,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-        }*/
+        }
+
+        #endregion Put Test Section
     }
 }
