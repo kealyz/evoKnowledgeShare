@@ -121,7 +121,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
         [Test]
@@ -144,6 +144,21 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
+        public async Task UserController_GetUserRangeById_NoUsersFound()
+        {
+            // Arrange
+            Guid[] ids = { myUsers[0].Id, Guid.NewGuid() };
+            Uri postUri = new Uri($"/api/User/UserRange/{ids}", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, ids);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
         public async Task UserController_CreateUser_UserSuccessfullyCreated()
         {
             // Arrange
@@ -163,6 +178,14 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(actualUser!.LastName, Is.EqualTo(userDTO.LastName));
 
         }
+
+        /*[Test]
+        public async Task UserController_CreateUser_UserAlreadyExistInDatabase()
+        {
+            // Arrange
+            // Action
+            // Assert
+        }*/
 
         [Test]
         public async Task UserController_DeleteUser_UserSuccessfullyDeleted()
@@ -266,7 +289,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
-        public async Task UserController_UpdateUser_CreatedButDoesNotUpdate()
+        public async Task UserController_UpdateUser_NoUserFound()
         {
             // Arrange
             Uri putUri = new Uri("/api/User", UriKind.Relative);
@@ -277,7 +300,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(myContext.Users.Count, Is.EqualTo(myUsers.Count()));
         }
 
@@ -295,9 +318,24 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             CollectionAssert.Contains(myContext.Users, myUsers[0]);
             CollectionAssert.Contains(myContext.Users, myUsers[1]);
         }
+
+        /*[Test]
+        public async Task UserController_UpdateRange_NoUserFound()
+        {
+            // Arrange
+            Uri putUri = new Uri("/api/User/UpdateRange", UriKind.Relative);
+            User[] putUsers = new User[] { new User(Guid.NewGuid(), "", "", ""), myUsers[1] };
+
+            // Action
+            HttpResponseMessage response = await myClient.PutAsJsonAsync(putUri, putUsers);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }*/
     }
 }

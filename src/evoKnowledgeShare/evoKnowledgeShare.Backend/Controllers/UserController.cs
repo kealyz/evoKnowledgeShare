@@ -17,6 +17,8 @@ namespace evoKnowledgeShare.Backend.Controllers
             this.myUserService = myUserService;
         }
 
+        #region Get Section
+
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -39,7 +41,11 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch(KeyNotFoundException)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
 
         }
@@ -50,9 +56,24 @@ namespace evoKnowledgeShare.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUserByUserName(string username)
         {
-            User? result = myUserService.GetUserByUserName(username);
-            return result is not null ? Ok(result) : NotFound();
+            try
+            {
+                User? result = myUserService.GetUserByUserName(username);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
+
+        #endregion Get Section
+
+        #region Post Section
 
         [HttpPost("UserRange/{ids}")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -60,12 +81,19 @@ namespace evoKnowledgeShare.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUserRangeById([FromBody] IEnumerable<Guid> ids)
         {
-            IEnumerable<User> result = myUserService.GetUserRangeById(ids);
-            if (result.Any())
+            try 
             {
-                return Ok(result);
+                IEnumerable<User> results = myUserService.GetUserRangeById(ids);
+                return Ok(results);
             }
-            else return NotFound();
+            catch(KeyNotFoundException)
+            {
+                return NotFound("Users cannot be found.");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("")]
@@ -74,9 +102,24 @@ namespace evoKnowledgeShare.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateUserAsync([FromBody] UserDTO user)
         {
-            User? result = await myUserService.CreateUserAsync(new User(user));
-            return result is not null ? Created(nameof(CreateUserAsync), result) : BadRequest("User cannot be added.");
+            try 
+            {
+                User? result = await myUserService.CreateUserAsync(new User(user));
+                return Created(nameof(CreateUserAsync),result);
+            }
+            catch(ArgumentException)
+            {
+                return BadRequest("An item with the same key has already been added.");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
+
+        #endregion Post Section
+
+        #region Delete Section
 
         [HttpDelete("")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -92,7 +135,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
             catch (Exception)
             {
@@ -114,7 +157,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
             catch (Exception)
             {
@@ -122,15 +165,30 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
         }
 
+        #endregion Delete Section
+
+        #region Put Section
+
         [HttpPut("")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult UpdateUser([FromBody] UserDTO user)
+        public IActionResult UpdateUser([FromBody] User user)
         {
+            try
+            {
+                User result = myUserService.Update(user);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("User cannot be found.");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
 
-            User result = myUserService.Update(new User(user));
-            return result is not null ? Created(nameof(UpdateUser), result) : NotFound("User cannot be found.");
         }
 
         [HttpPut("UpdateRange")]
@@ -138,9 +196,22 @@ namespace evoKnowledgeShare.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult UpdateRange([FromBody] IEnumerable<User> users)
-        {
-            IEnumerable<User> result = myUserService.UpdateRange(users);
-            return result is not null ? Created(nameof(UpdateRange), result) : NotFound("Users cannot be found.");
+        {       
+            try
+            {
+                IEnumerable<User> result = myUserService.UpdateRange(users);
+                return Ok(result);
+            }
+            catch(KeyNotFoundException)
+            {
+                return NotFound("Users cannot be found.");
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
+
+        #endregion Put Section
     }
 }
