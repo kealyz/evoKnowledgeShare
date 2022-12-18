@@ -10,56 +10,90 @@ using System.Threading.Tasks;
 
 namespace evoKnowledgeShare.UnitTests.Repositories
 {
-    public class HistoryReposiotroyTests
+    public class HistoryReposiotroyTests: RepositoryTestBase<History>
     {
-        HistoryRepository myRepository = default!;
-        EvoKnowledgeDbContext myDbContext = default!;
+        private History[] myHistories = default!;
 
         [SetUp]
         public void SetUp()
         {
-            DbContextOptions dbContextOptions = new DbContextOptionsBuilder<EvoKnowledgeDbContext>()
-               .UseInMemoryDatabase($"InMemoryDB").Options;
-
-            myDbContext = new EvoKnowledgeDbContext(dbContextOptions);
             myRepository = new HistoryRepository(myDbContext);
+
+            myHistories = new History[]
+            {
+                new History(Guid.NewGuid(), "Activity param", new DateTimeOffset(),"0.1", Guid.NewGuid(), "PK001"),
+                new History(Guid.NewGuid(), "Activity param", new DateTimeOffset(),"0.1", Guid.NewGuid(), "PK001"),
+                new History(Guid.NewGuid(), "Activity param", new DateTimeOffset(),"0.1", Guid.NewGuid(), "PK001"),
+                new History(Guid.NewGuid(), "Activity param", new DateTimeOffset(),"0.1", Guid.NewGuid(), "PK001")
+            };
+
+            myDbContext.Histories.Add(myHistories[0]);
+            myDbContext.Histories.Add(myHistories[1]);
+            myDbContext.SaveChanges();
         }
 
         [Test]
         public async Task HistoryRepository_GetAll_ShouldReturnAll()
         {
-            var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
-                "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
-            await myRepository.AddAsync(entity);
-
             var entities = myRepository.GetAll();
 
-            Assert.That(entities.Contains(entity));
-        }
 
-        [Test]
-        public async Task HistoryRepository_AddAsync_ShouldAdd()
-        {
-            var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
-                "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
-
-            var createdEntity = await myRepository.AddAsync(entity);
-
-            Assert.That(myDbContext.Histories.Count(), Is.EqualTo(1));
-            Assert.That(Equals(entity.Id, createdEntity.Id));
-            Assert.That(myDbContext.Histories, Does.Contain(entity));
+            Assert.That(entities.Contains(myHistories[0]));
+            Assert.That(entities.Contains(myHistories[1]));
+            Assert.That(!entities.Contains(myHistories[2]));
         }
 
         [Test]
         public async Task HistoryRepository_GetById_ShouldReturnEntityById()
         {
-            var entity = new History(new Guid("27181d48-4b43-455b-ac50-39ae783a5b24"), "Activity param", new DateTimeOffset(),
-                "0.1", new Guid("6b40ce07-e6f3-4a16-a5ae-989cca872a57"), "PK001");
-            await myRepository.AddAsync(entity);
+            var enityById = myRepository.GetById(myHistories[0].Id);
 
-            var enityById = myRepository.GetById(entity.Id);
-
-            Assert.That(Equals(enityById, entity));
+            Assert.That(Equals(enityById, myHistories[0]));
         }
+
+        [Test]
+        public async Task HistoryRepository_AddAsync_ShouldAdd()
+        {
+            var entity = myHistories[2];
+
+            var createdEntity = await myRepository.AddAsync(entity);
+
+            Assert.That(Equals(entity.Id, createdEntity.Id));
+            Assert.That(myDbContext.Histories, Does.Contain(entity));
+        }
+        
+        [Test]
+        public void HistoryRepository_AddAsync_ShouldReturnWithArgumentException()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await myRepository.AddAsync(myHistories[0]);
+            });
+        }
+        
+        [Test]
+        public async Task HistoryRepository_AddRangeAsync_ShouldAddNotesToRepository()
+        {
+            IEnumerable<History> expectedNotes = new[] { myHistories[2], myHistories[3] };
+
+            var actualNotes = await myRepository.AddRangeAsync(expectedNotes);
+            myDbContext.SaveChanges();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualNotes, Does.Contain(myHistories[2]));
+                Assert.That(actualNotes, Does.Contain(myHistories[3]));
+            });
+        }
+        
+        [Test]
+        public void HistoryRepository_AddRangeAsync_ShouldReturnWithArgumentException()
+        {
+            IEnumerable<History> expectedHistories = new[] { myHistories[0], myHistories[1] };
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await myRepository.AddRangeAsync(expectedHistories);
+            });
+        } 
     }
 }

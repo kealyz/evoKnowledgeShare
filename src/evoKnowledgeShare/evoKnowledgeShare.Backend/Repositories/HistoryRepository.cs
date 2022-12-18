@@ -13,66 +13,91 @@ namespace evoKnowledgeShare.Backend.Repositories
         #region Add Section
         public override async Task<History> AddAsync(History entity)
         {
-            entity.Id = Guid.NewGuid();
-            await myDbContext.Histories.AddAsync(entity);
-            await myDbContext.SaveChangesAsync();
-            return myDbContext.Histories.FirstOrDefault(x => x.Id == entity.Id);
+            try
+            {
+                await myDbContext.Histories.AddAsync(entity);
+                myDbContext.SaveChanges();
+                return await Task.FromResult(entity);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
         }
 
-        public override Task<IEnumerable<History>> AddRangeAsync(IEnumerable<History> entities)
+        public override async Task<IEnumerable<History>> AddRangeAsync(IEnumerable<History> entities)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<History> histories = new();
+                foreach (History entity in entities)
+                {
+                    histories.Add(await AddAsync(entity));
+                }
+                myDbContext.SaveChanges();
+                return histories;
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
         }
         #endregion
 
         #region Get Section
         public override IEnumerable<History> GetAll()
         {
-            return myDbContext.Histories;
+            IEnumerable<History> history = myDbContext.Histories;
+            if (!history.Any())
+            {
+                return Enumerable.Empty<History>();
+            }
+            return history;
         }
 
         public override History GetById(Guid id)
         {
-            return myDbContext.Histories.FirstOrDefault(x => x.Id == id);
+            History? history = myDbContext.Histories.FirstOrDefault(x => x.Id == id);
+            return history;
         }
 
         public override IEnumerable<History> GetRangeById(IEnumerable<Guid> ids)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
         #endregion
 
         #region Remove Section
         public override void Remove(History entity)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void RemoveById(Guid id)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void RemoveRange(IEnumerable<History> entities)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
         #endregion
 
         #region Update Section
         public override History Update(History entity)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override IEnumerable<History> UpdateRange(IEnumerable<History> entities)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
         #endregion
     }
