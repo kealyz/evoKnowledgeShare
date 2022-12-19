@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using evoKnowledgeShare.Backend.DTO;
+
+using System.ComponentModel.DataAnnotations;
 
 namespace evoKnowledgeShare.Backend.Models
 {
@@ -14,6 +16,12 @@ namespace evoKnowledgeShare.Backend.Models
         {
             Id = id;
             Title = title;
+        }
+
+        public Topic(TopicDTO topicDTO)
+        {
+            Id = Guid.NewGuid();
+            Title = topicDTO.Title;
         }
 
         public bool Equals(Topic other)
