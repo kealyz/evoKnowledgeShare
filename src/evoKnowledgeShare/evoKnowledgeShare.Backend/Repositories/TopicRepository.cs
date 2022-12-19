@@ -1,5 +1,6 @@
 ﻿using evoKnowledgeShare.Backend.DataAccess;
 using evoKnowledgeShare.Backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
@@ -19,10 +20,8 @@ namespace evoKnowledgeShare.Backend.Repositories
         }
 
         public override async Task<IEnumerable<Topic>> AddRangeAsync(IEnumerable<Topic> entities) {
-            List<Topic> confirmationTopics = new List<Topic>();
-            foreach (Topic topic in entities)
-                confirmationTopics.Add(await AddAsync(topic));
-            return confirmationTopics;
+            await myDbContext.Topics.AddRangeAsync(entities);
+            return myDbContext.Topics.Where(topic => entities.Any(entity => entity == topic));
         }
         #endregion Add Section
 
@@ -90,12 +89,8 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override IEnumerable<Topic> UpdateRange(IEnumerable<Topic> entities)
         {
-            List<Topic> confirmationTopics = new List<Topic>();
-            foreach (Topic topic in entities)
-            {
-                confirmationTopics.Add(Update(topic));
-            }
-            return confirmationTopics;
+            myDbContext.Topics.UpdateRange(entities);
+            return myDbContext.Topics.Where(topic => entities.Any(entity => entity == topic));
         }
         #endregion Update Section
     }

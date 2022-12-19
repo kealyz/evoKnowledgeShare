@@ -21,18 +21,19 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 new Topic(Guid.NewGuid(), "Test Topic Title 4."),
                 new Topic(Guid.NewGuid(), "Test Topic Title 5."),
             };
+            myDbContext.AddAsync(myTopics);
         }
 
         #region Add Test Section
         [Test]
         public async Task Repository_AddAsync_ShouldAddOneNewTopic()
         {
-            Topic expectedTopic = new Topic(myTopics[1].Id, myTopics[1].Title);
+            Topic expectedTopic = new Topic(Guid.NewGuid(), "Add Async Test Title");
 
             Topic actualTopic = await myRepository.AddAsync(expectedTopic);
             await myRepository.SaveChangesAsync();
 
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(1));
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(myTopics.Count + 1));
             Assert.That(Equals(actualTopic, expectedTopic));
             Assert.That(myDbContext.Topics, Does.Contain(expectedTopic));
         }
@@ -40,15 +41,15 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public async Task Repository_AddRangeAsync_ShouldAddARangeOfTopicsAsync() {
             List<Topic> expectedTopics = new List<Topic>() {
-                new Topic(myTopics[1].Id, myTopics[1].Title),
-                new Topic(myTopics[2].Id, myTopics[2].Title),
-                new Topic(myTopics[3].Id, myTopics[3].Title),
+                new Topic(Guid.NewGuid(), "Add Range Async Test Title 1."),
+                new Topic(Guid.NewGuid(), "Add Range Async Test Title 2."),
+                new Topic(Guid.NewGuid(), "Add Range Async Test Title 3.")
             };
 
             IEnumerable<Topic> actualTopics = await myRepository.AddRangeAsync(expectedTopics);
 
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(expectedTopics.Count));
-            foreach (var topic in myTopics) {
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(expectedTopics.Count + myTopics.Count));
+            foreach (var topic in expectedTopics) {
                 Assert.That(actualTopics.Contains(topic));
                 Assert.That(myDbContext.Topics, Does.Contain(topic));
             }
@@ -59,10 +60,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         #region Get Test Section
         [Test]
         public void Repository_GetAll_ShouldGetAllTopics()
-        {   
-            myDbContext.Topics.AddRange(myTopics);
-            myDbContext.SaveChanges();
-
+        {
             IEnumerable<Topic> actualTopics = myRepository.GetAll().ToList();
 
             Assert.That(actualTopics.Count, Is.EqualTo(myTopics.Count));
@@ -74,8 +72,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         public void Repository_GetById_ShouldReturnATopicWithSpecificId()
         {
             Topic expectedTopic = new Topic(myTopics[2].Id, myTopics[2].Title);
-            myDbContext.Topics.AddRange(myTopics);
-            myDbContext.SaveChanges();
 
             Topic actualTopic = myRepository.GetById(expectedTopic.Id);
 
@@ -91,9 +87,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 new Topic(myTopics[4].Id, myTopics[4].Title)
             };
 
-            myDbContext.Topics.AddRange(myTopics);
-            myDbContext.SaveChanges();
-
             IEnumerable<Topic> actualTopics = myRepository.GetRangeById(expectedTopics.Take(3).Select(x => x.Id)).ToArray();
 
             foreach (var expectedTopic in expectedTopics)
@@ -108,9 +101,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         {
             Topic topicToRemove = new Topic(myTopics[0].Id, myTopics[0].Title);
 
-            myDbContext.Topics.AddRange(myTopics);
-            myDbContext.SaveChanges();
-
             myRepository.Remove(topicToRemove);
             myRepository.SaveChanges();
 
@@ -122,9 +112,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         public void Repository_RemoveById_ShouldRemoveOneTopicWithSpecificId() 
         {
             Topic topicToRemove = new Topic(myTopics[0].Id, myTopics[0].Title);
-
-            myDbContext.Topics.AddRange(myTopics);
-            myDbContext.SaveChanges();
 
             myRepository.RemoveById(topicToRemove.Id);
             myRepository.SaveChanges();
@@ -140,9 +127,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 new Topic(myTopics[0].Id, myTopics[0].Title),
                 new Topic(myTopics[3].Id, myTopics[3].Title),
             };
-
-            myRepository.AddRangeAsync(myTopics);
-            myRepository.SaveChanges();
 
             myRepository.RemoveRange(topicsToRemove.Take(2));
             myRepository.SaveChanges();
@@ -160,9 +144,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 new Topic(myTopics[3].Id, myTopics[3].Title),
             };
 
-            myRepository.AddRangeAsync(myTopics);
-            myRepository.SaveChanges();
-
             myRepository.RemoveRangeById(topicsToRemove.Take(2).Select(x => x.Id));
             myRepository.SaveChanges();
 
@@ -174,7 +155,7 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public async Task Repository_Update_ShouldUpdateOneTopic()
         {
-            var topic = new Topic(1, "Test Topic 1.");
+            var topic = new Topic(Guid.NewGuid(), "Test Topic 1.");
 
             await myRepository.AddAsync(topic);
             myRepository.SaveChanges();
@@ -195,12 +176,12 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         public void Repository_UpdateRange_ShouldUpdateARangeOfTopics()
         {
             var topics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
+                new Topic(Guid.NewGuid(), "Test Topic 1."),
+                new Topic(Guid.NewGuid(), "Test Topic 2."),
+                new Topic(Guid.NewGuid(), "Test Topic 3.")
             };
 
-            myRepository.AddRange(topics);
+            myRepository.AddRangeAsync(topics);
             myRepository.SaveChanges();
 
             List<string> newTopicTitles = new List<string> {

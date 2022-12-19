@@ -30,6 +30,8 @@ namespace evoKnowledgeShare.Backend
             services.AddControllers();
             Console.WriteLine("Adding services.");
             services.AddScoped<IRepository<User>, UserRepository>();
+            services.AddScoped<IRepository<History>, HistoryRepository>();
+            services.AddScoped<HistoryService>();
             services.AddScoped<UserService>();
             Console.WriteLine("Done.");
 

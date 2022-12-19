@@ -9,6 +9,8 @@ namespace evoKnowledgeShare.Backend.DataAccess
         {
         }
 
+        public DbSet<History> Histories { get; set; } = default!;
+
         public DbSet<User> Users { get; set; } = default!;
 
         public DbSet<Topic> Topics { get; set; } = default!;

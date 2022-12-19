@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using evoKnowledgeShare.Backend.DTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace evoKnowledgeShare.Backend.Models
 {
@@ -25,6 +26,20 @@ namespace evoKnowledgeShare.Backend.Models
             Version = version;
             NoteId = noteId;
             UserId = userId;
+        }
+
+        public History (HistoryDTO historyDTO)
+        {
+            Id = new Guid();
+            Activity = historyDTO.Activity;
+            ChangeDate = historyDTO.ChangeDate;
+            Version = historyDTO.Version;
+            NoteId = historyDTO.NoteId;
+            UserId = historyDTO.UserId;
+        }
+
+        public History()
+        {
         }
     }
 }
