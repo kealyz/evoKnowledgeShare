@@ -19,13 +19,7 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         #region Add Section
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="topic"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
+        /// <inheritdoc/>
         public override async Task<Topic> AddAsync(Topic topic)
         {
             if (topic == null)
@@ -47,13 +41,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="topics"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="OperationCanceledException"></exception>
+        /// <inheritdoc/>
         public override async Task<IEnumerable<Topic>> AddRangeAsync(IEnumerable<Topic> topics)
         {
             if (topics == null)
@@ -78,32 +66,19 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         #region Get Section
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override IEnumerable<Topic> GetAll()
         {
             return myDbContext.Topics;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        /// <exception cref="KeyNotFoundException"></exception>
+        /// <inheritdoc/>
         public override Topic GetById(Guid id)
         {
             return myDbContext.Topics.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ids"></param>
-        /// <returns>Empty if not found.</returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <inheritdoc/>
         public override IEnumerable<Topic> GetRangeById(IEnumerable<Guid> ids)
         {
             if (ids == null)
@@ -118,12 +93,7 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         #region Remove Section
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="topic"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="DbUpdateConcurrencyException"></exception>
+        /// <inheritdoc/>
         public override void Remove(Topic topic)
         {
             if (topic == null)
@@ -143,12 +113,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <exception cref="KeyNotFoundException"></exception>
-        /// <exception cref="DbUpdateConcurrencyException"></exception>
+        /// <inheritdoc/>
         public override void RemoveById(Guid id)
         {
             try
@@ -163,12 +128,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="topics"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="DbUpdateConcurrencyException"></exception>
+        /// <inheritdoc/>
         public override void RemoveRange(IEnumerable<Topic> topics)
         {
             if (topics == null)
@@ -190,13 +150,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ids"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="DbUpdateConcurrencyException"></exception>
-        /// <exception cref="KeyNotFoundException"></exception>
+        /// <inheritdoc/>
         public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
             if (ids == null)
@@ -228,12 +182,7 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         #region Update Section
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="topic"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <inheritdoc/>
         public override Topic Update(Topic topic)
         {
             if (topic == null)
@@ -247,12 +196,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             return topicUpdated;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="topics"></param>
-        /// <returns>Empty list if not found.</returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <inheritdoc/>
         public override IEnumerable<Topic> UpdateRange(IEnumerable<Topic> topics)
         {
             if (topics == null)
