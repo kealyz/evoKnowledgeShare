@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using evoKnowledgeShare.Backend.DTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace evoKnowledgeShare.Backend.Models
 {
@@ -23,6 +24,16 @@ namespace evoKnowledgeShare.Backend.Models
             FirstName = firstName;
             LastName = lastName;
         }
+
+        public User(UserDTO userDTO)
+        {
+            Id = new Guid();
+            UserName = userDTO.UserName;
+            FirstName = userDTO.FirstName;
+            LastName = userDTO.LastName;
+        }
+        
+        public User() { }
 
         public bool Equals(User other)
         {

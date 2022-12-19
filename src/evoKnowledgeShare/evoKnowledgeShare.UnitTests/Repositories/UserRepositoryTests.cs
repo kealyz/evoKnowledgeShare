@@ -6,192 +6,225 @@ namespace evoKnowledgeShare.UnitTests.Repositories
     [TestFixture]
     public class UserRepositoryTests : RepositoryTestBase<User>
     {
+        private List<User> myUsers;
+
         [SetUp]
         public void Setup()
         {
             myRepository = new UserRepository(myDbContext);
+            myUsers = new List<User>()
+            {
+                new User(Guid.NewGuid(),"TestUser","User","UserLastName"),
+                new User(Guid.NewGuid(),"TestUser2","User2","UserLastName2"),
+                new User(Guid.NewGuid(), "Helo", "szia", "")
+            };
+            myRepository.AddRangeAsync(myUsers);
         }
 
-        [Test]
-        public async Task UserRepository_AddAsync_DefaultPositive()
-        {
-            var user = new User(1, "Lajos", "Lali", "L");
-
-            await myRepository.AddAsync(user);
-            await myRepository.SaveChangesAsync();
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(1));
-
-        }
-
-        [Test]
-        public void UserRepository_AddRange_DefaultPositives()
-        {
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-
-            myRepository.AddRange(users);
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(2));
-
-        }
-
-        [Test]
-        public async Task UserRepository_AddRangeAsync_DefaultPositives()
-        {
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-
-            await myRepository.AddRangeAsync(users);
-            await myRepository.SaveChangesAsync();
-
-            Assert.That(myDbContext.Users.Count, Is.EqualTo(2));
-        }
+        #region Get Test Section
 
         [Test]
         public void UserRepository_GetAll_ReturnAllUsers()
         {
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-            myRepository.AddRange(users);
-            myRepository.SaveChanges();
+            IEnumerable<User> actualUsers = myRepository.GetAll();
 
-            var expectedUsers = myRepository.GetAll();
-
-            Assert.That(expectedUsers.Count(), Is.EqualTo(2));
-            for (int i = 0; i < users.Count(); i++)
-            {
-                Assert.That(myDbContext.Users, Does.Contain(users[i]));
-            }
+            Assert.That(actualUsers.Count, Is.EqualTo(myDbContext.Users.Count()));
+            CollectionAssert.AreEquivalent(myDbContext.Users, actualUsers);
         }
 
         [Test]
-        public async Task UserRepository_GetById_ReturnSpecificUser()
+        public void UserRepository_GetById_ReturnSpecificUserById()
         {
-            int id = 1;
-            var user = new User(id, "Lajos", "Lali", "l");
+            User user = myRepository.GetById(myUsers[0].Id);
+
+            Assert.That(myDbContext.Users, Does.Contain(user));
+        }
+
+        [Test]
+        public void UserRepository_GetById_ShouldThrowKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() => myRepository.GetById(Guid.NewGuid()));
+        }
+        
+        [Test]
+        public void UserRepository_GetRangeById_ReturnSpecificUsersByARangeOfId()
+        {
+            IEnumerable<User> actualUsers = myRepository.GetRangeById(myUsers.Select(x => x.Id).Take(2));
+
+            Assert.That(actualUsers.Count, Is.EqualTo(myDbContext.Users.Count()-1));
+            CollectionAssert.IsSupersetOf(myDbContext.Users, actualUsers);
+        }
+
+        [Test]
+        public void UserRepository_GetRangeById_ShouldThrowKeyNotFoundException()
+        {
+            Guid[] ids = new Guid[] { myUsers[0].Id, Guid.NewGuid() };
+
+            Assert.Throws<KeyNotFoundException>(() => myRepository.GetRangeById(ids));
+        }
+
+            #endregion Get Test Section
+
+            #region Add Test Section
+
+            [Test]
+        public async Task UserRepository_AddAsync_ShouldAddAUserAsync()
+        {
+            User user = new User(Guid.NewGuid(), "TestUser3", "User3", "UserLastName3");
+
             await myRepository.AddAsync(user);
-            myRepository.SaveChanges();
 
-            var expectedUser = myRepository.GetById(id);
-
-            Assert.That(myDbContext.Users.First(), Is.EqualTo(expectedUser));
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count() + 1));
+            Assert.That(myDbContext.Users, Does.Contain(user));
         }
 
         [Test]
-        public void UserRepository_GetRangeById_ReturnSpecificUsers()
+        public async Task UserRepository_AddAsync_ShouldThrowArgumentException()
         {
-            List<int> ids = new List<int>() { 1, 2 };
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-            myRepository.AddRange(users);
-            myRepository.SaveChanges();
-
-            var expectedUsers = myRepository.GetRangeById(ids);
-
-            Assert.That(expectedUsers, Does.Contain(users[0]));
-            Assert.That(expectedUsers, Does.Contain(users[1]));
-        }
-
-        /*[Test]
-        public async Task UserRepository_GetRangeByIdAsync_ReturnSpecificUsers()
-        {
-            List<int> ids = new List<int>() { 1, 2 };
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-            Repository.AddRange(users);
-            Repository.SaveChanges();
-
-            var expectedUsers = await Repository.GetRangeByIdAsync(ids);
-
-            Assert.That(expectedUsers, Does.Contain(users[0]));
-            Assert.That(expectedUsers, Does.Contain(users[1]));
-        }*/
-
-        [Test]
-        public async Task UserRepository_Remove_ShouldRemoveSpecificUser()
-        {
-            var user = new User(1, "Lajos", "Lali", "l");
-            await myRepository.AddAsync(user);
-            myRepository.SaveChanges();
-
-            myRepository.Remove(user);
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(0));
+            Assert.ThrowsAsync<ArgumentException>(() => myRepository.AddAsync(myUsers[0]));
         }
 
         [Test]
-        public async Task UserRepository_RemoveById_ShouldRemoveSpecificUserById()
+        public async Task UserRepository_AddRangeAsync_ShouldAddARangeOfUsersAsync()
         {
-            int id = 1;
-            var user = new User(id, "Lajos", "Lali", "l");
-            await myRepository.AddAsync(user);
+            IEnumerable<User> users = new List<User>() {
+                new User(Guid.NewGuid(), "TestUser3", "User3", "UserLastName3"),
+                new User(Guid.NewGuid(), "TestUser4", "User4", "UserLastName4") };
+
+            await myRepository.AddRangeAsync(users);
+
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count() + 2));
+            CollectionAssert.IsSupersetOf(myDbContext.Users, users);
+        }
+
+        [Test]
+        public async Task UserRepository_AddRangeAsync_ShouldThrowArgumentException()
+        {
+            User[] userList = new User[] { myUsers[0], myUsers[1] };
+
+            Assert.ThrowsAsync<ArgumentException>(() => myRepository.AddRangeAsync(userList));
+        }
+
+        #endregion Add Test Section
+
+        #region Remove Test Section
+
+        [Test]
+        public void UserRepository_Remove_ShouldRemoveSpecificUser()
+        {
+            myRepository.Remove(myUsers[1]);
             myRepository.SaveChanges();
 
-            myRepository.RemoveById(id);
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-1));
+            CollectionAssert.DoesNotContain(myDbContext.Users, myUsers[1]);
+        }
+
+        [Test]
+        public void UserRepository_Remove_ShouldThrowKeyNotFoundException()
+        {
+            User user = new User(Guid.NewGuid(), "A", "A", "A");
+
+            Assert.Throws<KeyNotFoundException>(() => myRepository.Remove(user));
+        }
+
+        [Test]
+        public void UserRepository_RemoveById_ShouldRemoveSpecificUserById()
+        {
+            myRepository.RemoveById(myUsers[1].Id);
             myRepository.SaveChanges();
 
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(0));
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-1));
+            CollectionAssert.DoesNotContain(myDbContext.Users, myUsers[1]);
+
+        }
+
+        [Test]
+        public void UserRepository_RemoveById_ShouldThrowKeyNotFoundException()
+        {
+            Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveById(Guid.NewGuid()));
         }
 
         [Test]
         public void UserRepository_RemoveRange_ShouldRemoveSpecificUsers()
         {
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-            myRepository.AddRange(users);
-            myRepository.SaveChanges();
+            IEnumerable<User> users = myUsers.Take(2);
 
             myRepository.RemoveRange(users);
             myRepository.SaveChanges();
 
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(0));
+            Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count()-2));
+            CollectionAssert.IsNotSupersetOf(myDbContext.Users, users);
+        }
+        [Test]
+        public void UserRepository_RemoveRange_ShouldThrowKeyNotFoundException()
+        {
+            User[] users = { new User(Guid.NewGuid(), "A", "A", "A"), myUsers[0] };
+            Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveRange(users));
         }
 
         [Test]
         public void UserRepository_RemoveRangeById_ShouldRemoveSpecificUsers()
         {
-            List<int> ids = new List<int>() { 1, 2 }; 
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-            myRepository.AddRange(users);
-            myRepository.SaveChanges();
+            IEnumerable<Guid> ids = myUsers.Select(x => x.Id).Take(2);
 
             myRepository.RemoveRangeById(ids);
-            myRepository.SaveChanges();
+            myDbContext.SaveChanges();
 
-            Assert.That(myDbContext.Users.Count(), Is.EqualTo(0));
+            Assert.That(myDbContext.Users.Count(), Is.EqualTo(myUsers.Count()-2));
+            CollectionAssert.DoesNotContain(myDbContext.Users, myUsers.Take(2));
         }
 
         [Test]
-        public async Task UserRepository_Update_ShouldUpdateSpecificUser()
+        public void UserRepository_RemoveRangeById_ShouldThrowKeyNotFoundException()
         {
-            var user = new User(1, "Lajos", "Lali", "l");
-            await myRepository.AddAsync(user);
-            myRepository.SaveChanges();
-            string newFirstName = "Lewis";
-            user.FirstName = newFirstName;
+            Guid[] ids = { Guid.NewGuid(), myUsers[0].Id };
+            Assert.Throws<KeyNotFoundException>(() => myRepository.RemoveRangeById(ids));
+        }
 
-            myRepository.Update(user);
-            myRepository.SaveChanges();
-            var updatedUser = myRepository.GetById(1);
+        #endregion Remove Test Section
 
-            Assert.That(updatedUser.FirstName, Is.EqualTo(newFirstName));
+        #region Update Test Section
+
+        [Test]
+        public void UserRepository_Update_ShouldUpdateSpecificUser()
+        {
+            myUsers[0].UserName = "Admin";
+
+            myRepository.Update(myUsers[0]);
+            myRepository.SaveChanges();
+
+            CollectionAssert.Contains(myDbContext.Users, myUsers[0]);
+        }
+
+        [Test]
+        public void UserRepository_Update_ShouldThrowKeyNotFoundException()
+        {
+            User user = new User(Guid.NewGuid(), "A", "A", "A");
+
+            Assert.Throws<KeyNotFoundException>(() => myRepository.Update(user));
         }
 
         [Test]
         public void UserRepository_UpdateRange_ShouldUpdateRange()
         {
-            var users = new List<User> { new User(1, "Lajos", "Lali", "l"), new User(2, "Steven", "Steve", "S") };
-            myRepository.AddRange(users);
-            myRepository.SaveChanges();
-            string newLastName = "W";
-
-            for(int i = 0; i < users.Count; i++)
+            for (int i = 0; i < myUsers.Count; i++)
             {
-                users[i].LastName = newLastName;
+                myUsers[i].UserName = $"Admin{i}";
             }
-            myRepository.UpdateRange(users);
+
+            myRepository.UpdateRange(myUsers);
             myRepository.SaveChanges();
 
-            for (int i = 0; i < users.Count; i++)
-            {
-                Assert.That(myDbContext.Users, Does.Contain(users[i]));
-            }
+            CollectionAssert.AreEquivalent(myDbContext.Users, myUsers);
         }
+
+        [Test]
+        public void UserRepository_UpdateRange_ShouldThrowKeyNotFoundException()
+        {
+            User[] users = { new User(Guid.NewGuid(),"A","A","A"), myUsers[0] };
+            Assert.Throws<KeyNotFoundException>(() => myRepository.UpdateRange(users));
+        }
+
+        #endregion Update Test Section
     }
 }
