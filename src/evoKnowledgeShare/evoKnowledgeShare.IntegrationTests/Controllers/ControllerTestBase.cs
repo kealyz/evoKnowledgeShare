@@ -39,11 +39,9 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [TearDown]
         public void TearDown()
         {
-            myClient.Dispose();
-
-            myTestServer.Dispose();
             myContext.Database.EnsureDeleted();
-
+            myClient.Dispose();
+            myTestServer.Dispose();
             myContext.Dispose();
         }
     }
