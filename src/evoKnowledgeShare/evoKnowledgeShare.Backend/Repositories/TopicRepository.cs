@@ -86,7 +86,8 @@ namespace evoKnowledgeShare.Backend.Repositories
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            return myDbContext.Topics.Where(x => ids.Any(y => x.Id == y));
+            IEnumerable<Topic> topics = myDbContext.Topics.Where(x => ids.Any(y => x.Id == y));
+            return topics.Any() ? topics : throw new KeyNotFoundException();
         }
 
         #endregion Get Section

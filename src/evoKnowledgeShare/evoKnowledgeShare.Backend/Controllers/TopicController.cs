@@ -45,6 +45,33 @@ namespace evoKnowledgeShare.Backend.Controllers
             {
                 return UnprocessableEntity();
             }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("ByTitle/{title}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetTopicsByTitle(string title)
+        {
+            try
+            {
+                return Ok(myTopicService.GetByTitle(title));
+            }
+            catch (ArgumentNullException)
+            {
+                return UnprocessableEntity();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
             catch (Exception)
             {
                 return BadRequest();

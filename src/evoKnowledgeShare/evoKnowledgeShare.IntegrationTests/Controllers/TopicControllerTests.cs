@@ -6,18 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace evoKnowledgeShare.IntegrationTests.Controllers {
+namespace evoKnowledgeShare.IntegrationTests.Controllers
+{
     [TestFixture]
-    public class TopicControllerTests : ControllerTestBase {
+    public class TopicControllerTests : ControllerTestBase
+    {
         private Topic[] myTopics = default!;
 
         [SetUp]
-        public void Setup() {
+        public void Setup()
+        {
             myTopics = new Topic[]
             {
                 new Topic(Guid.NewGuid(), "Test Topic Title 1."),
@@ -30,11 +34,12 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
 
         #region Get Test Section
         [Test]
-        public async Task TopicController_GetTopics_ReturnsAllTopics() {
+        public async Task TopicController_GetTopics_ReturnsAllTopics()
+        {
             // Arrange
             myContext.Topics.AddRange(myTopics);
             myContext.SaveChanges();
-            Uri getUri = new Uri("/api/Topic/Topics", UriKind.Relative);
+            Uri getUri = new Uri("/api/Topic/All", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -45,29 +50,31 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
         }
 
         [Test]
-        public async Task TopicController_GetTopics_NoTopicsFound() {
+        public async Task TopicController_GetTopics_NoTopicsFound()
+        {
             // Arrange
-            Uri getUri = new Uri("/api/Topic/Topics", UriKind.Relative);
+            Uri getUri = new Uri("/api/Topic/All", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test]
-        public async Task TopicController_GetTopicById_ReturnsTopicWithId1() {
+        public async Task TopicController_GetTopicById_ReturnsTopicWithId1()
+        {
             // Arrange
             myContext.Topics.AddRange(myTopics);
             myContext.SaveChanges();
-            Uri getUri = new Uri($"/api/Topic/TopicId/{myTopics[0].Id}", UriKind.Relative);
+            Uri getUri = new Uri($"/api/Topic/{myTopics[0].Id}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
-            Topic? actualTopic = await response.Content.ReadFromJsonAsync<Topic>();
+            Topic? actualTopic = await response.Content.ReadFromJsonAsync<Topic>(new System.Text.Json.JsonSerializerOptions() { PropertyNameCaseInsensitive = true }, default);
 
             // Assert
             Assert.That(actualTopic, Is.Not.Null);
@@ -77,9 +84,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
         }
 
         [Test]
-        public async Task TopicController_GetTopicById_NoTopicWithIdFound() {
+        public async Task TopicController_GetTopicById_NoTopicWithIdFound()
+        {
             // Arrange
-            Uri getUri = new Uri($"/api/Topic/TopicId/{myTopics[0].Id}", UriKind.Relative);
+            Uri getUri = new Uri($"/api/Topic/{myTopics[0].Id}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -90,11 +98,12 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
         }
 
         [Test]
-        public async Task TopicController_GetTopicsByTitle_ReturnsTopicsWithSpecificTitle() {
+        public async Task TopicController_GetTopicsByTitle_ReturnsTopicsWithSpecificTitle()
+        {
             // Arrange
             myContext.Topics.AddRange(myTopics);
             myContext.SaveChanges();
-            Uri getUri = new Uri($"/api/Topic/TopicTitle/{myTopics[0].Title}", UriKind.Relative);
+            Uri getUri = new Uri($"/api/Topic/ByTitle/{myTopics[0].Title}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -104,12 +113,12 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
             // Assert
             Assert.That(actualTopics, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            foreach (var actualTopic in actualTopics)
-                Assert.That(actualTopic.Title, Is.EqualTo(myTopics[0].Title));
+            CollectionAssert.AreEqual(actualTopics, myContext.Topics.Where(t => t.Title == myTopics[0].Title));
         }
 
         [Test]
-        public async Task TopicController_GetTopicsByTitle_NoTopicWithTitleFound() {
+        public async Task TopicController_GetTopicsByTitle_NoTopicWithTitleFound()
+        {
             // Arrange
             Uri getUri = new Uri($"/api/Topic/TopicTitle/{myTopics[0].Title}", UriKind.Relative);
 
@@ -124,7 +133,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
 
         #region Add Test Section
         [Test]
-        public async Task TopicController_CreateTopic_TopicSuccessfullyCreated() {
+        public async Task TopicController_CreateTopic_TopicSuccessfullyCreated()
+        {
             // Arrange
             Uri postUri = new Uri("/api/Topic/Create", UriKind.Relative);
             TopicDTO topicDTO = new TopicDTO(myTopics[0].Title);
@@ -147,7 +157,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers {
 
         #region Update Test Section
         [Test]
-        public async Task TopicController_UpdateTopic_TopicSuccessfullyUpdated() {
+        public async Task TopicController_UpdateTopic_TopicSuccessfullyUpdated()
+        {
             // Arrange
             Uri postUri = new Uri("/api/Topic/Create", UriKind.Relative);
             Topic topic = new Topic(myTopics[0].Id, myTopics[0].Title);

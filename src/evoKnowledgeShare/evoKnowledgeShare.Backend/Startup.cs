@@ -33,11 +33,9 @@ namespace evoKnowledgeShare.Backend
             services.AddScoped<IRepository<User>, UserRepository>();
             services.AddScoped<IRepository<Note>, NoteRepository>();
             services.AddScoped<IRepository<Topic>, TopicRepository>();
-            //services.AddScoped<IRepository<History>, HistoryRepository>();
+            services.AddScoped<IRepository<History>, HistoryRepository>();
 
             Console.WriteLine("Adding services.");
-            services.AddScoped<IRepository<User>, UserRepository>();
-            services.AddScoped<IRepository<History>, HistoryRepository>();
             services.AddScoped<HistoryService>();
             services.AddScoped<UserService>();
             services.AddScoped<NoteService>();

@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace evoKnowledgeShare.Backend.Models
 {
@@ -12,6 +13,7 @@ namespace evoKnowledgeShare.Backend.Models
         [Required]
         public string Title { get; set; }
 
+        [JsonConstructor]
         public Topic(Guid id, string title)
         {
             Id = id;

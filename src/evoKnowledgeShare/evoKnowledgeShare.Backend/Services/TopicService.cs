@@ -29,17 +29,25 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="id"></param>
         /// <returns>The topic that matches the id.</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         public Topic GetById(Guid id) => myRepository.GetById(id);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="title"></param>
-        /// <returns>Empty list if not found.</returns>
+        /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         public IEnumerable<Topic> GetByTitle(string title)
         {
-            return title is null ? throw new ArgumentNullException(nameof(title)) : myRepository.GetAll().Where(x => x.Title == title).ToList();
+            if(title == null)
+            {
+                throw new ArgumentNullException(nameof(title));
+            }
+
+            IEnumerable<Topic> topics = myRepository.GetAll().Where(x => x.Title == title).ToList();
+            return topics.Any() ? topics : throw new KeyNotFoundException();
         }
 
         /// <summary>
@@ -48,6 +56,7 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="ids"></param>
         /// <returns>Empty list if not found.</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         public IEnumerable<Topic> GetRangeById(IEnumerable<Guid> ids) => myRepository.GetRangeById(ids);
 
         #endregion Get Section

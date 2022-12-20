@@ -42,6 +42,7 @@ namespace evoKnowledgeShare.Backend.Interfaces
         /// <param name="ids"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         IEnumerable<T> GetRangeById(IEnumerable<Guid> ids);
 
         /// <summary>
