@@ -42,6 +42,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             myContext.Database.EnsureDeleted();
             myClient.Dispose();
             myTestServer.Dispose();
+
             myContext.Dispose();
         }
     }

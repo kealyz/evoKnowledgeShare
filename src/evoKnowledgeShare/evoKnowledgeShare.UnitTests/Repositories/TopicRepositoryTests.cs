@@ -21,7 +21,8 @@ namespace evoKnowledgeShare.UnitTests.Repositories
                 new Topic(Guid.NewGuid(), "Test Topic Title 4."),
                 new Topic(Guid.NewGuid(), "Test Topic Title 5."),
             };
-            myDbContext.AddAsync(myTopics);
+            myDbContext.Topics.AddRange(myTopics);
+            myDbContext.SaveChanges();
         }
 
         #region Add Test Section
@@ -99,13 +100,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         [Test]
         public void Repository_Remove_ShouldRemoveOneTopic()
         {
-            Topic topicToRemove = new Topic(myTopics[0].Id, myTopics[0].Title);
-
-            myRepository.Remove(topicToRemove);
+            myRepository.Remove(myTopics[0]);
             myRepository.SaveChanges();
 
             Assert.That(myDbContext.Topics.Count(), Is.EqualTo(myTopics.Count - 1));
-            Assert.That(myDbContext.Topics.All(x => !x.Equals(topicToRemove)));
+            Assert.That(myDbContext.Topics.All(x => !x.Equals(myTopics[0])));
         }
 
         [Test]
@@ -124,8 +123,8 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         public void Repository_RemoveRange_ShouldRemoveARangeOfTopics()
         {
             List<Topic> topicsToRemove = new List<Topic>() {
-                new Topic(myTopics[0].Id, myTopics[0].Title),
-                new Topic(myTopics[3].Id, myTopics[3].Title),
+                myTopics[0],
+                myTopics[1],
             };
 
             myRepository.RemoveRange(topicsToRemove.Take(2));

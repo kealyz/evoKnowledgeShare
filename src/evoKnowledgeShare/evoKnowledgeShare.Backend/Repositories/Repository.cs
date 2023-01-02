@@ -3,7 +3,7 @@ using evoKnowledgeShare.Backend.Interfaces;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
-    public abstract class Repository<T> : IRepository<T> where T : class
+    public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected readonly EvoKnowledgeDbContext myDbContext;
 
@@ -14,39 +14,51 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         #region Add section
 
-        public abstract Task<T> AddAsync(T entity);
+        /// <inheritdoc/>
+        public abstract Task<TEntity> AddAsync(TEntity entity);
 
-        public abstract Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
+        /// <inheritdoc/>
+        public abstract Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities);
 
         #endregion Add section
 
         #region Get section
 
-        public abstract IEnumerable<T> GetAll();
+        /// <inheritdoc/>
+        public abstract IEnumerable<TEntity> GetAll();
 
-        public abstract T GetById(Guid id);
+        
+        /// <inheritdoc/>
+        public abstract TEntity GetById(Guid id);
 
-        public abstract IEnumerable<T> GetRangeById(IEnumerable<Guid> ids);
+        /// <inheritdoc/>
+        public abstract IEnumerable<TEntity> GetRangeById(IEnumerable<Guid> ids);
 
         #endregion Get section
 
         #region Remove section
 
-        public abstract void Remove(T entity);
+        /// <inheritdoc/>
+        public abstract void Remove(TEntity entity);
 
+        /// <inheritdoc/>
         public abstract void RemoveById(Guid id);
 
-        public abstract void RemoveRange(IEnumerable<T> entities);
+        /// <inheritdoc/>
+        public abstract void RemoveRange(IEnumerable<TEntity> entities);
 
+        /// <inheritdoc/>
         public abstract void RemoveRangeById(IEnumerable<Guid> ids);
 
         #endregion Remove section
 
         #region Update section
 
-        public abstract T Update(T entity);
+        /// <inheritdoc/>
+        public abstract TEntity Update(TEntity entity);
 
-        public abstract IEnumerable<T> UpdateRange(IEnumerable<T> entities);
+        /// <inheritdoc/>
+        public abstract IEnumerable<TEntity> UpdateRange(IEnumerable<TEntity> entities);
 
         #endregion Update section
 
