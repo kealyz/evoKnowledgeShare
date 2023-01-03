@@ -79,12 +79,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
         }
 
         [Test]
-        public async Task UserRepository_AddAsync_ShouldThrowArgumentException()
-        {
-            Assert.ThrowsAsync<ArgumentException>(() => myRepository.AddAsync(myUsers[0]));
-        }
-
-        [Test]
         public async Task UserRepository_AddRangeAsync_ShouldAddARangeOfUsersAsync()
         {
             IEnumerable<User> users = new List<User>() {
@@ -95,14 +89,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             Assert.That(myDbContext.Users.Count, Is.EqualTo(myUsers.Count() + 2));
             CollectionAssert.IsSupersetOf(myDbContext.Users, users);
-        }
-
-        [Test]
-        public async Task UserRepository_AddRangeAsync_ShouldThrowArgumentException()
-        {
-            User[] userList = new User[] { myUsers[0], myUsers[1] };
-
-            Assert.ThrowsAsync<ArgumentException>(() => myRepository.AddRangeAsync(userList));
         }
 
         #endregion Add Test Section

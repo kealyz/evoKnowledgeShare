@@ -24,8 +24,14 @@ namespace evoKnowledgeShare.Backend.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUsers()
         {
-            IEnumerable<User> result = myUserService.Get();
-            return result.Any() ? Ok(result) : Problem(statusCode: StatusCodes.Status404NotFound, title: "No users found.");
+            try
+            {
+                return myUserService.GetAll().Count() > 0 ? Ok(myUserService.GetAll()) : NotFound(myUserService.GetAll());
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("{id}")]
@@ -38,6 +44,10 @@ namespace evoKnowledgeShare.Backend.Controllers
             {
                 User result = myUserService.GetUserById(id);
                 return Ok(result);
+            }
+            catch(ArgumentNullException)
+            {
+                return UnprocessableEntity();
             }
             catch(KeyNotFoundException)
             {
@@ -60,6 +70,10 @@ namespace evoKnowledgeShare.Backend.Controllers
             {
                 User? result = myUserService.GetUserByUserName(username);
                 return Ok(result);
+            }
+            catch (ArgumentNullException)
+            {
+                return UnprocessableEntity();
             }
             catch (KeyNotFoundException)
             {
@@ -87,7 +101,11 @@ namespace evoKnowledgeShare.Backend.Controllers
                 IEnumerable<User> results = myUserService.GetUserRangeById(ids);
                 return Ok(results);
             }
-            catch(KeyNotFoundException)
+            catch (ArgumentNullException)
+            {
+                return UnprocessableEntity();
+            }
+            catch (KeyNotFoundException)
             {
                 return NotFound("Users cannot be found.");
             }
@@ -108,9 +126,13 @@ namespace evoKnowledgeShare.Backend.Controllers
                 User? result = await myUserService.CreateUserAsync(new User(user));
                 return Created(nameof(CreateUserAsync),result);
             }
-            catch(ArgumentException)
+            catch (ArgumentNullException)
             {
-                return BadRequest("An item with the same key has already been added.");
+                return UnprocessableEntity();
+            }
+            catch (OperationCanceledException)
+            {
+                return Conflict();
             }
             catch (Exception)
             {
@@ -134,6 +156,10 @@ namespace evoKnowledgeShare.Backend.Controllers
                 myUserService.Remove(user);
                 return NoContent();
             }
+            catch (ArgumentNullException)
+            {
+                return UnprocessableEntity();
+            }
             catch (KeyNotFoundException)
             {
                 return NotFound("User cannot be found.");
@@ -155,6 +181,10 @@ namespace evoKnowledgeShare.Backend.Controllers
             {
                 myUserService.RemoveUserById(id);
                 return NoContent();
+            }
+            catch (ArgumentNullException)
+            {
+                return UnprocessableEntity();
             }
             catch (KeyNotFoundException)
             {
@@ -182,6 +212,10 @@ namespace evoKnowledgeShare.Backend.Controllers
                 User result = myUserService.Update(user);
                 return Ok(result);
             }
+            catch (ArgumentNullException)
+            {
+                return UnprocessableEntity();
+            }
             catch (KeyNotFoundException)
             {
                 return NotFound("User cannot be found.");
@@ -205,7 +239,11 @@ namespace evoKnowledgeShare.Backend.Controllers
                 IEnumerable<User> result = myUserService.UpdateRange(users);
                 return Ok(result);
             }
-            catch(KeyNotFoundException)
+            catch (ArgumentNullException)
+            {
+                return UnprocessableEntity();
+            }
+            catch (KeyNotFoundException)
             {
                 return NotFound("Users cannot be found.");
             }

@@ -8,10 +8,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
-using System.Text.Json.Nodes;
-using evoKnowledgeShare.Backend.Interfaces;
-using evoKnowledgeShare.Backend.Services;
-using Moq;
 
 namespace evoKnowledgeShare.IntegrationTests.Controllers
 {
