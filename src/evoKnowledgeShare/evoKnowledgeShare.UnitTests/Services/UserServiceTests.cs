@@ -34,7 +34,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public void UserService_GetAllUsers_ShouldReturnAll()
         {
-            var users = myUserService.Get();
+            var users = myUserService.GetAll();
 
             Assert.That(users, Is.EquivalentTo(myUsers));
         }
@@ -48,7 +48,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public void UserService_GetUserById_ShouldThrowArgumentException()
+        public void UserService_GetUserById_ShouldThrowKeyNotFoundException()
         {
             myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Throws<KeyNotFoundException>();
 
@@ -64,7 +64,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
-        public void UserService_GetUserByUserName_ShouldThrowArgumentException()
+        public void UserService_GetUserByUserName_ShouldThrowKeyNotFoundException()
         {
             myRepositoryMock.Setup(x => x.GetAll()).Throws<KeyNotFoundException>();
 
@@ -84,17 +84,6 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             myRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(y => y.Equals(user))), Times.Once);
             Assert.That(actualUser, Is.EqualTo(user));
-        }
-
-        [Test]
-        public async Task UserService_CreateUserAsync_ShouldThrowArgumentException()
-        {
-            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).Throws<ArgumentException>();
-
-            Assert.ThrowsAsync<ArgumentException>(async()=>
-            {
-                await myUserService.CreateUserAsync(myUsers[0]);
-            });
         }
 
         #endregion Add Test Section

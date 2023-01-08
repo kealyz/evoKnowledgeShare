@@ -1,62 +1,83 @@
 ﻿using evoKnowledgeShare.Backend.DataAccess;
 using evoKnowledgeShare.Backend.Models;
+using evoKnowledgeShare.Backend.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
     public class UserRepository : Repository<User>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbContext"></param>
         public UserRepository(EvoKnowledgeDbContext dbContext) : base(dbContext)
         { }
 
         #region Get Section
 
+        /// <inheritdoc/>
         public override IEnumerable<User> GetAll() => myDbContext.Users;
+
+        /// <inheritdoc/>
         public override User GetById(Guid id) => myDbContext.Users.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
+
+        /// <inheritdoc/>
         public override IEnumerable<User> GetRangeById(IEnumerable<Guid> ids)
         {
-            List<User> resultUsers = new();
-            resultUsers.AddRange(myDbContext.Users.Where(x => ids.Any(y => x.Id.Equals(y))));
+            if(ids == null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
 
-            if (resultUsers.Count() != ids.Count())
-                throw new KeyNotFoundException();
-            return resultUsers;
-
+            IEnumerable<User> users = myDbContext.Users.Where(x => ids.Any(y => x.Id == y)).ToList();
+            return users.Count() == ids.Count() ? users : throw new KeyNotFoundException();
         }
 
         #endregion Get Section
 
         #region Add Section
 
+        /// <inheritdoc/>
         public override async Task<User> AddAsync(User entity)
         {
+            if(entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            entity.Id = Guid.NewGuid();
             try
             {
-                await myDbContext.Users.AddAsync(entity);
+                EntityEntry<User> addedUser = await myDbContext.Users.AddAsync(entity);
                 await myDbContext.SaveChangesAsync();
-                return await Task.FromResult(entity);
+                return addedUser.Entity;
             }
-            catch (ArgumentException)
+            catch (OperationCanceledException ex)
             {
-                throw new ArgumentException("An item with the same key has already been added.");
+                throw;
             }
         }
 
+        /// <inheritdoc/>
         public override async Task<IEnumerable<User>> AddRangeAsync(IEnumerable<User> entities)
         {
+            if (entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+
             try
             {
-                List<User> resultUsers = new();
-                foreach (User entity in entities)
-                {
-                    resultUsers.Add(await AddAsync(entity));
-                }
+                await myDbContext.Users.AddRangeAsync(entities);
                 await myDbContext.SaveChangesAsync();
-                return resultUsers;
+                return myDbContext.Users.Where(user => entities.Any(entity => entity == user)).ToList();
             }
-            catch (ArgumentException)
+            catch (OperationCanceledException ex)
             {
-                throw new ArgumentException("An item with the same key has already been added.");
+                //TODO: Log(ex)
+                throw;
             }
         }
 
@@ -64,76 +85,118 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         #region Remove Section
 
+        /// <inheritdoc/>
         public override void Remove(User entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             try
             {
                 myDbContext.Users.Remove(entity);
                 myDbContext.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 throw new KeyNotFoundException();
             }
         }
 
+        /// <inheritdoc/>
         public override void RemoveById(Guid id)
         {
             User user = myDbContext.Users.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
-            myDbContext.Remove(user);
+            myDbContext.Users.Remove(user);
             myDbContext.SaveChanges();
         }
 
+        /// <inheritdoc/>
         public override void RemoveRange(IEnumerable<User> entities)
         {
+            if(entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+
             try
             {
                 myDbContext.Users.RemoveRange(entities);
                 myDbContext.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 throw new KeyNotFoundException();
             }
         }
 
+        /// <inheritdoc/>
         public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
-            foreach (Guid id in ids)
+            if(ids == null)
             {
-                User? user = myDbContext.Users.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
-                myDbContext.Users.Remove(user);
+                throw new ArgumentNullException();
             }
-            myDbContext.SaveChanges();
+
+            try
+            {
+                IEnumerable<User> usersToRemove = myDbContext.Users.Where(x => ids.Any(y => x.Id == y)).ToList();
+
+                if (ids.Count() != usersToRemove.Count())
+                {
+                    throw new KeyNotFoundException();
+                }
+                foreach (User userToRemove in usersToRemove)
+                {
+                    myDbContext.Users.Remove(userToRemove);
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw;
+            }
         }
 
         #endregion Remove Section
 
         #region Update Section
 
-        public override User Update(User user_in)
+        /// <inheritdoc/>
+        public override User Update(User entity)
         {
+            if(entity == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             try
             {
-                User user = myDbContext.Users.Update(user_in).Entity;
+                User user = myDbContext.Users.Update(entity).Entity;
                 myDbContext.SaveChanges();
                 return user;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 throw new KeyNotFoundException();
             }
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<User> UpdateRange(IEnumerable<User> entities)
         {
+            if(entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+            
             try
             {
                 myDbContext.Users.UpdateRange(entities);
                 myDbContext.SaveChanges();
-                return myDbContext.Users.Where(user => entities.Any(entity => entity == user));
+                return myDbContext.Users.Where(user => entities.Any(entity => entity == user)).ToList();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 throw new KeyNotFoundException();
             }

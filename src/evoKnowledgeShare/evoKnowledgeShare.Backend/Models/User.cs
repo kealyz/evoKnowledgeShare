@@ -1,5 +1,6 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace evoKnowledgeShare.Backend.Models
 {
@@ -17,6 +18,7 @@ namespace evoKnowledgeShare.Backend.Models
         [Required]
         public string LastName { get; set; }
 
+        [JsonConstructor]
         public User(Guid id, string userName, string firstName, string lastName)
         {
             Id = id;
@@ -27,7 +29,7 @@ namespace evoKnowledgeShare.Backend.Models
 
         public User(UserDTO userDTO)
         {
-            Id = new Guid();
+            Id = Guid.NewGuid();
             UserName = userDTO.UserName;
             FirstName = userDTO.FirstName;
             LastName = userDTO.LastName;
@@ -40,9 +42,9 @@ namespace evoKnowledgeShare.Backend.Models
             if (GetHashCode() == other.GetHashCode())
             {
                 return Id == other.Id &&
-                UserName == other.UserName &&
-                FirstName == other.FirstName &&
-                LastName == other.LastName;
+                UserName.Equals(other.UserName, StringComparison.InvariantCulture) &&
+                FirstName.Equals(other.FirstName, StringComparison.InvariantCulture) &&
+                LastName.Equals(other.LastName, StringComparison.InvariantCulture);
             }
 
             return false;
