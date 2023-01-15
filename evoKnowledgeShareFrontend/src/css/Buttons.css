@@ -1,0 +1,30 @@
+.function-buttons{
+    margin: 0px 5px;
+    transition: 0.5s;
+    border: none;
+    outline: none;
+    padding: 0px 10px;
+}
+
+.function-buttons.info{
+    background-color: #0d6efd;
+    color: white;
+}
+.function-buttons.info:hover{
+    border-radius: 10px 0px 10px 0px;
+}
+
+.function-buttons.warning{
+    background-color: #ffc107;
+}
+.function-buttons.warning:hover{
+    border-radius: 10px 0px 10px 0px;
+}
+
+.function-buttons.danger{
+    background-color: #dc3545;
+    color: white;
+}
+.function-buttons.danger:hover{
+    border-radius: 10px 0px 10px 0px;
+}

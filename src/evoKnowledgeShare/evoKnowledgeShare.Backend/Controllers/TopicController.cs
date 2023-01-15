@@ -17,6 +17,12 @@ namespace evoKnowledgeShare.Backend.Controllers
             this.myTopicService = myTopicService;
         }
 
+        [HttpGet("Test")]
+        public IActionResult GetTest()
+        {
+            return Ok(new Topic[] { new Topic(Guid.NewGuid(), "Title1"), new Topic(Guid.NewGuid(), "Title2") });
+        }
+
         [HttpGet("All")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
