@@ -43,6 +43,15 @@ namespace evoKnowledgeShare.Backend
             services.AddScoped<HistoryService>();
             Console.WriteLine("Done.");
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "AllowOrigin",
+                                  policy =>
+                                  {
+                                      policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                                  });
+            });
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
@@ -56,7 +65,7 @@ namespace evoKnowledgeShare.Backend
             }
 
             app.UseRouting();
-
+            app.UseCors("AllowOrigin");
             app.UseHttpsRedirection();
             app.UseAuthorization();
 
