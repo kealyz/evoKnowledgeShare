@@ -15,11 +15,11 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             myRepository = new NoteRepository(myDbContext);
             myNotes = new Note[]
             {
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 1, DateTimeOffset.Now, "C# fejlesztes", "Kezdo C#"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 2, DateTimeOffset.Now, "Java fejlesztes", "Halado java"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 3, DateTimeOffset.Now, "Assembly fejlesztes", "KYS"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 4, DateTimeOffset.Now, "Python fejlesztes", "Kigyo vagy"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 5, DateTimeOffset.Now, "C es C++ fejlesztes", "Kezd az alapoktol")
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "C# fejlesztes", "Kezdo C#"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Java fejlesztes", "Halado java"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Assembly fejlesztes", "KYS"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Python fejlesztes", "Kigyo vagy"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "C es C++ fejlesztes", "Kezd az alapoktol")
             };
             myDbContext.Notes.Add(myNotes[0]);
             myDbContext.Notes.Add(myNotes[1]);
