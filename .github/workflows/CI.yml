@@ -6,16 +6,19 @@ on:
     - main
     - Dev
     - Features/*
+    - refactor
   pull_request:
     branches:
     - main
     - Dev
     - Features/*
+    - refactor
   pull_request_target:
     branches:
     - main
     - Dev
     - Features/*
+    - refactor
   workflow_dispatch:
 
 jobs:
