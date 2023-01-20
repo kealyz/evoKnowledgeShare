@@ -60,7 +60,7 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
             columns.push(i)
         }
     }
-
+  
     return (
         <div>
             <Table striped bordered hover>
