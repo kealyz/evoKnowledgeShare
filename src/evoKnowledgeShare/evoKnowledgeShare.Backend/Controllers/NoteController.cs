@@ -70,7 +70,7 @@ namespace evoKnowledgeShare.Backend.Controllers
             }
         }
         [HttpGet("byTopicId/{topicId}")]
-        public IActionResult GetRangeByTopicId(int topicId)
+        public IActionResult GetRangeByTopicId(Guid topicId)
         {
             try
             {

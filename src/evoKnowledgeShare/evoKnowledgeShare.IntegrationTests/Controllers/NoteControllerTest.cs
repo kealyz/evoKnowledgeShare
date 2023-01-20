@@ -20,11 +20,11 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
             myNotes = new Note[]
             {
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 1, DateTimeOffset.Now, "C# fejlesztes", "Kezdo C#"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 2, DateTimeOffset.Now, "Java fejlesztes", "Halado java"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 3, DateTimeOffset.Now, "Assembly fejlesztes", "KYS"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 4, DateTimeOffset.Now, "Python fejlesztes", "Kigyo vagy"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 5, DateTimeOffset.Now, "C es C++ fejlesztes", "Kezd az alapoktol")
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "C# fejlesztes", "Kezdo C#"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Java fejlesztes", "Halado java"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Assembly fejlesztes", "KYS"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Python fejlesztes", "Kigyo vagy"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "C es C++ fejlesztes", "Kezd az alapoktol")
             };
             myContext.Notes.AddRange(myNotes);
             myContext.SaveChanges();
@@ -118,7 +118,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         [Test]
         public async Task NoteController_GetByTopicId_ShouldReturnWitNotFound()
         {
-            Uri getUri = new($"/api/Note/byTopicId/{8}", UriKind.Relative);
+            Uri getUri = new($"/api/Note/byTopicId/{Guid.NewGuid()}", UriKind.Relative);
 
             // Action
             HttpResponseMessage response = await myClient.GetAsync(getUri);
@@ -183,7 +183,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
             // Arrange
             Uri postUri = new("/api/Note/", UriKind.Relative);
-            Note note = new(Guid.NewGuid(), Guid.NewGuid(), 6, DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
+            Note note = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
 
             // Action
             HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, note);
@@ -201,7 +201,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Arrange
             Uri postUri = new("/api/Note/", UriKind.Relative);
             Guid guid = myNotes[2].NoteId;
-            Note note = new(guid, Guid.NewGuid(), 6, DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
+            Note note = new(guid, Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
 
             // Action
             HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, note);
@@ -215,8 +215,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         {
             // Arrange
             Uri postUri = new("/api/Note/createRange", UriKind.Relative);
-            Note note = new(Guid.NewGuid(), Guid.NewGuid(), 6, DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
-            Note note2 = new(Guid.NewGuid(), Guid.NewGuid(), 7, DateTimeOffset.Now, "Word szovegfejlesztes", "Word");
+            Note note = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
+            Note note2 = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Word szovegfejlesztes", "Word");
 
             IEnumerable<Note> notes= new[] { note, note2 };
 
@@ -331,7 +331,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Action
             Uri updateUri = new("/api/Note/", UriKind.Relative);
-            Note note=new(Guid.NewGuid(), Guid.NewGuid(), 1, DateTimeOffset.Now, "Paint ismeretek megszerzese", "Paint>Photoshop");
+            Note note=new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Paint ismeretek megszerzese", "Paint>Photoshop");
 
             HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, note);
             Note? actualNote = await updateResponse.Content.ReadFromJsonAsync<Note>();

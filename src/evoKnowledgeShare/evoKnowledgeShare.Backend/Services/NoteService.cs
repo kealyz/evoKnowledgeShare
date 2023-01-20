@@ -41,7 +41,7 @@ namespace evoKnowledgeShare.Backend.Services
         ///<summary>Returns all <see cref="Note"/> type datas from database if their topicId match with the given.</summary>
         /// <param name="id"></param>
         /// <returns>A list of <see cref="Note"/> if found, else an empty list</returns>
-        public IEnumerable<Note> GetRangeBytTopicId(int id)
+        public IEnumerable<Note> GetRangeBytTopicId(Guid id)
         {
             IEnumerable<Note> notes = myRepository.GetAll().Where(x => x.TopicId == id).ToList();
             if (!notes.Any())
