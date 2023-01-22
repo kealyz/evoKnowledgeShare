@@ -6,6 +6,7 @@ namespace evoKnowledgeShare.Backend.Services
     public class NoteService
     {
         private readonly IRepository<Note> myRepository;
+        private string notePathRoot = Environment.GetEnvironmentVariable("USERPROFILE") + "\\NoteTesting\\"!;
 
         public NoteService(IRepository<Note> repository)
         {
@@ -78,16 +79,45 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="note"></param>
         /// <returns>Task <see cref="Note"/> if added</returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<Note> AddAsync(Note note)
+        public async Task<Note> AddAsync(Note note, string mdRaw) 
         {
-            try
-            {
+            try {
                 await myRepository.AddAsync(note);
+                CreateNoteFolder(note.NoteId.ToString(), mdRaw);
                 return await Task.FromResult(note);
-            }
-            catch (ArgumentException)
-            {
+            } catch (ArgumentException) {
                 throw;
+            }
+        }
+
+        private void CreateNoteFolder(string guid, string mdRaw) 
+        {
+            // Create Note Folder
+            Directory.CreateDirectory(notePathRoot + guid);
+
+            // Create Latest Version File
+            StreamWriter writer = null;
+
+            try {
+                writer = new StreamWriter(notePathRoot + guid + "\\LatestVersion.txt");
+                writer.WriteLine("1.0.0");
+            } catch (Exception) {
+                throw;
+            } finally {
+                writer.Close();
+            }
+
+            // Create Version Subfolder
+            Directory.CreateDirectory(notePathRoot + guid + "\\1.0.0");
+
+            // Create MD File
+            try {
+                writer = new StreamWriter(notePathRoot + guid + "\\1.0.0" + "\\document.md");
+                writer.Write(mdRaw);
+            } catch (Exception) {
+                throw;
+            } finally {
+                writer.Close();
             }
         }
 
@@ -113,12 +143,18 @@ namespace evoKnowledgeShare.Backend.Services
         ///<summary>Removes a <see cref="Note"/> entity from the database.</summary>
         /// <param name="note"></param>
         /// <exception cref="KeyNotFoundException"></exception>
-        public void Remove(Note note) => myRepository.Remove(note);
+        public void Remove(Note note) {
+            myRepository.Remove(note);
+            Directory.Delete(notePathRoot + note.NoteId, true);
+        }
 
         ///<summary>Removes a specific <see cref="Note"/> from the database identified by it's noteId</summary>
         /// <param name="id"></param>
         /// <exception cref="KeyNotFoundException"></exception>
-        public void RemoveById(Guid id) => myRepository.RemoveById(id);
+        public void RemoveById(Guid id) {
+            myRepository.RemoveById(id);
+            Directory.Delete(notePathRoot + id, true);
+        }
         #endregion Remove Section
 
         #region Modify Section
@@ -127,7 +163,64 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="note"></param>
         /// <returns>A <see cref="Note"/> if modified</returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public Note Update(Note note) => myRepository.Update(note);
+        public Note Update(Note note, string mdRaw, int incrementSize) {
+            UpdateNoteFolder(note.NoteId.ToString(), mdRaw, incrementSize);
+            return myRepository.Update(note);
+        }
+
+        private void UpdateNoteFolder(string guid, string mdRaw, int incrementSize) {
+            // Get Latest Version
+            string[] versionRaw;
+            int[] version = new int[3];
+            string newVersion;
+            StreamReader reader = null;
+            StreamWriter writer = null;
+
+            try {
+                reader = new StreamReader(notePathRoot + guid + "\\LatestVersion.txt");
+                versionRaw = reader.ReadLine()!.Split('.');
+                version[0] = int.Parse(versionRaw[0]);
+                version[1] = int.Parse(versionRaw[1]);
+                version[2] = int.Parse(versionRaw[2]);
+            } catch (Exception) {
+                throw;
+            } finally {
+                reader.Close();
+            }
+
+            // Update Version
+            switch (incrementSize) {
+                case 1: version[0]++; break;
+                case 2: version[1]++; break;
+                case 3: version[2]++; break;
+                default:
+                    break;
+            }
+
+            newVersion = version[0] + "." + version[1] + "." + version[2];
+
+            try {
+                writer = new StreamWriter(notePathRoot + guid + "\\LatestVersion.txt");
+                writer.WriteLine(newVersion);
+            } catch (Exception) {
+                throw;
+            } finally {
+                writer.Close();
+            }
+
+            // Create New Version Subfolder
+            Directory.CreateDirectory(notePathRoot + guid + "\\" + newVersion);
+
+            // Create MD File
+            try {
+                writer = new StreamWriter(notePathRoot + guid + "\\" + newVersion + "\\document.md");
+                writer.Write(mdRaw);
+            } catch (Exception) {
+                throw;
+            } finally {
+                writer.Close();
+            }
+        }
         #endregion Modify Section
     }
 }
