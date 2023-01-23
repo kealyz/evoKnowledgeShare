@@ -130,7 +130,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                Note result = await myNoteService.AddAsync(noteMdDTO.note, noteMdDTO.mdRaw);
+                Note result = await myNoteService.AddAsync(noteMdDTO.Note, noteMdDTO.MdRaw);
                 return Created(nameof(AddAsync), result);
             }
             catch (ArgumentException)
@@ -211,7 +211,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
-                Note result = myNoteService.Update(noteMdDto.note, noteMdDto.mdRaw, noteMdDto.incrementSize);
+                Note result = myNoteService.Update(noteMdDto.Note, noteMdDto.MdRaw, noteMdDto.IncrementSize);
                 return Ok(result);
             }
             catch (KeyNotFoundException)

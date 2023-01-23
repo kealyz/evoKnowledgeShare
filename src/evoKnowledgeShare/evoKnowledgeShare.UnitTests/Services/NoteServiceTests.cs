@@ -165,7 +165,7 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Note>())).ReturnsAsync(myNotes[0]);
 
-            Note actualNote = await myNoteService.AddAsync(myNotes[0]);
+            Note actualNote = await myNoteService.AddAsync(myNotes[0], "");
 
             myRepositoryMock.Verify(x => x.AddAsync(It.Is<Note>(y => y.Equals(myNotes[0]))), Times.Once);
             Assert.That(actualNote, Is.EqualTo(myNotes[0]));
@@ -176,7 +176,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Note>())).Throws(new ArgumentException());
             Assert.ThrowsAsync<ArgumentException>(async() =>
             {
-                await myNoteService.AddAsync(myNotes[0]);
+                await myNoteService.AddAsync(myNotes[0], "");
             });
         }
         [Test]
@@ -268,7 +268,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         {
             myRepositoryMock.Setup(x => x.Update(It.IsAny<Note>())).Returns(myNotes[0]);
 
-            Note actualNote = myNoteService.Update(myNotes[0]);
+            Note actualNote = myNoteService.Update(myNotes[0], "", 1);
 
             myRepositoryMock.Verify(x => x.Update(It.Is<Note>(y => y.Equals(myNotes[0]))), Times.Once);
             Assert.That(actualNote, Is.EqualTo(myNotes[0]));
@@ -281,7 +281,7 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             Assert.Throws<KeyNotFoundException>(() =>
             {
-                myNoteService.Update(new Note());
+                myNoteService.Update(new Note(), "", 1);
             });
         }
         #endregion Modify Section
