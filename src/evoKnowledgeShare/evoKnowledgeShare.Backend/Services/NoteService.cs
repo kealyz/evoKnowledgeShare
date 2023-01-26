@@ -6,7 +6,7 @@ namespace evoKnowledgeShare.Backend.Services
     public class NoteService
     {
         private readonly IRepository<Note> myRepository;
-        private string notePathRoot = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE")!, "NoteTesting");
+        private string notePathRoot = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory)!, "NoteTesting");  
 
         public NoteService(IRepository<Note> repository)
         {
