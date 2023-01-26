@@ -6,6 +6,7 @@ import IObject from '../interfaces/IObject';
 
 import '../css/Buttons.css';
 import ITopic from '../interfaces/ITopic';
+import { useLocation } from 'react-router-dom';
 
 /*function instanceOfTopic(object: any): object is ITopic {
     type asd = keyof ITopic;
@@ -17,7 +18,10 @@ import ITopic from '../interfaces/ITopic';
 
 function RemoveContent(guid: string, type?: string) {
     alert("Removing data with id [" + guid + "]");
-    let url = "api/RemoveById/?id=" + guid;
+    let url = "api/"+location.pathname+"/Delete/"+guid;
+
+    console.log(location.pathname);
+    console.log(url)
     //fetch(url, { method: 'DELETE' });
     //window.location.reload(false);
 }
@@ -51,6 +55,9 @@ interface RenderTableProps {
 }
 
 export default function RenderTable(props: RenderTableProps): JSX.Element {
+
+    const location = useLocation();
+
     console.log("got it")
     console.log(props.topics)
 
@@ -60,7 +67,7 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
             columns.push(i)
         }
     }
-  
+
     return (
         <div>
             <Table striped bordered hover>

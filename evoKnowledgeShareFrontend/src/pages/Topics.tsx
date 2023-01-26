@@ -20,7 +20,7 @@ export default function Topics() {
     const [topics, setTopics] = useState<ITopic[]>([])
 
     useEffect(() => {
-        fetch('https://localhost:5145/api/Topic/Test')
+        fetch('https://localhost:5145/api/Topic/All')
             .then(res => res.json())
             .then(json => {
                 setTopics(json)
