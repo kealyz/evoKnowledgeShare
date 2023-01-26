@@ -20,8 +20,8 @@ namespace evoKnowledgeShare.UnitTests.Services
             myNoteService = new NoteService(myRepositoryMock.Object);
             myNotes = new Note[]
            {
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 1, DateTimeOffset.Now, "C# fejlesztes", "Kezdo C#"),
-                new Note(Guid.NewGuid(), Guid.NewGuid(), 2, DateTimeOffset.Now, "Java fejlesztes", "Halado java")
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "C# fejlesztes", "Kezdo C#"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Java fejlesztes", "Halado java")
            };
         }
         #region Get Section
@@ -105,7 +105,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         public void NoteService_getRangeByTopicId_ShouldReturnEmptyList()
         {
             myRepositoryMock.Setup(x => x.GetAll()).Returns(myNotes);
-            var actualNotes = myNoteService.GetRangeBytTopicId(11);
+            var actualNotes = myNoteService.GetRangeBytTopicId(Guid.NewGuid());
 
             Assert.That(actualNotes.Count, Is.EqualTo(0));
             Assert.That(actualNotes, Is.Empty);

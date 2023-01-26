@@ -7,7 +7,7 @@ namespace evoKnowledgeShare.Backend.Models
     public class Note
     {
         public Note() { }
-        public Note(Guid noteId, Guid userId, int topicId, DateTimeOffset createdAt, string description, string title)
+        public Note(Guid noteId, Guid userId, Guid topicId, DateTimeOffset createdAt, string description, string title)
         {
             NoteId = noteId;
             UserId = userId;
@@ -32,7 +32,7 @@ namespace evoKnowledgeShare.Backend.Models
         public Guid UserId { get; set; }
 
         [Required]
-        public int TopicId { get; set; }
+        public Guid TopicId { get; set; }
 
         [Required]
         public DateTimeOffset CreatedAt { get; set; }
