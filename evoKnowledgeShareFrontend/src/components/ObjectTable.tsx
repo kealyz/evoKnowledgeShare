@@ -81,7 +81,7 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
                     {props.topics.map((row: IObject) =>
                         <tr key={row.id}>
                             {Object.entries(row).map((value: [string, any]) => {
-                                return (<td key={value[1]}>
+                                return (<td key={value[0]}>
                                     {value[1]}
                                 </td>)
                             })}

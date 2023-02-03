@@ -35,6 +35,12 @@ export const Editor = () => {
     setValue(e);
   }
 
+  //1. alaklami mentés
+  //n. mentés
+  //Give this a title
+  //editor felett szürke new note input (unsaved)
+  //minor change
+
   return (
     <>
       {modalIsShown && (
@@ -54,7 +60,7 @@ export const Editor = () => {
           value={value}
           onChange={onChange}
         />
-        <Button onClick={showModalHandler}>Modal test</Button>
+        <Button className='mt-3' onClick={showModalHandler}>Modal test</Button>
       </motion.div>
     </>
   )
