@@ -1,7 +1,11 @@
-import React from 'react'
+import PureCSSComponent from "../components/PureCSSComponent";
+import MaterialTreeView from "../components/MaterialTreeView";
+import HistoryDropDownButton from "../components/HistoryDropdownButton"
 
 export const Home = () => {
   return (
-    <div>Home</div>
-  )
+    //<PureCSSComponent></PureCSSComponent>
+    <MaterialTreeView></MaterialTreeView>
+    //<HistoryDropdownButton></HistoryDropdownButton>
+  );
 }

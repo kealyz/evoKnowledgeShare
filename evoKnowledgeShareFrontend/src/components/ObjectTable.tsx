@@ -6,6 +6,7 @@ import IObject from '../interfaces/IObject';
 
 import '../css/Buttons.css';
 import ITopic from '../interfaces/ITopic';
+import React from 'react';
 
 /*function instanceOfTopic(object: any): object is ITopic {
     type asd = keyof ITopic;
