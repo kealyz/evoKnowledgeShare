@@ -17,13 +17,14 @@ import { useLocation } from 'react-router-dom';
 }*/
 
 function RemoveContent(guid: string, type?: string) {
-    alert("Removing data with id [" + guid + "]");
-    let url = "api/"+location.pathname+"/Delete/"+guid;
+    //alert("Removing data with id [" + guid + "]");
+    //let url = "api/"+location.pathname+"/Delete/"+guid;
 
-    console.log(location.pathname);
-    console.log(url)
+    //console.log(location.pathname);
+    //console.log(url)
     //fetch(url, { method: 'DELETE' });
     //window.location.reload(false);
+    
 }
 
 function UpdateContent(guid: string) {
@@ -40,19 +41,27 @@ function ViewContent(guid: string) {
     //window.location.reload(false);
 }
 
-function GetActionButtons(guid: string) {
+function GetActionButtons(guid: string, props: RenderTableProps) {
     return (
         <div>
-            <button className="function-buttons info" onClick={() => ViewContent(guid)}>View</button>
-            <button className="function-buttons warning" onClick={() => UpdateContent(guid)}>Edit</button>
-            <button className="function-buttons danger" onClick={() => RemoveContent(guid,)}>Delete</button>
+            {props.viewable && <button className="function-buttons info" onClick={() => ViewContent(guid)}>View</button>}
+            {props.editable && <button className="function-buttons warning" onClick={() => UpdateContent(guid)}>Edit</button>}
+            {props.deletable && <button className="function-buttons danger" onClick={() => props.onDelete && props.onDelete(guid)}>Delete</button>}
         </div>
     );
 }
 
 interface RenderTableProps {
-    topics: IObject[]
+    topics: IObject[],
+    deletable?: boolean,
+    editable?: boolean,
+    viewable?: boolean,
+    action?: boolean,
+    onDelete?: (guid: string) => void,
+    onEdit?: (guid: string) => void,
+    onView?: (guid: string) => void
 }
+
 
 export default function RenderTable(props: RenderTableProps): JSX.Element {
 
@@ -86,7 +95,8 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
                                 </td>)
                             })}
                             <td>
-                                {GetActionButtons(row.id)}
+                                {/*TODO:Check action is exist*/}
+                                {GetActionButtons(row.id, props)}
                             </td>
                         </tr>
                     )}

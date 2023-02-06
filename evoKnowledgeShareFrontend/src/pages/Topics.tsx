@@ -20,29 +20,22 @@ export default function Topics() {
     const [topics, setTopics] = useState<ITopic[]>([])
 
     useEffect(() => {
-        fetch('https://localhost:5145/api/Topic/All')
-            .then(res => res.json())
-            .then(json => {
-                setTopics(json)
-            })
-    }, [])
+        const data = async () => {
+          const res = await fetch('https://localhost:5145/api/Topic/All');
+          const json = await res.json();
+          setTopics(json);
+        }
+        data();
+      }, [])
 
-    function GetTopics() {
-        return (
-            <>
-                {topics?.map((topic) => {
-                    return (<p key={topic.id}>{topic.id}: {topic.title}</p>)
-                })}
-            </>
-        )
-    }
-
+    
     return (
         <>
             <motion.div variants={containerVariant}
-                    initial="hidden"
-                    animate="visible">
-                <RenderTable topics={topics} />
+                initial="hidden"
+                animate="visible">
+                <h1 className='mb-4'>Topic operations</h1>
+                <RenderTable topics={topics} viewable={true} editable={true} deletable={false} />
             </motion.div>
         </>
     )

@@ -19,29 +19,21 @@ export const Histories = () => {
   }
 
   useEffect(() => {
-    fetch('https://localhost:5145/api/History')
-      .then(res => res.json())
-      .then(json => {
-        setHistories(json)
-      })
+    const data = async () => {
+      const res = await fetch('https://localhost:5145/api/History');
+      const json = await res.json();
+      setHistories(json);
+    }
+    data();
   }, [])
-
-  function GetTopics() {
-    return (
-      <>
-        {histories?.map((history) => {
-          return (<p key={history.id}>{history.id}: {history.activity}</p>)
-        })}
-      </>
-    )
-  }
 
   return (
     <>
       <motion.div variants={containerVariant}
         initial="hidden"
         animate="visible">
-        <RenderTable topics={histories} />
+        <h1 className='mb-4'>History operations</h1>
+        <RenderTable topics={histories} viewable={false} editable={false} deletable={false}/>
       </motion.div>
     </>
   )
