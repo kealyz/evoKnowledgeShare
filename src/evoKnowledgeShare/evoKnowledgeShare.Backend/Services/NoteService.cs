@@ -96,29 +96,15 @@ namespace evoKnowledgeShare.Backend.Services
                 Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid));
 
             // Create Latest Version File
-            StreamWriter writer = null;
-
-            try {
-                writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt"));
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt")))
                 writer.WriteLine("1.0.0");
-            } catch (Exception) {
-                throw;
-            } finally {
-                writer?.Close();
-            }
 
             // Create Version Subfolder
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "1.0.0"));
 
             // Create MD File
-            try {
-                writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "1.0.0", "document.md"));
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "1.0.0", "document.md")))
                 writer.Write(mdRaw);
-            } catch (Exception) {
-                throw;
-            } finally {
-                writer?.Close();
-            }
         }
 
         /// <param name="note"></param>
@@ -175,22 +161,15 @@ namespace evoKnowledgeShare.Backend.Services
             string[] versionRaw;
             int[] version = new int[3];
             string newVersion;
-            StreamReader reader = null;
-            StreamWriter writer = null;
 
             if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt")))
                 return;
 
-            try {
-                reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt"));
+            using (StreamReader reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt"))) {
                 versionRaw = reader.ReadLine()!.Split('.');
                 version[0] = int.Parse(versionRaw[0]);
                 version[1] = int.Parse(versionRaw[1]);
                 version[2] = int.Parse(versionRaw[2]);
-            } catch (Exception) {
-                throw;
-            } finally {
-                reader?.Close();
             }
 
             // Update Version
@@ -204,27 +183,15 @@ namespace evoKnowledgeShare.Backend.Services
 
             newVersion = version[0] + "." + version[1] + "." + version[2];
 
-            try {
-                writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt"));
+            using(StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt")))
                 writer.WriteLine(newVersion);
-            } catch (Exception) {
-                throw;
-            } finally {
-                writer?.Close();
-            }
 
             // Create New Version Subfolder
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, newVersion));
 
             // Create MD File
-            try {
-                writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, newVersion, "document.md"));
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, newVersion, "document.md")))
                 writer.Write(mdRaw);
-            } catch (Exception) {
-                throw;
-            } finally {
-                writer?.Close();
-            }
         }
         #endregion Modify Section
     }

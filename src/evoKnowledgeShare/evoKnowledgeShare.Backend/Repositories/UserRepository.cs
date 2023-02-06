@@ -54,7 +54,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 await myDbContext.SaveChangesAsync();
                 return addedUser.Entity;
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
                 throw;
             }
@@ -74,7 +74,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 await myDbContext.SaveChangesAsync();
                 return myDbContext.Users.Where(user => entities.Any(entity => entity == user)).ToList();
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
                 //TODO: Log(ex)
                 throw;
@@ -98,7 +98,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 myDbContext.Users.Remove(entity);
                 myDbContext.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 throw new KeyNotFoundException();
             }
@@ -125,7 +125,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 myDbContext.Users.RemoveRange(entities);
                 myDbContext.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 throw new KeyNotFoundException();
             }
@@ -152,7 +152,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                     myDbContext.Users.Remove(userToRemove);
                 }
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 throw;
             }
@@ -176,7 +176,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 myDbContext.SaveChanges();
                 return user;
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 throw new KeyNotFoundException();
             }
@@ -196,7 +196,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 myDbContext.SaveChanges();
                 return myDbContext.Users.Where(user => entities.Any(entity => entity == user)).ToList();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 throw new KeyNotFoundException();
             }

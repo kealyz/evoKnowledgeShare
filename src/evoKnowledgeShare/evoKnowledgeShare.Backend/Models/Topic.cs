@@ -51,5 +51,10 @@ namespace evoKnowledgeShare.Backend.Models
         {
             return HashCode.Combine(Id, Title);
         }
+
+        public Topic() {
+            Id = Guid.Empty;
+            Title = "";
+        }
     }
 }

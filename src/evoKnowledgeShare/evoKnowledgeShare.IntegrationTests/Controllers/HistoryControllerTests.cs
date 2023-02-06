@@ -87,12 +87,12 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Uri postUri = new Uri("/api/History", UriKind.Relative);
             HistoryDTO historyDTO = new HistoryDTO("Activity param", new DateTimeOffset(), "0.1",Guid.NewGuid(), "PK001");
 
-            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, historyDTO);
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, historyDTO)!;
             History history = await response.Content.ReadFromJsonAsync<History>();
 
             Assert.That(history, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-            Assert.That(historyDTO.Activity, Is.EqualTo(history.Activity));
+            Assert.That(historyDTO.Activity, Is.EqualTo(history!.Activity));
         }
 
         [Test]
