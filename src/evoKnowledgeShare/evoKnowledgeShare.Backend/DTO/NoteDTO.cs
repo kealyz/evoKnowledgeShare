@@ -5,7 +5,7 @@ namespace evoKnowledgeShare.Backend.DTO
 {
     public class NoteDTO
     {
-        public NoteDTO(Guid noteId, Guid userId, int topicId, DateTimeOffset createdAt, string description, string title)
+        public NoteDTO(Guid noteId, Guid userId, Guid topicId, DateTimeOffset createdAt, string description, string title)
         {
             NoteId = noteId;
             UserId = userId;
@@ -21,7 +21,7 @@ namespace evoKnowledgeShare.Backend.DTO
         public Guid UserId { get; set; }
 
         [Required]
-        public int TopicId { get; set; }
+        public Guid TopicId { get; set; }
 
         [Required]
         public DateTimeOffset CreatedAt { get; set; }
