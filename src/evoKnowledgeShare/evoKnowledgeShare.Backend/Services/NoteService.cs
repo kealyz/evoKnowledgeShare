@@ -96,15 +96,19 @@ namespace evoKnowledgeShare.Backend.Services
                 Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid));
 
             // Create Latest Version File
-            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt")))
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt"))) 
+            {
                 writer.WriteLine("1.0.0");
+            }
 
             // Create Version Subfolder
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "1.0.0"));
 
             // Create MD File
-            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "1.0.0", "document.md")))
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "1.0.0", "document.md"))) 
+            {
                 writer.Write(mdRaw);
+            }
         }
 
         /// <param name="note"></param>
@@ -183,15 +187,17 @@ namespace evoKnowledgeShare.Backend.Services
 
             newVersion = version[0] + "." + version[1] + "." + version[2];
 
-            using(StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt")))
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, "LatestVersion.txt"))) {
                 writer.WriteLine(newVersion);
+            }
 
             // Create New Version Subfolder
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, newVersion));
 
             // Create MD File
-            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, newVersion, "document.md")))
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "NoteTesting", guid, newVersion, "document.md"))) {
                 writer.Write(mdRaw);
+            }
         }
         #endregion Modify Section
     }

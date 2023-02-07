@@ -65,9 +65,9 @@ namespace evoKnowledgeShare.Backend.Models
 
         public User() {
             Id = Guid.Empty;
-            UserName = "";
-            FirstName = "";
-            LastName = "";
+            UserName = String.Empty;
+            FirstName = String.Empty;
+            LastName = String.Empty;
         }
     }
 }

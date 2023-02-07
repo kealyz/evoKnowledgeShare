@@ -73,8 +73,8 @@ namespace evoKnowledgeShare.Backend.Models
             UserId = Guid.Empty;
             TopicId = Guid.Empty;
             CreatedAt = DateTimeOffset.MinValue;
-            Description = "";
-            Title = "";
+            Description = String.Empty;
+            Title = String.Empty;
         }
     }
 }

@@ -57,8 +57,13 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override History GetById(Guid id)
         {
-            History? history = myDbContext.Histories.FirstOrDefault(x => x.Id == id);
-            return history!;
+            try {
+                History? history = myDbContext.Histories.FirstOrDefault(x => x.Id == id);
+                return history;
+            } catch (Exception) {
+                throw new KeyNotFoundException();
+            }
+            
         }
 
         public override IEnumerable<History> GetRangeById(IEnumerable<Guid> ids)

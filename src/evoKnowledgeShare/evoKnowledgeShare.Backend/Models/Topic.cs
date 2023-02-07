@@ -54,7 +54,7 @@ namespace evoKnowledgeShare.Backend.Models
 
         public Topic() {
             Id = Guid.Empty;
-            Title = "";
+            Title = String.Empty;
         }
     }
 }

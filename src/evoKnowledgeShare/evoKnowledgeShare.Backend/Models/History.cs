@@ -42,11 +42,11 @@ namespace evoKnowledgeShare.Backend.Models
 
         public History() {
             Id = Guid.Empty;
-            Activity = "";
+            Activity = String.Empty;
             ChangeDate = DateTimeOffset.MinValue;
-            Version = "";
+            Version = String.Empty;
             NoteId = Guid.Empty;
-            UserId = "";
+            UserId = String.Empty;
         }
     }
 }
