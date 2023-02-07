@@ -41,16 +41,6 @@ function ViewContent(guid: string) {
     //window.location.reload(false);
 }
 
-function GetActionButtons(guid: string, props: RenderTableProps) {
-    return (
-        <div>
-            {props.viewable && <button className="function-buttons info" onClick={() => ViewContent(guid)}>View</button>}
-            {props.editable && <button className="function-buttons warning" onClick={() => UpdateContent(guid)}>Edit</button>}
-            {props.deletable && <button className="function-buttons danger" onClick={() => props.onDelete && props.onDelete(guid)}>Delete</button>}
-        </div>
-    );
-}
-
 interface RenderTableProps {
     topics: IObject[],
     deletable?: boolean,
@@ -62,10 +52,17 @@ interface RenderTableProps {
     onView?: (guid: string) => void
 }
 
+function GetActionButtons(guid: string, props: RenderTableProps) {
+    return (
+        <div>
+            {props.viewable && <button className="function-buttons info" onClick={() => ViewContent(guid)}>View</button>}
+            {props.editable && <button className="function-buttons warning" onClick={() => UpdateContent(guid)}>Edit</button>}
+            {props.deletable && <button className="function-buttons danger" onClick={() => props.onDelete && props.onDelete(guid)}>Delete</button>}
+        </div>
+    );
+}
 
 export default function RenderTable(props: RenderTableProps): JSX.Element {
-
-    const location = useLocation();
 
     console.log("got it")
     console.log(props.topics)
