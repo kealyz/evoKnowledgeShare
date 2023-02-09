@@ -24,7 +24,7 @@ function RemoveContent(guid: string, type?: string) {
     //console.log(url)
     //fetch(url, { method: 'DELETE' });
     //window.location.reload(false);
-    
+
 }
 
 function UpdateContent(guid: string) {
@@ -42,34 +42,24 @@ function ViewContent(guid: string) {
 }
 
 interface RenderTableProps {
-    topics: IObject[],
-    deletable?: boolean,
-    editable?: boolean,
-    viewable?: boolean,
-    action?: boolean,
+    data: IObject[],
     onDelete?: (guid: string) => void,
-    onEdit?: (guid: string) => void,
-    onView?: (guid: string) => void
+    onEdit?: (guid: string) => void
 }
 
 function GetActionButtons(guid: string, props: RenderTableProps) {
     return (
         <div>
-            {props.viewable && <button className="function-buttons info" onClick={() => ViewContent(guid)}>View</button>}
-            {props.editable && <button className="function-buttons warning" onClick={() => UpdateContent(guid)}>Edit</button>}
-            {props.deletable && <button className="function-buttons danger" onClick={() => props.onDelete && props.onDelete(guid)}>Delete</button>}
+            {props.onEdit && <button className="function-buttons warning" onClick={() => props.onEdit && props.onEdit(guid)}>Edit</button>}
+            {props.onDelete && <button className="function-buttons danger" onClick={() => props.onDelete && props.onDelete(guid)}>Delete</button>}
         </div>
     );
 }
 
 export default function RenderTable(props: RenderTableProps): JSX.Element {
-
-    console.log("got it")
-    console.log(props.topics)
-
     let columns: string[] = [];
-    if (props.topics) {
-        for (let i in props.topics[0]) {
+    if (props.data) {
+        for (let i in props.data[0]) {
             columns.push(i)
         }
     }
@@ -80,21 +70,23 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
                 <thead>
                     <tr>
                         {columns.map((header: string) => <th key={header}>{header.charAt(0).toUpperCase() + header.slice(1)}</th>)}
-                        <th>Actions</th>
+                        {(props.onDelete || props.onEdit) && <th>Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
-                    {props.topics.map((row: IObject) =>
+                    {props.data && props.data.map((row: IObject) =>
                         <tr key={row.id}>
                             {Object.entries(row).map((value: [string, any]) => {
                                 return (<td key={value[0]}>
                                     {value[1]}
                                 </td>)
                             })}
-                            <td>
-                                {/*TODO:Check action is exist*/}
-                                {GetActionButtons(row.id, props)}
-                            </td>
+                            {(props.onDelete || props.onEdit) &&
+                                <td>
+
+                                    {GetActionButtons(row.id, props)}
+                                </td>
+                            }
                         </tr>
                     )}
                 </tbody>

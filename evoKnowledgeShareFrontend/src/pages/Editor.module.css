@@ -1,0 +1,16 @@
+  .descriptionItem {
+      width: 600px;
+      margin-right: 2rem;
+      display: inline-block;
+  }
+
+  .levelItem {
+      display: inline-block;
+      width: 300px;
+  }
+
+  .buttonItem{
+    display: inline-block;
+    margin-left: 3rem;
+    
+  }

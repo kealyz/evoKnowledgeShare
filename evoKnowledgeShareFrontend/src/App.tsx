@@ -6,6 +6,7 @@ import { NotFound } from './pages/NotFound';
 import { Editor } from './pages/Editor';
 import { Histories } from './pages/Histories';
 import { Users } from './pages/Users';
+import { Notes } from './pages/Notes';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path='/Editor' element={<Editor/>}/>
         <Route path='/Histories' element={<Histories/>}/>
         <Route path='/Users' element={<Users/>}/>
+        <Route path='/Notes' element={<Notes/>}/>
       </Routes>
   );
 }

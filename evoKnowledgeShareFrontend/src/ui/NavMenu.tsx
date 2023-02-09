@@ -16,6 +16,8 @@ export default function NavMenu() {
                         <NavDropdown.Item><Link style={{ color: "black" }} className="nav-link" to="/Topics">Topic Actions</Link></NavDropdown.Item>
                         <NavDropdown.Divider />
                         <NavDropdown.Item><Link style={{ color: "black" }} className="nav-link" to="/Users">User Actions</Link></NavDropdown.Item>
+                        <NavDropdown.Divider />
+                        <NavDropdown.Item><Link style={{ color: "black" }} className="nav-link" to="/Notes">Notes</Link></NavDropdown.Item>
                     </NavDropdown>
                 </Nav>
             </Container>

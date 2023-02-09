@@ -119,8 +119,10 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             try
             {
+                //Something wrong here
                 Topic topicToRemove = myDbContext.Topics.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
                 myDbContext.Topics.Remove(topicToRemove);
+                myDbContext.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
