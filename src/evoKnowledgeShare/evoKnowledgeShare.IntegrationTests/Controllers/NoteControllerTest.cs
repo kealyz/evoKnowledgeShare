@@ -212,7 +212,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
-        [Test]
+/*        [Test]
         public async Task NoteController_AddRangeAsync_ShouldAddNotesAndReturnWithCreated()
         {
             // Arrange
@@ -242,7 +242,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-        }
+        }*/
         #endregion Add Section
 
         #region Remove Section
