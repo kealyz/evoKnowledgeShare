@@ -117,22 +117,11 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="note"></param>
         /// <returns>Task list of <see cref="Note"/> if added</returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<NoteMdDTO> noteMdDTOs)
+        public async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<Note> notes)
         {
-            var tasks = new List<Task>();
-
-            for (int i = 0; i < noteMdDTOs.Count(); i++) {
-                tasks.Add(Task.Run(() => {
-                    CreateNoteFolder(noteMdDTOs.ElementAt(i).Note.NoteId.ToString(), noteMdDTOs.ElementAt(i).MdRaw);
-                }));
-            }
-            Task t = Task.WhenAll(tasks);
-
             try
             {
-                var notes = noteMdDTOs.Select(note => note.Note).ToList();
                 await myRepository.AddRangeAsync(notes);
-                t.Wait();
                 return await Task.FromResult(notes);
             }
             catch (ArgumentException)

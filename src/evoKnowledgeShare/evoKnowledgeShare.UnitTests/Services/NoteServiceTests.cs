@@ -179,7 +179,7 @@ namespace evoKnowledgeShare.UnitTests.Services
                 await myNoteService.AddAsync(myNotes[0], "");
             });
         }
-/*        [Test]
+        [Test]
         public async Task NoteService_AddRangeAsync_CreatesNotes()
         {
             var notesList = new List<Note>()
@@ -207,7 +207,7 @@ namespace evoKnowledgeShare.UnitTests.Services
             {
                 await myNoteService.AddRangeAsync(notesList);
             });
-        }*/
+        }
         #endregion Add Section
         #region Remove Section
         [Test]
