@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Topics from './pages/Topics';
 import { NotFound } from './pages/NotFound';
 import { Editor } from './pages/Editor';
+import { Histories } from './pages/Histories';
+import { Users } from './pages/Users';
 
 
 function App() {
@@ -13,7 +15,9 @@ function App() {
         <Route path='*' element={<NotFound/>}/>
         <Route path='/' element={<Home />} />
         <Route path='/Topics' element={<Topics />} />
-        <Route path='Editor' element={<Editor/>}/>
+        <Route path='/Editor' element={<Editor/>}/>
+        <Route path='/Histories' element={<Histories/>}/>
+        <Route path='/Users' element={<Users/>}/>
       </Routes>
   );
 }
