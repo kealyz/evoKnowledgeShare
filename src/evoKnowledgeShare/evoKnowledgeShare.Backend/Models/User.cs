@@ -34,8 +34,6 @@ namespace evoKnowledgeShare.Backend.Models
             FirstName = userDTO.FirstName;
             LastName = userDTO.LastName;
         }
-        
-        public User() { }
 
         public bool Equals(User other)
         {
@@ -63,6 +61,13 @@ namespace evoKnowledgeShare.Backend.Models
         public override int GetHashCode()
         {
             return HashCode.Combine(Id, UserName, FirstName, LastName);
+        }
+
+        public User() {
+            Id = Guid.Empty;
+            UserName = String.Empty;
+            FirstName = String.Empty;
+            LastName = String.Empty;
         }
     }
 }
