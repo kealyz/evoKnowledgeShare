@@ -57,12 +57,10 @@ namespace evoKnowledgeShare.Backend.Repositories
 
         public override History GetById(Guid id)
         {
-            try {
-                History? history = myDbContext.Histories.FirstOrDefault(x => x.Id == id);
-                return history;
-            } catch (Exception) {
+            History? history = myDbContext.Histories.FirstOrDefault(x => x.Id == id);
+            if (history == null)
                 throw new KeyNotFoundException();
-            }
+            return history;
             
         }
 
