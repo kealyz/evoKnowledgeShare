@@ -34,7 +34,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 await myDbContext.SaveChangesAsync();
                 return addedTopic.Entity;
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
                 //TODO: Log(ex)
                 throw;
@@ -55,7 +55,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 await myDbContext.SaveChangesAsync();
                 return myDbContext.Topics.Where(topic => topics.Any(entity => entity == topic));
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
                 //TODO: Log(ex)
                 throw;
@@ -107,7 +107,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 myDbContext.Topics.Remove(topic);
                 myDbContext.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 //TODO: Log(ex)
                 throw;
@@ -124,7 +124,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 myDbContext.Topics.Remove(topicToRemove);
                 myDbContext.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 //TODO: Log(ex)
                 throw;
@@ -146,7 +146,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                     myDbContext.Remove(topic);
                 }
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 //TODO: Log(ex)
                 throw;
@@ -174,7 +174,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                     myDbContext.Topics.Remove(topicToRemove);
                 }
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 //TODO: Log(ex)
                 throw;

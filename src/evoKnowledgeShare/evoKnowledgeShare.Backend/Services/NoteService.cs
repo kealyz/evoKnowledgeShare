@@ -1,11 +1,15 @@
-﻿using evoKnowledgeShare.Backend.Interfaces;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
+using System.Runtime.InteropServices.ComTypes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace evoKnowledgeShare.Backend.Services
 {
     public class NoteService
     {
         private readonly IRepository<Note> myRepository;
+        private string currentDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Notes");
 
         public NoteService(IRepository<Note> repository)
         {
@@ -78,16 +82,35 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="note"></param>
         /// <returns>Task <see cref="Note"/> if added</returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<Note> AddAsync(Note note)
+        public async Task<Note> AddAsync(Note note, string mdRaw) 
         {
-            try
-            {
+            try {
+                CreateNoteFolder(note.NoteId.ToString(), mdRaw);
                 await myRepository.AddAsync(note);
                 return await Task.FromResult(note);
-            }
-            catch (ArgumentException)
-            {
+            } catch (ArgumentException) {
                 throw;
+            }
+        }
+
+        private void CreateNoteFolder(string guid, string mdRaw) {
+            // Create Note Folder
+            if(!Directory.Exists(Path.Combine(currentDirectory, guid)))
+                Directory.CreateDirectory(Path.Combine(currentDirectory, guid));
+
+            // Create Latest Version File
+            using (StreamWriter writer = new StreamWriter(Path.Combine(currentDirectory, guid, "LatestVersion.txt"))) 
+            {
+                writer.WriteLine("1.0.0");
+            }
+
+            // Create Version Subfolder
+            Directory.CreateDirectory(Path.Combine(currentDirectory, guid, "1.0.0"));
+
+            // Create MD File
+            using (StreamWriter writer = new StreamWriter(Path.Combine(currentDirectory, guid, "1.0.0", "document.md"))) 
+            {
+                writer.Write(mdRaw);
             }
         }
 
@@ -113,12 +136,20 @@ namespace evoKnowledgeShare.Backend.Services
         ///<summary>Removes a <see cref="Note"/> entity from the database.</summary>
         /// <param name="note"></param>
         /// <exception cref="KeyNotFoundException"></exception>
-        public void Remove(Note note) => myRepository.Remove(note);
+        public void Remove(Note note) {
+            if (Directory.Exists(Path.Combine(currentDirectory, note.NoteId.ToString())))
+                Directory.Delete(Path.Combine(currentDirectory, note.NoteId.ToString()), true);
+            myRepository.Remove(note);
+        }
 
         ///<summary>Removes a specific <see cref="Note"/> from the database identified by it's noteId</summary>
         /// <param name="id"></param>
         /// <exception cref="KeyNotFoundException"></exception>
-        public void RemoveById(Guid id) => myRepository.RemoveById(id);
+        public void RemoveById(Guid id) {
+            if(Directory.Exists(Path.Combine(currentDirectory, id.ToString())))
+                Directory.Delete(Path.Combine(currentDirectory, id.ToString()), true);
+            myRepository.RemoveById(id);
+        }
         #endregion Remove Section
 
         #region Modify Section
@@ -127,7 +158,50 @@ namespace evoKnowledgeShare.Backend.Services
         /// <param name="note"></param>
         /// <returns>A <see cref="Note"/> if modified</returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public Note Update(Note note) => myRepository.Update(note);
+        public Note Update(Note note, string mdRaw, int incrementSize) {
+            UpdateNoteFolder(note.NoteId.ToString(), mdRaw, incrementSize);
+            return myRepository.Update(note);
+        }
+
+        private void UpdateNoteFolder(string guid, string mdRaw, int incrementSize) {
+            // Get Latest Version
+            string[] versionRaw;
+            int[] version = new int[3];
+            string newVersion;
+
+            if (!File.Exists(Path.Combine(currentDirectory, guid, "LatestVersion.txt")))
+                return;
+
+            using (StreamReader reader = new StreamReader(Path.Combine(currentDirectory, guid, "LatestVersion.txt"))) {
+                versionRaw = reader.ReadLine()!.Split('.');
+                version[0] = int.Parse(versionRaw[0]);
+                version[1] = int.Parse(versionRaw[1]);
+                version[2] = int.Parse(versionRaw[2]);
+            }
+
+            // Update Version
+            switch (incrementSize) {
+                case 1: version[0]++; version[1] = 0; version[2] = 0; break;
+                case 2: version[1]++; version[2] = 0; break;
+                case 3: version[2]++; break;
+                default:
+                    break;
+            }
+
+            newVersion = version[0] + "." + version[1] + "." + version[2];
+
+            using (StreamWriter writer = new StreamWriter(Path.Combine(currentDirectory, guid, "LatestVersion.txt"))) {
+                writer.WriteLine(newVersion);
+            }
+
+            // Create New Version Subfolder
+            Directory.CreateDirectory(Path.Combine(currentDirectory, guid, newVersion));
+
+            // Create MD File
+            using (StreamWriter writer = new StreamWriter(Path.Combine(currentDirectory, guid, newVersion, "document.md"))) {
+                writer.Write(mdRaw);
+            }
+        }
         #endregion Modify Section
     }
 }

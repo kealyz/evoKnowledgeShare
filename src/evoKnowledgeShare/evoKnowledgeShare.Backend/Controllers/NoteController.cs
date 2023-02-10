@@ -1,4 +1,5 @@
-﻿using evoKnowledgeShare.Backend.Models;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -125,11 +126,11 @@ namespace evoKnowledgeShare.Backend.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddAsync([FromBody] Note note)
+        public async Task<IActionResult> AddAsync([FromBody] NoteMdDTO noteMdDTO)
         {
             try
             {
-                Note result = await myNoteService.AddAsync(note);
+                Note result = await myNoteService.AddAsync(noteMdDTO.Note, noteMdDTO.MdRaw);
                 return Created(nameof(AddAsync), result);
             }
             catch (ArgumentException)
@@ -206,11 +207,11 @@ namespace evoKnowledgeShare.Backend.Controllers
         #region Modify Section
         [HttpPut("")]
         [Consumes(MediaTypeNames.Application.Json)]
-        public IActionResult Update([FromBody] Note note)
+        public IActionResult Update([FromBody] NoteMdDTO noteMdDto)
         {
             try
             {
-                Note result = myNoteService.Update(note);
+                Note result = myNoteService.Update(noteMdDto.Note, noteMdDto.MdRaw, noteMdDto.IncrementSize);
                 return Ok(result);
             }
             catch (KeyNotFoundException)
