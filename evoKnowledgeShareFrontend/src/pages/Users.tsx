@@ -8,6 +8,37 @@ import { Modal } from '../ui/Modal';
 import { RootState } from '../store'
 import { Button } from 'react-bootstrap'
 
+/*
+- nincs user
+- filter komponens
+- history bekötés -> history generálás
+*/
+
+/*
+- user
+- log
+- auth
+*/
+
+/*
+23.prezentáció 4 óra
+- bevezető - Kelemen Bence
+- backend - Peti
+- frontend - Marci
+- demo - Szabó András 
+- jövő - Bence
+- kérdések
+*/
+
+/*
+Topic-ot csak akkor lehessen törölni, ha nem tartozik hozzá egyetlen note sem, 
+csekkolni service-ben
+
+User-eket adatbázis szintjén tárolni (mock adatok)
+
+History-createnél majd csak egy létező userhez kellene bekötni. Ez külön branch 
+lesz majd a végén (demo branch)
+*/
 export const Users = () => {
   const dispatch = useDispatch();
   let modalIsShown = useSelector((state: RootState) => state.modal.show);
@@ -81,7 +112,7 @@ export const Users = () => {
         initial="hidden"
         animate="visible">
         <h1 className='mb-4'>User operations</h1>
-        <RenderTable data={users} onDelete={onDeleteUser} />
+        {(users && Object.keys(users).length !== 0) ? <RenderTable data={users} onDelete={onDeleteUser} /> : <h2>No user</h2>}
       </motion.div>
     </>
   )

@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react'
 import RenderTable from '../components/ObjectTable'
 import IHistory from '../interfaces/IHistory'
 
+//TODO: Tesztek
+//TODO: Merge everything
+
 export const Histories = () => {
   const [histories, setHistories] = useState<IHistory[]>([])
 
@@ -33,7 +36,7 @@ export const Histories = () => {
         initial="hidden"
         animate="visible">
         <h1 className='mb-4'>History operations</h1>
-        <RenderTable topics={histories}/>
+        {(histories && Object.keys(histories).length !== 0) ? <RenderTable data={histories}/> : <h2>No histories</h2>}
       </motion.div>
     </>
   )

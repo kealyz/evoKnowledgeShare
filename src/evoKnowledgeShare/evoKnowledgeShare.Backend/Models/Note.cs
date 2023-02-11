@@ -1,5 +1,6 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace evoKnowledgeShare.Backend.Models
@@ -27,10 +28,10 @@ namespace evoKnowledgeShare.Backend.Models
         [Key]
         public Guid NoteId { get; set; }
 
-        [Required]
+        [ForeignKey("User")]
         public Guid UserId { get; set; }
 
-        [Required]
+        [ForeignKey("Topic")]
         public Guid TopicId { get; set; }
 
         [Required]

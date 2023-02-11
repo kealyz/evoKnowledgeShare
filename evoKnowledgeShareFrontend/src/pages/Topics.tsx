@@ -81,7 +81,7 @@ export default function Topics() {
                 initial="hidden"
                 animate="visible">
                 <h1 className='mb-4'>Topic operations</h1>
-                <RenderTable data={topics} onDelete={onDeleteTopic}/>
+                {(topics && Object.keys(topics).length !== 0) ? <RenderTable data={topics} onDelete={onDeleteTopic} /> : <h2>No topic</h2>}
             </motion.div>
         </>
     )

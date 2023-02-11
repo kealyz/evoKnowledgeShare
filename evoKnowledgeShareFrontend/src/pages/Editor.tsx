@@ -63,6 +63,10 @@ export const Editor = () => {
     setValue(e);
   }
 
+  const saveNoteRequest = async() => {
+    
+  }
+
   const onSave = () => {
     if (isLevelInvalid === false && isValueInvalid === false && documentNameInvalid === false) {
       showModalHandler("Everything is fine")
