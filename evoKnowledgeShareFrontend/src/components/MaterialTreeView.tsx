@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import TreeView from '@mui/lab/TreeView';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import Box from '@mui/material/Box';
 import { FaRegFolder, FaRegFolderOpen } from 'react-icons/fa';
 import Button from '@mui/material/Button';
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { Modal } from "../ui/Modal"
+import { modalActions } from "../store/modal";
+import { useNavigate } from "react-router-dom";
+import { Form } from "react-bootstrap";
 
 interface RenderTree {
     id: string;
@@ -52,7 +56,7 @@ export default function MaterialTreeView() {
     const [topics, setTopics] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5145/api/Topic/TreeView')
+        fetch('https://localhost:5145/api/Topic/TreeView')
             .then(res => res.json())
             .then(json => {
                 setTopics(json)
@@ -78,32 +82,82 @@ export default function MaterialTreeView() {
         </TreeItem>
     );
 
-    return (
-        <Box sx={{ height: 270, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}>
-            <Box sx={{ mb: 1 }}>
-                <Button onClick={closeOrOpenTree}>
-                    {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
-                </Button>
-            </Box>
-            <TreeView
-                aria-label="controlled"
-                defaultExpanded={parentIds}
-                expanded={expanded}
-                defaultCollapseIcon={<FaRegFolderOpen />}
-                defaultExpandIcon={<FaRegFolder/>}
-                onNodeToggle={handleToggle}
-            >
-                {data.map(node =>
-                    <TreeItem nodeId={node.id} label={node.children?.length != undefined ? node.name + " (" + node.children?.length + ")" : node.name}>
-                        {node.hasOwnProperty("children") ?
-                            node.children?.map(level => <TreeItem nodeId={level.id} label={level.name}></TreeItem>)
-                            : ""}
-                        <TreeItem nodeId={"createNote" + node.id} label={"Create Note"}></TreeItem>
-                    </TreeItem>)}
-                <Button>Create Topic</Button>
+    /* Modal */
+    const dispatch = useDispatch();
+    let modalIsShown = useSelector((state: RootState) => state.modal.show);
+    const modalContent = useSelector((state: RootState) => state.modal.content);
 
-            </TreeView>
-        </Box>
+    /*const setModalContent = (props: string) => {
+        dispatch(modalActions.setContent(props))  
+    }
+
+    const showModalHandler = () => {
+        setModalContent("Are you want to save this document?")
+        dispatch(modalActions.toggleShow())
+    }*/
+    const showModalHandler = () => {
+        dispatch(modalActions.toggleShow())
+    }
+
+    const hideModalHandler = () => {
+        dispatch(modalActions.toggleShow());
+        dispatch(modalActions.removeModalContent);
+    }
+
+    const onSave = () => {
+        //navigate('/')
+        //alert('Saved');
+        //dispatch(modalActions.toggleShow());
+        showModalHandler()
+        onSubmit(topicTitle)
+        setTopicTitle("")
+    }
+    //const onSubmit = async (user: IRegistration) => {
+
+    const onSubmit = async (topicTitle: any) => {
+        const create = await fetch('https://localhost:5145/api/Topic/Create', { method: 'POST', body: JSON.stringify(topicTitle), headers: { "Content-Type": "application/json" } })
+        const response = await create.json()
+    }
+
+    const [topicTitle, setTopicTitle] = useState<string>("");
+    let navigate = useNavigate();
+
+    return (
+        <>
+            {modalIsShown && (
+                <Modal onClose={hideModalHandler}>
+                        <p>{modalContent}</p>
+                        <Form.Control type="text" placeholder="Enter the Topic title" value={topicTitle} onChange={e => setTopicTitle(e.target.value)} />
+                        <Button onClick={onSave}>Save</Button>
+                </Modal>
+            )}
+            <Box sx={{ height: 270, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}>
+                <Box sx={{ mb: 1 }}>
+                    <Button onClick={closeOrOpenTree}>
+                        {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
+                    </Button>
+                </Box>
+                <TreeView
+                    aria-label="controlled"
+                    defaultExpanded={parentIds}
+                    expanded={expanded}
+                    defaultCollapseIcon={<FaRegFolderOpen />}
+                    defaultExpandIcon={<FaRegFolder />}
+                    onNodeToggle={handleToggle}
+                >
+                    {data.map(node =>
+                        <TreeItem nodeId={node.id} label={node.children?.length != undefined ? node.name + " (" + node.children?.length + ")" : node.name}>
+                            {node.hasOwnProperty("children") ?
+                                node.children?.map(level => <TreeItem nodeId={level.id} label={level.name}></TreeItem>)
+                                : ""}
+                            <TreeItem nodeId={"createNote" + node.id} label={"Create Note"} onClick={e => navigate("editor?topic=" + node.id)}></TreeItem>
+                        </TreeItem>)}
+                    <Button onClick={e => showModalHandler()}>Create Topic</Button>
+
+                </TreeView>
+            </Box>
+        </>
     );
 }
-//}
+// title={"Last edited: " + date} <Button onClick={showModalHandler}>Create Topic</Button>
+// <Button onClick()={}>
