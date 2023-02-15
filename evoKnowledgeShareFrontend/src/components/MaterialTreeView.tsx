@@ -48,11 +48,10 @@ const data = [
     }
 ]
 
-const parentIds = data.map(node => (node.id))
-
-
+let useEffectActivator = 1;
 export default function MaterialTreeView() {
 
+    
     const [topics, setTopics] = useState([]);
 
     useEffect(() => {
@@ -60,9 +59,10 @@ export default function MaterialTreeView() {
             .then(res => res.json())
             .then(json => {
                 setTopics(json)
-            })
-    }, [])
-    // const parentIds = topics.map(node => (node.id))
+            });
+    }, [useEffectActivator])
+
+    const parentIds = topics.map(node => (node.id));
 
     const [expanded, setExpanded] = useState<string[]>([]);
     const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
@@ -87,14 +87,6 @@ export default function MaterialTreeView() {
     let modalIsShown = useSelector((state: RootState) => state.modal.show);
     const modalContent = useSelector((state: RootState) => state.modal.content);
 
-    /*const setModalContent = (props: string) => {
-        dispatch(modalActions.setContent(props))  
-    }
-
-    const showModalHandler = () => {
-        setModalContent("Are you want to save this document?")
-        dispatch(modalActions.toggleShow())
-    }*/
     const showModalHandler = () => {
         dispatch(modalActions.toggleShow())
     }
@@ -105,18 +97,18 @@ export default function MaterialTreeView() {
     }
 
     const onSave = () => {
-        //navigate('/')
-        //alert('Saved');
-        //dispatch(modalActions.toggleShow());
         showModalHandler()
         onSubmit(topicTitle)
+        useEffectActivator += 1;
         setTopicTitle("")
     }
-    //const onSubmit = async (user: IRegistration) => {
 
-    const onSubmit = async (topicTitle: any) => {
-        const create = await fetch('https://localhost:5145/api/Topic/Create', { method: 'POST', body: JSON.stringify(topicTitle), headers: { "Content-Type": "application/json" } })
+
+    const onSubmit = async (topicTitle: string) => {
+        const jsonObject = {title: topicTitle}
+        const create = await fetch('https://localhost:7145/api/Topic/Create', { method: "POST", body: JSON.stringify(jsonObject), headers: { "Content-Type": "application/json" } })
         const response = await create.json()
+        console.log(useEffectActivator)
     }
 
     const [topicTitle, setTopicTitle] = useState<string>("");
@@ -128,7 +120,7 @@ export default function MaterialTreeView() {
                 <Modal onClose={hideModalHandler}>
                         <p>{modalContent}</p>
                         <Form.Control type="text" placeholder="Enter the Topic title" value={topicTitle} onChange={e => setTopicTitle(e.target.value)} />
-                        <Button onClick={onSave}>Save</Button>
+                        <Button onClick={() => onSave()}>Save</Button>
                 </Modal>
             )}
             <Box sx={{ height: 270, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}>
@@ -145,12 +137,13 @@ export default function MaterialTreeView() {
                     defaultExpandIcon={<FaRegFolder />}
                     onNodeToggle={handleToggle}
                 >
-                    {data.map(node =>
+                    {topics.map(node =>
                         <TreeItem nodeId={node.id} label={node.children?.length != undefined ? node.name + " (" + node.children?.length + ")" : node.name}>
                             {node.hasOwnProperty("children") ?
-                                node.children?.map(level => <TreeItem nodeId={level.id} label={level.name}></TreeItem>)
+                                node.children?.map(level => 
+                                <TreeItem nodeId={level.id} label={level.name}></TreeItem>)
                                 : ""}
-                            <TreeItem nodeId={"createNote" + node.id} label={"Create Note"} onClick={e => navigate("editor?topic=" + node.id)}></TreeItem>
+                            <TreeItem nodeId={"createNote" + node.id} label={"Create Note"} onClick={e => navigate("editor?topic=" + node.id)}></TreeItem> 
                         </TreeItem>)}
                     <Button onClick={e => showModalHandler()}>Create Topic</Button>
 
@@ -159,5 +152,3 @@ export default function MaterialTreeView() {
         </>
     );
 }
-// title={"Last edited: " + date} <Button onClick={showModalHandler}>Create Topic</Button>
-// <Button onClick()={}>

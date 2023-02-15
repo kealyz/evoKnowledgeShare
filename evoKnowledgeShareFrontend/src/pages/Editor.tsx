@@ -1,5 +1,6 @@
 import MDEditor from '@uiw/react-md-editor'
 import { motion } from 'framer-motion'
+import React from 'react';
 import { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,25 +9,6 @@ import { RootState } from '../store';
 import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
 import classes from './Editor.module.css';
-
-const datak = [
-  {
-    id: "1",
-    title: "Egyes title"
-  },
-  {
-    id: "2",
-    title: "Kettes title"
-  },
-  {
-    id: "3",
-    title: "Harmas title"
-  },
-  {
-    id: "4",
-    title: "Negyes title"
-  },
-]
 
 export const Editor = () => {
   const [searchParams] = useSearchParams();
@@ -49,21 +31,19 @@ export const Editor = () => {
   const [documentNameInvalid, setDocumentNameInvalid] = useState<boolean>(false);
   const [topics, setTopics] = useState([]);
 
-  let title = ""
-  // useEffect(() =>{
-  //   fetch('https://localhost:5145/api/Topic/')
-  //           .then(res => res.json())
-  //           .then(json => {
-  //               setTopics(json)
-  //           })
-  //   }, [])
-
-  useEffect(() => {
-    datak.map(topic => { if (topic.id == searchParams.get("topic")) { setTopicTitle(topic.id) } })
-
+  const [topicId, setTopicId] = useState<string>("Choose a Topic Title");
+  const [topicTitle, setTopicTitle] = useState<string>("");
+  useEffect(() =>{
+    fetch('https://localhost:5145/api/Topic/All')
+            .then(res => res.json())
+            .then(json => {
+                setTopics(json)
+            });
   }, [])
 
-  const [topicTitle, setTopicTitle] = useState<string>(title);
+  useEffect(() => {
+        topics.map(topic => { if (topic.id == searchParams.get("topic")) { setTopicTitle(topic.title); setTopicId(topic.id);} });
+  }, [topics])
 
   useEffect(() => {
     if (value.trim().length < 5) {
@@ -84,15 +64,14 @@ export const Editor = () => {
       setIsLevelInvalid(true);
     }
 
-    if (topicTitle.trim() === "" || topicTitle === "Choose a Topic Title") {
+    if (topicId === "Choose a Topic Title") {
       setIsTopicTitleInvalid(true);
     } else {
       setIsTopicTitleInvalid(false);
     }
 
-    //TODO: topicTitle ha van value-ja, akkor true legyen a isTopicTitleInvalid
 
-  }, [value, documentName, level, topicTitle])
+  }, [value, documentName, level, topicId])
 
   const showModalHandler = (content: string) => {
     dispatch(modalActions.setContent(content))
@@ -116,8 +95,9 @@ export const Editor = () => {
     }
   }
 
-  console.log(topicTitle)
-  //console.log(searchParams.get("topic"))
+  console.log(topicId)
+  //console.log(topicTitle)
+  //TODO: topic listában ne szerepeljen kétszer
   return (
     <>
       {modalIsShown && (
@@ -140,11 +120,10 @@ export const Editor = () => {
         <div>
           <Form.Group className="mb-3">
             <div className={classes.topicItem}>
-              <Form.Select aria-label="Select title" isInvalid={isTopicTitleInvalid} value={topicTitle} onChange={(e) => setTopicTitle(e.target.value)}>
-                {searchParams.get("Topic") == null ?
-                  <option>Choose a Topic Title</option> :
-                  <option value={searchParams.get("topic").toString()}>{title}</option>}
-                {datak.map(topic => <option value={topic.id}>{topic.title}</option>)}
+              <Form.Select aria-label="Select title" isInvalid={isTopicTitleInvalid} value={topicId} onChange={(e) => {setTopicId(e.target.value);}}>
+                {searchParams.get("topic") === null ?
+                  <option>Choose a Topic Title</option> : <option>{topicTitle}</option>}
+                  {topics.map(topic => <option value={topic.id}>{topic.title}</option>)}
               </Form.Select>
             </div>
             <div className={classes.descriptionItem}>

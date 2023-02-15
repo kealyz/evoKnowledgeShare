@@ -1,7 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
-
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace evoKnowledgeShare.Backend.Services
@@ -10,9 +10,16 @@ namespace evoKnowledgeShare.Backend.Services
     {
         private readonly IRepository<Topic> myRepository;
 
-        public TopicService(IRepository<Topic> repository)
+        private readonly NoteService myNoteService;
+        public TopicService(IRepository<Topic> repository, NoteService noteService)
         {
             myRepository = repository;
+            myNoteService = noteService;
+        }
+        public Note[] GetRangeBytTopicId(Guid id)
+        {
+            Note[] notes = myNoteService.GetRangeBytTopicId(id).ToArray();
+            return notes;
         }
 
         #region Get Section
@@ -58,6 +65,31 @@ namespace evoKnowledgeShare.Backend.Services
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="KeyNotFoundException"></exception>
         public IEnumerable<Topic> GetRangeById(IEnumerable<Guid> ids) => myRepository.GetRangeById(ids);
+
+        public ITreeNode[] GetTreeView()
+        {
+            Topic[] topics = myRepository.GetAll().ToArray();
+            ITreeNode[] nodes = new ITreeNode[topics.Length];
+            for (int i = 0; i < topics.Length; i++)
+            {
+                nodes[i] = new ITreeNode();
+                nodes[i].Id = topics[i].Id;
+                nodes[i].Name = topics[i].Title;
+                Note[] notes = GetRangeBytTopicId(topics[i].Id);
+                if (notes.Any())
+                {
+                    ITreeNode[] children = new ITreeNode[notes.Length];
+                    for (int j = 0; j < children.Length; j++)
+                    {
+                        children[j] = new ITreeNode();
+                        children[j].Id = notes[j].NoteId;
+                        children[j].Name = notes[j].Title;
+                    }
+                    nodes[i].Children = children;
+                }
+            }
+            return (nodes);
+        }
 
         #endregion Get Section
 
