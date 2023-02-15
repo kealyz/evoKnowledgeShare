@@ -1,5 +1,6 @@
 import MDEditor from '@uiw/react-md-editor'
 import { motion } from 'framer-motion'
+import moment from 'moment';
 import { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,26 +9,31 @@ import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
 import classes from './Editor.module.css';
 
-
 export const Editor = () => {
   const dispatch = useDispatch();
   let modalIsShown = useSelector((state: RootState) => state.modal.show);
   const modalContent = useSelector((state: RootState) => state.modal.content);
-  //TODO:Save and load in local storage => no need for a save button 
-  //TODO: View needed ?
-  //TODO: Are u sure / change
-  //const [elements, setElements] = useLocalStorage({ id: '', title: '', content: '', version: '' });
 
   const [value, setValue] = useState<string>("");
   const [documentName, setDocumentName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [level, setLevel] = useState<string>("");
-  
+
   const [isLevelInvalid, setIsLevelInvalid] = useState<boolean>(false);
   const [isValueInvalid, setIsValueInvalid] = useState<boolean>(false);
   const [documentNameInvalid, setDocumentNameInvalid] = useState<boolean>(false);
 
+  const showModalHandler = (content: string) => {
+    dispatch(modalActions.setContent(content))
+    dispatch(modalActions.toggleShow())
+  }
 
+  const hideModalHandler = () => {
+    dispatch(modalActions.toggleShow());
+    dispatch(modalActions.removeModalContent);
+  }
+
+  //Basic form validation
   useEffect(() => {
     if (value.trim().length < 5) {
       setIsValueInvalid(true);
@@ -49,30 +55,46 @@ export const Editor = () => {
 
   }, [value, documentName, level])
 
-  const showModalHandler = (content: string) => {
-    dispatch(modalActions.setContent(content))
-    dispatch(modalActions.toggleShow())
-  }
-
-  const hideModalHandler = () => {
-    dispatch(modalActions.toggleShow());
-    dispatch(modalActions.removeModalContent);
-  }
-
   const onChangeValue = (e: any): void => {
     setValue(e);
   }
 
-  const saveNoteRequest = async() => {
-    
+  const saveNoteRequest = async () => {
+    //This going to be in a useState 
+    const body = {
+      note: {
+        noteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        topicId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        createdAt: moment().format('YYYY-MM-DD[T]HH:mm:ss.SSSZ'),
+        description: description,
+        title: documentName
+      },
+      mdRaw: value,
+      incrementSize: level
+    }
+
+    const request = await fetch('https://localhost:7145/api/Note', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+    );
+    const result = await request.json();
+    hideModalHandler();
   }
 
-  const onSave = () => {
+  const onSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isLevelInvalid === false && isValueInvalid === false && documentNameInvalid === false) {
-      showModalHandler("Everything is fine")
+      showModalHandler("Saving...");
+      saveNoteRequest()
+
     } else {
       showModalHandler("Please check every fields")
     }
+    e.preventDefault();
   }
 
   return (
@@ -80,10 +102,9 @@ export const Editor = () => {
       {modalIsShown && (
         <Modal onClose={hideModalHandler}>
           <div className="">
-            <p>{modalContent}</p>
-            <Button onClick={onSave} variant="success">Save</Button>
-          </div>
+            <h2>{modalContent}</h2>
 
+          </div>
         </Modal>
       )}
 
@@ -107,7 +128,7 @@ export const Editor = () => {
                 <option value="3">Large</option>
               </Form.Select>
             </div>
-            <div className={classes.buttonItem}><Button disabled={isValueInvalid} onClick={onSave}>Save</Button></div>
+            <div className={classes.buttonItem}><Button disabled={isValueInvalid} onClick={(e) => onSave(e)}>Save</Button></div>
           </Form.Group>
         </div>
         <Form.Group className="mb-3">

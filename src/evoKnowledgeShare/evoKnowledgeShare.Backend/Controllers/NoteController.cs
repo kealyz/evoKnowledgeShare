@@ -146,6 +146,7 @@ namespace evoKnowledgeShare.Backend.Controllers
         {
             try
             {
+                noteMdDTO.Note.NoteId = Guid.NewGuid();
                 Note result = await myNoteService.AddAsync(noteMdDTO.Note, noteMdDTO.MdRaw);
                 return Created(nameof(AddAsync), result);
             }

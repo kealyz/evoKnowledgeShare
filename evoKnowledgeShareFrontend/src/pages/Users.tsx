@@ -39,6 +39,7 @@ User-eket adatbázis szintjén tárolni (mock adatok)
 History-createnél majd csak egy létező userhez kellene bekötni. Ez külön branch 
 lesz majd a végén (demo branch)
 */
+
 export const Users = () => {
   const dispatch = useDispatch();
   let modalIsShown = useSelector((state: RootState) => state.modal.show);
@@ -73,6 +74,7 @@ export const Users = () => {
     setUsers(await getAllUser.json());
   };
 
+  //This is only temporary 
   useEffect(() => {
     fetchUser();
   }, [users])
@@ -89,7 +91,6 @@ export const Users = () => {
     hideModalHandler();
   }
 
-
   const onDeleteUser = async (userId: string) => {
     showModalHandler("Are you want to delete " + userId + " ?");
     setUserId(userId);
@@ -104,7 +105,6 @@ export const Users = () => {
             <Button className='m-2' variant="success" onClick={deleteUser}>Yes</Button>
             <Button variant="danger" onClick={hideModalHandler}>No</Button>
           </div>
-
         </Modal>
       )}
 

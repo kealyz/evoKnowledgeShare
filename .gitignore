@@ -348,3 +348,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+src/evoKnowledgeShare/evoKnowledgeShare.Backend/Notes
+src/evoKnowledgeShare/evoKnowledgeShare.Backend/Notes

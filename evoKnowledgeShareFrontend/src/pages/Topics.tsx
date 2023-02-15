@@ -28,6 +28,7 @@ export default function Topics() {
     let modalIsShown = useSelector((state: RootState) => state.modal.show);
     const modalContent = useSelector((state: RootState) => state.modal.content);
 
+    //This is only temporary 
     useEffect(() => {
         fetchTopics();
     }, [topics])
