@@ -7,6 +7,8 @@ import IObject from '../interfaces/IObject';
 import '../css/Buttons.css';
 import ITopic from '../interfaces/ITopic';
 import { useLocation } from 'react-router-dom';
+import FilterArrayFunction from './Filter';
+import { useState } from 'react';
 
 /*function instanceOfTopic(object: any): object is ITopic {
     type asd = keyof ITopic;
@@ -64,8 +66,15 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
         }
     }
 
+    const [filteredData, setFilteredData] = useState<IObject[]>([]);
+
+    const handleFilter = (data: IObject[]) => {
+        setFilteredData(data);
+    };
+
     return (
         <div>
+            <FilterArrayFunction data={props.data} onFilter={handleFilter} />
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -74,7 +83,7 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
                     </tr>
                 </thead>
                 <tbody>
-                    {props.data && props.data.map((row: IObject) =>
+                    {filteredData.map((row: IObject) =>
                         <tr key={row.id}>
                             {Object.entries(row).map((value: [string, any]) => {
                                 return (<td key={value[0]}>
