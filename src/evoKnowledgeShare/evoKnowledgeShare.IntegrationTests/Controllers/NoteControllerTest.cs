@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
+using evoKnowledgeShare.Backend.DTO;
 
 namespace evoKnowledgeShare.IntegrationTests.Controllers
 {
@@ -184,9 +185,10 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Arrange
             Uri postUri = new("/api/Note/", UriKind.Relative);
             Note note = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Paint tovabbkepzes", "Photoshop helyett ingyenes paint");
+            NoteMdDTO noteMdDTO = new NoteMdDTO(note, "", 1);
 
             // Action
-            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, note);
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, noteMdDTO);
             Note? actualNote = await response.Content.ReadFromJsonAsync<Note>();
 
             // Assert
@@ -312,8 +314,9 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Action
             Uri updateUri = new("/api/Note/", UriKind.Relative);
             myNotes[0].Title = "Updated Title";
+            NoteMdDTO noteMdDTO = new NoteMdDTO(myNotes[0], "", 1);
 
-            HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, myNotes[0]);
+            HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, noteMdDTO);
             Note? actualNote = await updateResponse.Content.ReadFromJsonAsync<Note>();
 
             // Assert
@@ -332,8 +335,9 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Action
             Uri updateUri = new("/api/Note/", UriKind.Relative);
             Note note=new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.Now, "Paint ismeretek megszerzese", "Paint>Photoshop");
+            NoteMdDTO noteMdDTO = new NoteMdDTO(note, "", 1);
 
-            HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, note);
+            HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, noteMdDTO);
             Note? actualNote = await updateResponse.Content.ReadFromJsonAsync<Note>();
 
             // Assert

@@ -6,7 +6,6 @@ namespace evoKnowledgeShare.Backend.Models
 {
     public class Note
     {
-        public Note() { }
         public Note(Guid noteId, Guid userId, Guid topicId, DateTimeOffset createdAt, string description, string title)
         {
             NoteId = noteId;
@@ -68,8 +67,14 @@ namespace evoKnowledgeShare.Backend.Models
         {
             return HashCode.Combine(NoteId, UserId, TopicId, CreatedAt, Description, Title);
         }
+        
+        public Note() {
+            NoteId = Guid.Empty;
+            UserId = Guid.Empty;
+            TopicId = Guid.Empty;
+            CreatedAt = DateTimeOffset.MinValue;
+            Description = String.Empty;
+            Title = String.Empty;
+        }
     }
-
-    
-
 }

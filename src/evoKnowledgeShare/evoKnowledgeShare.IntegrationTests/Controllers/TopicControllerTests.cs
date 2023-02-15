@@ -175,7 +175,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Topic? actualTopic = await updateResponse.Content.ReadFromJsonAsync<Topic>();
 
             // Assert
-            Assert.That(actualTopic.Title, Is.EqualTo(topic.Title));
+            Assert.That(actualTopic!.Title, Is.EqualTo(topic.Title));
         }
         #endregion Update Test Section
     }
