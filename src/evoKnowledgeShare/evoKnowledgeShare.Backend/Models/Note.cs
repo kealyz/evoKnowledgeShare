@@ -28,10 +28,10 @@ namespace evoKnowledgeShare.Backend.Models
         [Key]
         public Guid NoteId { get; set; }
 
-        [ForeignKey("User")]
+        [Required]
         public Guid UserId { get; set; }
 
-        [ForeignKey("Topic")]
+        [Required]
         public Guid TopicId { get; set; }
 
         [Required]
