@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
+using System;
 using System.Runtime.InteropServices.ComTypes;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -73,6 +74,28 @@ namespace evoKnowledgeShare.Backend.Services
         {
             Note note=myRepository.GetAll().FirstOrDefault(x => x.Title == title) ?? throw new KeyNotFoundException();
             return note;
+        }
+
+        /// <summary>Get the latest version of a <see cref="Note"/> by it's id</summary>
+        /// <param name="noteId"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public string GetLatestVersion(Guid noteId) {
+            string versionRaw = String.Empty;
+            string md = String.Empty;
+
+            if (!Directory.Exists(Path.Combine(currentDirectory, noteId.ToString())))
+                throw new KeyNotFoundException();
+
+            using (StreamReader reader = new StreamReader(Path.Combine(currentDirectory, noteId.ToString(), "LatestVersion.txt"))) {
+                versionRaw = reader.ReadLine();
+            }
+
+            using (StreamReader reader = new StreamReader(Path.Combine(currentDirectory, noteId.ToString(), versionRaw, "document.md"))) {
+                md = reader.ReadLine();
+            }
+
+            return md;
         }
         #endregion Get Section
 
