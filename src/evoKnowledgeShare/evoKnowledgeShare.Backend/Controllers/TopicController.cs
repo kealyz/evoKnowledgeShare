@@ -23,6 +23,12 @@ namespace evoKnowledgeShare.Backend.Controllers
             return Ok(new Topic[] { new Topic(Guid.NewGuid(), "Title1"), new Topic(Guid.NewGuid(), "Title2") });
         }
 
+        [HttpGet("TreeView")]
+        public IActionResult GetTreeView()
+        {
+            return Ok(myTopicService.GetTreeView());
+        }
+
         [HttpGet("All")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
