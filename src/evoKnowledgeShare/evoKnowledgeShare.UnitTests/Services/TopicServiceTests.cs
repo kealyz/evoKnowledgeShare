@@ -41,6 +41,15 @@ namespace evoKnowledgeShare.UnitTests.Services
         }
 
         [Test]
+        public void TopicService_GetAll_ShouldReturnEmptyList() {
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(Enumerable.Empty<Topic>);
+            var actualNotes = myService.GetAll();
+
+            Assert.That(actualNotes.Count, Is.EqualTo(0));
+            Assert.That(actualNotes, Is.Empty);
+        }
+
+        [Test]
         public void TopicService_GetById_ShouldReturnTopicWithSpecificId()
         {
             Topic expectedTopic = new Topic(myTopics[2].Id, myTopics[2].Title);

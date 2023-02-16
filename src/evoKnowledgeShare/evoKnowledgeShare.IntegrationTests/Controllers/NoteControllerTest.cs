@@ -82,6 +82,14 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
         [Test]
+        public async Task NoteController_GetById_ShouldReturnWithBadRequest() {
+            Uri getUri = new($"/api/Note/nem guid", UriKind.Relative);
+
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+        [Test]
         public async Task NoteController_GetByUserId_ShouldReturnWithOk()
         {
             Uri getUri = new($"/api/Note/byUserId/{myNotes[0].UserId}", UriKind.Relative);
@@ -103,6 +111,14 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+        [Test]
+        public async Task NoteController_GetByUserId_ShouldReturnWithBadRequest() {
+            Uri getUri = new($"/api/Note/byUserId/nem guid", UriKind.Relative);
+
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
         [Test]
         public async Task NoteController_GetByTopicId_ShouldReturnWithOk()
@@ -127,6 +143,14 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+        [Test]
+        public async Task NoteController_GetByTopicId_ShouldReturnWithBadRequest() {
+            Uri getUri = new($"/api/Note/byTopicId/nem guid", UriKind.Relative);
+
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
         [Test]
         public async Task NoteController_GetByDescription_ShouldReturnWithOk()
@@ -278,6 +302,20 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
         [Test]
+        public async Task NoteController_Remove_ShouldReturnWithBadRequest() {
+            // Arrange
+            Uri removeUri = new($"/api/Note/", UriKind.Relative);
+            List<int> notNote = new List<int>();
+            // Action
+            HttpRequestMessage requestMessage = new(HttpMethod.Delete, removeUri);
+            requestMessage.Content = JsonContent.Create(notNote);
+
+            HttpResponseMessage response = await myClient.SendAsync(requestMessage);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+        [Test]
         public async Task NoteController_ById_ShouldRemoveNoteAndReturnWithNoContent()
         {
             // Arrange
@@ -302,6 +340,17 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.IsFalse(myContext.Notes.FirstOrDefault(x => x.NoteId == guid) == null);
+        }
+        [Test]
+        public async Task NoteController_ById_ShouldReturnWithBadRequest() 
+        {
+            // Arrange
+            Uri removeUri = new($"/api/Note/byId/nem guid", UriKind.Relative);
+            // Action
+            HttpResponseMessage response = await myClient.DeleteAsync(removeUri);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
         #endregion Remove Section
 
@@ -342,6 +391,18 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+        [Test]
+        public async Task NoteController_Update_ShouldReturnWithBadRequest() {
+
+            // Action
+            Uri updateUri = new("/api/Note/", UriKind.Relative);
+            List<int> notNoteMdDto = new List<int>();
+
+            HttpResponseMessage updateResponse = await myClient.PutAsJsonAsync(updateUri, notNoteMdDto);
+
+            // Assert
+            Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
         #endregion Modify Section
 

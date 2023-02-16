@@ -54,6 +54,10 @@ namespace evoKnowledgeShare.Backend.Controllers
             {
                 return Ok(myHistoryService.GetById(id));
             }
+            catch(KeyNotFoundException) 
+            {
+                return NotFound();
+            }
             catch (ArgumentNullException)
             {
                 throw;

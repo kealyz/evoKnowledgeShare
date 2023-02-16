@@ -157,6 +157,12 @@ namespace evoKnowledgeShare.UnitTests.Services
                 var note = myNoteService.GetByTitle("Not existing test title");
             });
         }
+        [Test]
+        public void NoteService_GetLatestVersion_ShouldReturnKeyNotFoundException() {
+            Assert.Throws<KeyNotFoundException>(() => {
+                var latestVersion = myNoteService.GetLatestVersion(Guid.Empty);
+            });
+        }
         #endregion Get Section
         #region Add Section
         [Test]
