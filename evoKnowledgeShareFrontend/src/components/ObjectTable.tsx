@@ -8,40 +8,7 @@ import '../css/Buttons.css';
 import ITopic from '../interfaces/ITopic';
 import { useLocation } from 'react-router-dom';
 import FilterArrayFunction from './Filter';
-import { useState } from 'react';
-
-/*function instanceOfTopic(object: any): object is ITopic {
-    type asd = keyof ITopic;
-    asd
-    Object.entries(ITopic).map((value: [string, any]) => {
-        if(value[0] in ITopic)
-    })
-}*/
-
-function RemoveContent(guid: string, type?: string) {
-    //alert("Removing data with id [" + guid + "]");
-    //let url = "api/"+location.pathname+"/Delete/"+guid;
-
-    //console.log(location.pathname);
-    //console.log(url)
-    //fetch(url, { method: 'DELETE' });
-    //window.location.reload(false);
-
-}
-
-function UpdateContent(guid: string) {
-    alert("Updating data with id [" + guid + "]");
-    //url = url + "/DELETE/?ID=" + row;
-    //fetch(url, { method: 'DELETE' });
-    //window.location.reload(false);
-}
-
-function ViewContent(guid: string) {
-    alert("Viewing data with id [" + guid + "]");
-    //url = url + "/DELETE/?ID=" + row;
-    //fetch(url, { method: 'DELETE' });
-    //window.location.reload(false);
-}
+import { useEffect, useState } from 'react';
 
 interface RenderTableProps {
     data: IObject[],
@@ -68,8 +35,21 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
 
     const [filteredData, setFilteredData] = useState<IObject[]>([]);
 
+
+    /*
+    //BUG: ha túl sok az oszlop akkor az első betöltésnél nem jelenítit meg a táblát csak akkor ha a filter megváltozik, így folyamatosan
+    useEffect(() => {
+     handleFilter(props.data)
+    }, [filteredData, props.data])
+    */
+
     const handleFilter = (data: IObject[]) => {
         setFilteredData(data);
+        /*
+        if(data.length > 0){
+            setFilteredData(data);
+        }
+        */
     };
 
     return (

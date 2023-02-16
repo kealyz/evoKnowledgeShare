@@ -41,6 +41,7 @@ export const Notes = () => {
 
   useEffect(() => {
     fetchNotes();
+    //console.log(notes)
   }, [])
 
   return (

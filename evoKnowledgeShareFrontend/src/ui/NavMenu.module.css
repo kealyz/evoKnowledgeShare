@@ -1,6 +1,5 @@
 .navbar,
 .navbar-default {
-    font-weight: bold;
-    font-size:larger;
-    background-image: linear-gradient(to bottom,#2db13f 0,#0edd5d 100%) !important; 
+    font-size: larger;
+    background-image: linear-gradient(to bottom,#2db13f 0,#13be55 100%) !important; 
 }
