@@ -9,10 +9,7 @@ interface FilterArrayFunctionProps {
   onFilter: (filteredData: IObject[]) => void;
 }
 
-const FilterArrayFunction: React.FC<FilterArrayFunctionProps> = ({
-  data,
-  onFilter,
-}) => {
+const FilterArrayFunction: React.FC<FilterArrayFunctionProps> = ({data, onFilter,}) => {
   let keys: string[] = [];
   if (data.length > 0) {
     keys = Object.keys(data[0]);
@@ -27,17 +24,22 @@ const FilterArrayFunction: React.FC<FilterArrayFunctionProps> = ({
     onFilter && onFilter(filteredData);
   }, [filterKey, filteredData, data])
 */
-  onFilter(filteredData);
 
-  const handleFilterKeyChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const fetchFilterData = async() => {
+    await onFilter(filteredData);
+  }
+
+  useEffect(() => {
+   fetchFilterData();
+  }, [filteredData])
+  
+  
+
+  const handleFilterKeyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterKey(event.target.value);
   };
 
-  const handleFilterStringChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFilterStringChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterString(event.target.value);
   };
 

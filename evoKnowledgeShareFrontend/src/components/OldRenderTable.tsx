@@ -1,14 +1,6 @@
-import { Button, Table } from 'react-bootstrap';
-import { BsTrashFill } from 'react-icons/bs';
-import { BsPencil } from 'react-icons/bs';
-import { BsEye } from 'react-icons/bs';
+import { Table } from 'react-bootstrap';
 import IObject from '../interfaces/IObject';
-
 import '../css/Buttons.css';
-import ITopic from '../interfaces/ITopic';
-import { useLocation } from 'react-router-dom';
-import FilterArrayFunction from './Filter';
-import { useEffect, useState } from 'react';
 
 interface RenderTableProps {
     data: IObject[],
@@ -17,6 +9,8 @@ interface RenderTableProps {
 }
 
 function GetActionButtons(guid: string, props: RenderTableProps) {
+    //console.log(guid);
+    //console.log(props)
     return (
         <div>
             {props.onEdit && <button className="function-buttons warning" onClick={() => props.onEdit && props.onEdit(guid)}>Edit</button>}
@@ -25,7 +19,7 @@ function GetActionButtons(guid: string, props: RenderTableProps) {
     );
 }
 
-export default function RenderTable(props: RenderTableProps): JSX.Element {
+export default function OldRenderTable(props: RenderTableProps): JSX.Element {
     let columns: string[] = [];
     if (props.data) {
         for (let i in props.data[0]) {
@@ -33,24 +27,8 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
         }
     }
 
-    const [filteredData, setFilteredData] = useState<IObject[]>([]);
-
-
-    /*
-    //BUG: ha túl sok az oszlop akkor az első betöltésnél nem jelenítit meg a táblát csak akkor ha a filter megváltozik, így folyamatosan
-    useEffect(() => {
-     handleFilter(filteredData)
-     console.log(props.data)
-    }, [filteredData, props.data])
-    */
-    
-    const handleFilter = (data: IObject[]) => {
-        setFilteredData(data);
-    };
-
     return (
         <div>
-            <FilterArrayFunction data={props.data} onFilter={handleFilter} />
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -59,7 +37,7 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredData.map((row: IObject) =>
+                    {props.data && props.data.map((row: IObject) =>
                         <tr key={row.id}>
                             {Object.entries(row).map((value: [string, any]) => {
                                 return (<td key={value[0]}>

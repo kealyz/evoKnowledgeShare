@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { RootState } from '../store';
 import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
@@ -13,11 +14,14 @@ export const Editor = () => {
   const dispatch = useDispatch();
   let modalIsShown = useSelector((state: RootState) => state.modal.show);
   const modalContent = useSelector((state: RootState) => state.modal.content);
+  const navigate = useNavigate();
+
 
   const [value, setValue] = useState<string>("");
   const [documentName, setDocumentName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [level, setLevel] = useState<string>("");
+  const [save, setSave] = useState<boolean>(false);
 
   const [isLevelInvalid, setIsLevelInvalid] = useState<boolean>(false);
   const [isValueInvalid, setIsValueInvalid] = useState<boolean>(false);
@@ -84,12 +88,17 @@ export const Editor = () => {
     );
     const result = await request.json();
     hideModalHandler();
+    setSave(false);
   }
 
   const onSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isLevelInvalid === false && isValueInvalid === false && documentNameInvalid === false) {
       showModalHandler("Saving...");
+      setSave(true);
       saveNoteRequest()
+      if(!save){
+        navigate("/Notes");
+      }
 
     } else {
       showModalHandler("Please check every fields")
