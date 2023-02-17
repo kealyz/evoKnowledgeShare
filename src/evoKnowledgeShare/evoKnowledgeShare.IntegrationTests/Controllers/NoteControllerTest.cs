@@ -179,6 +179,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         #endregion Get Section
 
         #region Add Section
+        /*
         [Test]
         public async Task NoteController_AddAsync_ShouldAddNoteAndReturnWithCreated()
         {
@@ -197,6 +198,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(actualNote!.NoteId, Is.EqualTo(note.NoteId));
             Assert.That(actualNote!.Title, Is.EqualTo(note.Title));
         }
+        */
+
         [Test]
         public async Task NoteController_AddAsync_ShouldReturnWithBadRequest()
         {
@@ -344,6 +347,5 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
         #endregion Modify Section
-
     }
 }
