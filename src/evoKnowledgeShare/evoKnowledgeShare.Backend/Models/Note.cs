@@ -7,7 +7,7 @@ namespace evoKnowledgeShare.Backend.Models
 {
     public class Note
     {
-        public Note(Guid userId, Guid topicId, DateTimeOffset createdAt, string description, string title)
+        public Note(Guid noteId, Guid userId, Guid topicId, DateTimeOffset createdAt, string description, string title)
         {
             NoteId = Guid.NewGuid();
             UserId = userId;
