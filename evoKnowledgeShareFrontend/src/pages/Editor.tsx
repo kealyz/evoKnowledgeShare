@@ -16,7 +16,6 @@ export const Editor = () => {
   const modalContent = useSelector((state: RootState) => state.modal.content);
   const navigate = useNavigate();
 
-
   const [value, setValue] = useState<string>("");
   const [documentName, setDocumentName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -64,7 +63,6 @@ export const Editor = () => {
   }
 
   const saveNoteRequest = async () => {
-    //This going to be in a useState 
     const body = {
       note: {
         noteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',

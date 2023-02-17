@@ -3,7 +3,6 @@ import React from 'react'
 import { Image } from "react-bootstrap";
 import photo from '../resources/NotFound.png'
 
-
 const containerVariant = {
     hidden: {
         opacity: 0

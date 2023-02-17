@@ -35,7 +35,6 @@ export default function RenderTable(props: RenderTableProps): JSX.Element {
 
     const [filteredData, setFilteredData] = useState<IObject[]>([]);
 
-
     /*
     //BUG: ha túl sok az oszlop akkor az első betöltésnél nem jelenítit meg a táblát csak akkor ha a filter megváltozik, így folyamatosan
     useEffect(() => {

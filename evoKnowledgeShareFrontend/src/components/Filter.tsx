@@ -19,12 +19,6 @@ const FilterArrayFunction: React.FC<FilterArrayFunctionProps> = ({data, onFilter
 
   const filteredData = useFilteredArray(data, filterKey.toString(), filterString);
 
-  /*
-  useEffect(() => {
-    onFilter && onFilter(filteredData);
-  }, [filterKey, filteredData, data])
-*/
-
   const fetchFilterData = async() => {
     await onFilter(filteredData);
   }
@@ -33,8 +27,6 @@ const FilterArrayFunction: React.FC<FilterArrayFunctionProps> = ({data, onFilter
    fetchFilterData();
   }, [filteredData])
   
-  
-
   const handleFilterKeyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterKey(event.target.value);
   };

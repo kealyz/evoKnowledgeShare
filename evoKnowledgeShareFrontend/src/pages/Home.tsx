@@ -1,11 +1,8 @@
 import { motion } from 'framer-motion'
-import React from 'react'
 import { Card } from 'react-bootstrap'
-import { Navigate, useNavigate } from 'react-router-dom'
 import classes from './Home.module.css'
 
 export const Home = () => {
-
 
   return (
     <motion.div initial={{ scale: 0, }}

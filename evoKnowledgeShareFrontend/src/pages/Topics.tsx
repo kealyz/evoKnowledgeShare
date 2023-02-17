@@ -8,7 +8,6 @@ import { RootState } from '../store'
 import { modalActions } from "../store/modal";
 import { Modal } from '../ui/Modal';
 
-
 const containerVariant = {
     hidden: {
         opacity: 0
@@ -28,7 +27,6 @@ export default function Topics() {
     let modalIsShown = useSelector((state: RootState) => state.modal.show);
     const modalContent = useSelector((state: RootState) => state.modal.content);
 
-    //This is only temporary 
     useEffect(() => {
         fetchTopics();
     }, [topics])
@@ -59,7 +57,6 @@ export default function Topics() {
         setTopicId('');
         hideModalHandler();
     }
-
 
     const onDeleteTopic = async (topicId: string) => {
         showModalHandler("Are you want to delete " + topicId + " ?");

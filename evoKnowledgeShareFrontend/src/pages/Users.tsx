@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import RenderTable from '../components/ObjectTable'
 import IUser from '../interfaces/IUser'
@@ -7,37 +7,14 @@ import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
 import { RootState } from '../store'
 import { Button } from 'react-bootstrap'
-
 /*
-- nincs user
-- filter komponens
-- history bekötés -> history generálás
-*/
-
-/*
-- user
-- log
-- auth
-*/
-
-/*
-23.prezentáció 4 óra
+23.prezentáció beosztás:
 - bevezető - Kelemen Bence
 - backend - Peti
 - frontend - Marci
 - demo - Szabó András 
 - jövő - Bence
 - kérdések
-*/
-
-/*
-Topic-ot csak akkor lehessen törölni, ha nem tartozik hozzá egyetlen note sem, 
-csekkolni service-ben
-
-User-eket adatbázis szintjén tárolni (mock adatok)
-
-History-createnél majd csak egy létező userhez kellene bekötni. Ez külön branch 
-lesz majd a végén (demo branch)
 */
 
 export const Users = () => {
@@ -74,7 +51,6 @@ export const Users = () => {
     setUsers(await getAllUser.json());
   };
 
-  //This is only temporary 
   useEffect(() => {
     fetchUser();
   }, [users])

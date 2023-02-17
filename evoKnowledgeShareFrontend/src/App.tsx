@@ -9,7 +9,6 @@ import { Users } from './pages/Users';
 import { Notes } from './pages/Notes';
 import { UpdateNote } from './pages/UpdateNote';
 
-
 function App() {
   return (
    

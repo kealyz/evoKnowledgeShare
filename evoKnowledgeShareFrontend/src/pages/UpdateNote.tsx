@@ -10,6 +10,7 @@ import { RootState } from '../store';
 import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
 import classes from './Editor.module.css';
+import { NotFound } from './NotFound';
 
 export const UpdateNote = () => {
     const dispatch = useDispatch();
@@ -17,8 +18,6 @@ export const UpdateNote = () => {
     const modalContent = useSelector((state: RootState) => state.modal.content);
     const navigate = useNavigate();
     let { id } = useParams();
-
-    const [noteValue, setNoteValue] = useState<string>();
 
     const [value, setValue] = useState<string>("");
     const [documentName, setDocumentName] = useState<string>("");
@@ -40,7 +39,6 @@ export const UpdateNote = () => {
         dispatch(modalActions.removeModalContent);
     }
 
-    //Basic form validation
     useEffect(() => {
         if (value.trim().length < 5) {
             setIsValueInvalid(true);
@@ -72,9 +70,12 @@ export const UpdateNote = () => {
     }, [])
 
     const fetchLatestNoteValue = async () => {
-        const getNoteValueById = await fetch(`https://localhost:5145/api/Note/latestVersion/${id}`);
-        const response = await getNoteValueById.text();
-        setValue(response);  
+        const getNoteValueById = await fetch(`https://localhost:5145/api/Note/latestVersion/${id}`); 
+        if(await getNoteValueById.ok){
+            const response = await getNoteValueById.text();
+            setValue(response);
+        }
+        
     }
 
     const fetchNoteById = async () => {
@@ -85,7 +86,6 @@ export const UpdateNote = () => {
     }
 
     const saveNoteRequest = async () => {
-        //This going to be in a useState 
         const body = {
             note: {
                 noteId: id,
@@ -138,7 +138,7 @@ export const UpdateNote = () => {
                 </Modal>
             )}
 
-            <motion.div
+            {value.length > 0 ? (<motion.div
                 initial={{ opacity: 0, scale: 0.2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7 }}
@@ -170,7 +170,7 @@ export const UpdateNote = () => {
                     preview="edit"
                     onChange={onChangeValue}
                 />
-            </motion.div>
+            </motion.div>) : <NotFound/>}
         </>
     )
 }

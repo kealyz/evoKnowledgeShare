@@ -1,9 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react'
-import { Accordion, Button, Card, ListGroup } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import RenderTable from '../components/ObjectTable';
-import OldRenderTable from '../components/OldRenderTable';
 import IDocument from '../interfaces/IDocument';
 
 const containerVariant = {
@@ -19,36 +17,8 @@ const containerVariant = {
 }
 
 export const Notes = () => {
-  //const dispatch = useDispatch();
-  //let modalIsShown = useSelector((state: RootState) => state.modal.show);
-  //const modalContent = useSelector((state: RootState) => state.modal.content);
   const [notes, setNotes] = useState<IDocument[]>([])
   const navigate = useNavigate();
-  //const [noteId, setNoteId] = useState<string>();
-
-  const containerVariant = {
-    hidden: {
-      opacity: 0
-    },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.4
-      }
-    }
-  }
-
-  /*
-  const showModalHandler = (content: string) => {
-    dispatch(modalActions.setContent(content))
-    dispatch(modalActions.toggleShow())
-  }
- 
-  const hideModalHandler = () => {
-    dispatch(modalActions.toggleShow());
-    dispatch(modalActions.removeModalContent);
-  }
-*/
 
   const fetchNotes = async () => {
     const getAllNotes = await fetch('https://localhost:7145/api/Note');
@@ -72,17 +42,6 @@ export const Notes = () => {
 
   return (
     <>
-      {/*modalIsShown && (
-          <Modal onClose={hideModalHandler}>
-            <div className="">
-              <p>{modalContent}</p>
-              <Button className='m-2' variant="success" onClick={}>Yes</Button>
-              <Button variant="danger" onClick={hideModalHandler}>No</Button>
-            </div>
-  
-          </Modal>
-        )*/}
-
       <motion.div variants={containerVariant}
         initial="hidden"
         animate="visible">
@@ -103,7 +62,6 @@ export const Notes = () => {
             </Card.Body>
           </Card>
         ))}
-
       </motion.div>
     </>
   )

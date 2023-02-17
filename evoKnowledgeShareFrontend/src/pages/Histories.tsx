@@ -3,9 +3,6 @@ import React, { useEffect, useState } from 'react'
 import RenderTable from '../components/ObjectTable'
 import IHistory from '../interfaces/IHistory'
 
-//TODO: Tesztek
-//TODO: Merge everything
-
 export const Histories = () => {
   const [histories, setHistories] = useState<IHistory[]>([])
 
