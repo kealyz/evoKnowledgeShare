@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import IEditorTopic from '../interfaces/IEditorTopic';
 import { RootState } from '../store';
 import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
@@ -29,7 +30,7 @@ export const Editor = () => {
   const [isTopicTitleInvalid, setIsTopicTitleInvalid] = useState<boolean>(false);
   const [isValueInvalid, setIsValueInvalid] = useState<boolean>(false);
   const [documentNameInvalid, setDocumentNameInvalid] = useState<boolean>(false);
-  const [topics, setTopics] = useState([]);
+  const [topics, setTopics] = useState([] as IEditorTopic[]);
 
   const [topicId, setTopicId] = useState<string>("Choose a Topic Title");
   const [topicTitle, setTopicTitle] = useState<string>("");
@@ -95,9 +96,6 @@ export const Editor = () => {
     }
   }
 
-  console.log(topicId)
-  //console.log(topicTitle)
-  //TODO: topic listában ne szerepeljen kétszer
   return (
     <>
       {modalIsShown && (
@@ -121,8 +119,7 @@ export const Editor = () => {
           <Form.Group className="mb-3">
             <div className={classes.topicItem}>
               <Form.Select aria-label="Select title" isInvalid={isTopicTitleInvalid} value={topicId} onChange={(e) => {setTopicId(e.target.value);}}>
-                {searchParams.get("topic") === null ?
-                  <option>Choose a Topic Title</option> : <option>{topicTitle}</option>}
+                  <option>Choose a Topic Title</option>
                   {topics.map(topic => <option value={topic.id}>{topic.title}</option>)}
               </Form.Select>
             </div>

@@ -10,49 +10,10 @@ import { Modal } from "../ui/Modal"
 import { modalActions } from "../store/modal";
 import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
+import ITopicWithNotes from "../interfaces/TreeView/ITopicWithNotes";
 
-interface RenderTree {
-    id: string;
-    name: string;
-    children?: readonly RenderTree[];
-}
-
-const data = [
-    {
-        id: "1",
-        name: "Topic: jók",
-        children: [
-            {
-                id: "2",
-                name: "Note: nagyonjó",
-            },
-            {
-                id: "3",
-                name: "Note: mégjobb"
-            }
-        ]
-    },
-    {
-        id: "4",
-        name: "Topic: rosszak",
-        children: [
-            {
-                id: "5",
-                name: "Note: rossz:("
-            }
-        ]
-    },
-    {
-        id: "6",
-        name: "Topic: meg"
-    }
-]
-
-let useEffectActivator = 1;
 export default function MaterialTreeView() {
-
-    
-    const [topics, setTopics] = useState([]);
+    const [topics, setTopics] = useState([] as ITopicWithNotes[]);
 
     useEffect(() => {
         fetch('https://localhost:5145/api/Topic/TreeView')
@@ -60,10 +21,9 @@ export default function MaterialTreeView() {
             .then(json => {
                 setTopics(json)
             });
-    }, [useEffectActivator])
-
-    const parentIds = topics.map(node => (node.id));
-
+    }, [])
+    
+    const parentIds: string[] = topics.map(node => node.notes?.length != 0 ? node.topicId : "");
     const [expanded, setExpanded] = useState<string[]>([]);
     const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
         setExpanded(nodeIds);
@@ -74,10 +34,12 @@ export default function MaterialTreeView() {
             oldExpanded.length === 0 ? parentIds : []
         )
     }
-    const renderTree = (nodes: RenderTree) => (
-        <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
-            {Array.isArray(nodes.children)
-                ? nodes.children.map((node) => renderTree(node))
+    const renderTree = (nodes) => (
+        <TreeItem key={nodes.topicId} nodeId={nodes.topicId} label={nodes.title}>
+            {Array.isArray(nodes.notes
+            )
+                ? nodes.notes
+                    .map((node) => renderTree(node))
                 : null}
         </TreeItem>
     );
@@ -99,16 +61,23 @@ export default function MaterialTreeView() {
     const onSave = () => {
         showModalHandler()
         onSubmit(topicTitle)
-        useEffectActivator += 1;
         setTopicTitle("")
+    }
+
+    const getTreeAfterTopicAdd = () => {
+        fetch('https://localhost:5145/api/Topic/TreeView')
+            .then(res => res.json())
+            .then(json => {
+                setTopics(json)
+        });
     }
 
 
     const onSubmit = async (topicTitle: string) => {
-        const jsonObject = {title: topicTitle}
+        const jsonObject = { title: topicTitle }
         const create = await fetch('https://localhost:7145/api/Topic/Create', { method: "POST", body: JSON.stringify(jsonObject), headers: { "Content-Type": "application/json" } })
         const response = await create.json()
-        console.log(useEffectActivator)
+        getTreeAfterTopicAdd();
     }
 
     const [topicTitle, setTopicTitle] = useState<string>("");
@@ -118,9 +87,9 @@ export default function MaterialTreeView() {
         <>
             {modalIsShown && (
                 <Modal onClose={hideModalHandler}>
-                        <p>{modalContent}</p>
-                        <Form.Control type="text" placeholder="Enter the Topic title" value={topicTitle} onChange={e => setTopicTitle(e.target.value)} />
-                        <Button onClick={() => onSave()}>Save</Button>
+                    <p>{modalContent}</p>
+                    <Form.Control type="text" placeholder="Enter the Topic title" value={topicTitle} onChange={e => setTopicTitle(e.target.value)} />
+                    <Button onClick={() => onSave()}>Save</Button>
                 </Modal>
             )}
             <Box sx={{ height: 270, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}>
@@ -131,22 +100,19 @@ export default function MaterialTreeView() {
                 </Box>
                 <TreeView
                     aria-label="controlled"
-                    defaultExpanded={parentIds}
                     expanded={expanded}
                     defaultCollapseIcon={<FaRegFolderOpen />}
                     defaultExpandIcon={<FaRegFolder />}
                     onNodeToggle={handleToggle}
                 >
-                    {topics.map(node =>
-                        <TreeItem nodeId={node.id} label={node.children?.length != undefined ? node.name + " (" + node.children?.length + ")" : node.name}>
-                            {node.hasOwnProperty("children") ?
-                                node.children?.map(level => 
-                                <TreeItem nodeId={level.id} label={level.name}></TreeItem>)
-                                : ""}
-                            <TreeItem nodeId={"createNote" + node.id} label={"Create Note"} onClick={e => navigate("editor?topic=" + node.id)}></TreeItem> 
+                    {topics.map(oneTopic =>
+                        <TreeItem nodeId={oneTopic.topicId} label={oneTopic.notes?.length != undefined ? 
+                            oneTopic.title + " (" + oneTopic.notes?.length + ")" : oneTopic.title}>
+                            {oneTopic.hasOwnProperty("notes") ? oneTopic.notes?.map(oneNote =>
+                                <TreeItem nodeId={oneNote.noteId} label={oneNote.title} title={oneNote.createdAt.substring(0,10) + " " + oneNote.createdAt.substring(11,19)}></TreeItem>) : ""}
+                            <TreeItem nodeId={"createNote" + oneTopic.topicId} label={"Create Note"} onClick={e => navigate("../editor?topic=" + oneTopic.topicId)}></TreeItem>
                         </TreeItem>)}
                     <Button onClick={e => showModalHandler()}>Create Topic</Button>
-
                 </TreeView>
             </Box>
         </>
