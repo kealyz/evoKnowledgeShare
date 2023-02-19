@@ -119,6 +119,22 @@ namespace evoKnowledgeShare.Backend.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("latestVersion/{noteId}")]
+        public IActionResult GetLatestVersion(Guid noteId) 
+        {
+            try 
+            {
+                return Ok(myNoteService.GetLatestVersion(noteId));
+            }
+            catch (KeyNotFoundException) 
+            {
+                return NotFound();
+            } 
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
         #endregion Get Section
 
         #region Add Section
