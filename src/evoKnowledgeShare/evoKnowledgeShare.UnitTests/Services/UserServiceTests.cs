@@ -84,8 +84,15 @@ namespace evoKnowledgeShare.UnitTests.Services
 
             User actualUser = await myUserService.CreateUserAsync(userDTOToBeAdded);
 
-            //myRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(y => y.Equals(user))), Times.Once);
             Assert.That(actualUser, Is.EqualTo(userToBeAdded));
+        }
+
+        [Test]
+        public async Task UserService_CreateUserAsync_ShouldThrowArgumentNullException()
+        {
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).Throws<ArgumentNullException>();
+
+            Assert.ThrowsAsync<ArgumentNullException>(() => myUserService.CreateUserAsync(new UserDTO("", "", "")));
         }
 
         #endregion Add Test Section
