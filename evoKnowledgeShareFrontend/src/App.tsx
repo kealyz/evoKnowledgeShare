@@ -6,6 +6,7 @@ import { NotFound } from './pages/NotFound';
 import { Editor } from './pages/Editor';
 import { Histories } from './pages/Histories';
 import { Users } from './pages/Users';
+import MaterialTreeView from './pages/MaterialTreeView';
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/Topics' element={<Topics />} />
         <Route path='/Editor' element={<Editor/>}/>
+        <Route path='/TreeView' element={<MaterialTreeView/>}/>
         <Route path='/Histories' element={<Histories/>}/>
         <Route path='/Users' element={<Users/>}/>
       </Routes>
