@@ -1,10 +1,8 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
-namespace evoKnowledgeShare.Backend.Repositories
+namespace evoKnowledgeShare.Backend.Services
 {
     public class TreeViewService
     {
@@ -33,7 +31,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                     for (int j = 0; j < noteEntitiesByTopic.Length; j++)
                     {
                         notes.Add(new NoteByTopicDTO(noteEntitiesByTopic[j].NoteId, noteEntitiesByTopic[j].Title, noteEntitiesByTopic[j].CreatedAt));
-                    }                    
+                    }
                 }
                 topics[i] = new TopicsWithNotesDTO(topicEntities[i].Id, topicEntities[i].Title, notes);
             }

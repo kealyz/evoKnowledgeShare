@@ -1,6 +1,5 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Models;
-using evoKnowledgeShare.Backend.Repositories;
 using evoKnowledgeShare.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
