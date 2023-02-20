@@ -11,6 +11,33 @@ import { modalActions } from "../store/modal";
 import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import ITopicWithNotes from "../interfaces/TreeView/ITopicWithNotes";
+import type {} from "@mui/lab/themeAugmentation"
+import createTheme from "@mui/material/styles/createTheme";
+
+const treeViewTheme = createTheme({
+    components: {
+        MuiTreeView: {
+            styleOverrides: {
+                root: {
+                    paddingLeft: "55px",
+                }
+            }
+        }
+    }
+})
+
+const treeItemTheme = createTheme({
+    components: {
+        MuiTreeItem: {
+            styleOverrides: {
+                root: {
+                    fontStyle: "italic",
+                    transform: "scale(0.9)",
+                },
+            }
+        }
+    }
+})
 
 export default function MaterialTreeView() {
     const [topics, setTopics] = useState([] as ITopicWithNotes[]);
@@ -92,8 +119,8 @@ export default function MaterialTreeView() {
                     <Button onClick={() => onSave()}>Save</Button>
                 </Modal>
             )}
-            <Box sx={{ height: 270, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}>
-                <Box sx={{ mb: 1 }}>
+            <Box sx={{ height: 600, flexGrow: 1, maxWidth: 450, overflowY: 'auto' }}>
+                <Box sx={{ mb: 1, paddingLeft: "55px" }}>
                     <Button onClick={closeOrOpenTree}>
                         {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
                     </Button>
@@ -101,16 +128,18 @@ export default function MaterialTreeView() {
                 <TreeView
                     aria-label="controlled"
                     expanded={expanded}
+                    defaultExpanded={parentIds}
                     defaultCollapseIcon={<FaRegFolderOpen />}
                     defaultExpandIcon={<FaRegFolder />}
                     onNodeToggle={handleToggle}
+                    theme={treeViewTheme}
                 >
                     {topics.map(oneTopic =>
-                        <TreeItem nodeId={oneTopic.topicId} label={oneTopic.notes?.length != undefined ? 
+                        <TreeItem nodeId={oneTopic.topicId}  label={oneTopic.notes?.length != 0 ? 
                             oneTopic.title + " (" + oneTopic.notes?.length + ")" : oneTopic.title}>
                             {oneTopic.hasOwnProperty("notes") ? oneTopic.notes?.map(oneNote =>
                                 <TreeItem nodeId={oneNote.noteId} label={oneNote.title} title={oneNote.createdAt.substring(0,10) + " " + oneNote.createdAt.substring(11,19)}></TreeItem>) : ""}
-                            <TreeItem nodeId={"createNote" + oneTopic.topicId} label={"Create Note"} onClick={e => navigate("../editor?topic=" + oneTopic.topicId)}></TreeItem>
+                            <TreeItem nodeId={"createNote" + oneTopic.topicId} label={"Create Note"} theme={treeItemTheme} onClick={e => navigate("../editor?topic=" + oneTopic.topicId)}></TreeItem>
                         </TreeItem>)}
                     <Button onClick={e => showModalHandler()}>Create Topic</Button>
                 </TreeView>
