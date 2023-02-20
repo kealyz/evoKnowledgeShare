@@ -33,7 +33,7 @@ export const Histories = () => {
         initial="hidden"
         animate="visible">
         <h1 className='mb-4'>History operations</h1>
-        <RenderTable topics={histories} viewable={false} editable={false} deletable={false}/>
+        {(histories && Object.keys(histories).length !== 0) ? <RenderTable data={histories}/> : <h2>No histories</h2>}
       </motion.div>
     </>
   )

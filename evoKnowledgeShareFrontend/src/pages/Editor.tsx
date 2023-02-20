@@ -1,38 +1,33 @@
 import MDEditor from '@uiw/react-md-editor'
 import { motion } from 'framer-motion'
-import React from 'react';
-import { useState } from 'react'
+import moment from 'moment';
+import { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { useBeforeUnload, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { RootState } from '../store';
 import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
-import useLocalStorage from '../hooks/useLocalStorage';
-import IDocument from '../interfaces/IDocument';
-
+import classes from './Editor.module.css';
 
 export const Editor = () => {
-
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
-  //TODO:Save and load in local storage => no need for a save button 
-  //TODO: View needed ?
-  //TODO: Are u sure / change
-  const [elements, setElements] = useLocalStorage({id:'', title:'', content: '', version: ''});
-  
-  const [value, setValue] = useState<string>("");
-  const [documentName, setDocumentName] = useState<string>("");
   let modalIsShown = useSelector((state: RootState) => state.modal.show);
   const modalContent = useSelector((state: RootState) => state.modal.content);
+  const navigate = useNavigate();
 
-  const setModalContent = (props: string) => {
-    dispatch(modalActions.setContent(props))
-  }
+  const [value, setValue] = useState<string>("");
+  const [documentName, setDocumentName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [level, setLevel] = useState<string>("");
+  const [save, setSave] = useState<boolean>(false);
 
-  const showModalHandler = () => {
-    setModalContent("Are you want to save this document?")
+  const [isLevelInvalid, setIsLevelInvalid] = useState<boolean>(false);
+  const [isValueInvalid, setIsValueInvalid] = useState<boolean>(false);
+  const [documentNameInvalid, setDocumentNameInvalid] = useState<boolean>(false);
+
+  const showModalHandler = (content: string) => {
+    dispatch(modalActions.setContent(content))
     dispatch(modalActions.toggleShow())
   }
 
@@ -41,44 +36,111 @@ export const Editor = () => {
     dispatch(modalActions.removeModalContent);
   }
 
+  //Basic form validation
+  useEffect(() => {
+    if (value.trim().length < 5) {
+      setIsValueInvalid(true);
+    } else {
+      setIsValueInvalid(false);
+    }
+
+    if (documentName.trim().length < 5 && documentName.trim().length === 0) {
+      setDocumentNameInvalid(true)
+    } else {
+      setDocumentNameInvalid(false);
+    }
+
+    if (level === "1" || level === "2" || level === "3") {
+      setIsLevelInvalid(false);
+    } else {
+      setIsLevelInvalid(true);
+    }
+
+  }, [value, documentName, level])
+
   const onChangeValue = (e: any): void => {
     setValue(e);
   }
 
-  const onSave = () => {
-    //navigate('/')
-    //alert('Saved');
-    dispatch(modalActions.toggleShow());
+  const saveNoteRequest = async () => {
+    const body = {
+      note: {
+        noteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        topicId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        createdAt: moment().format('YYYY-MM-DD[T]HH:mm:ss.SSSZ'),
+        description: description,
+        title: documentName
+      },
+      mdRaw: value,
+      incrementSize: level
+    }
+
+    const request = await fetch('https://localhost:7145/api/Note', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+    );
+    const result = await request.json();
+    hideModalHandler();
+    setSave(false);
   }
 
-  //1. alaklami mentés
-  //n. mentés
-  //Give this a title
-  //editor felett szürke new note input (unsaved)
-  //minor change
+  const onSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (isLevelInvalid === false && isValueInvalid === false && documentNameInvalid === false) {
+      showModalHandler("Saving...");
+      setSave(true);
+      saveNoteRequest()
+      if(!save){
+        navigate("/Notes");
+      }
+
+    } else {
+      showModalHandler("Please check every fields")
+    }
+    e.preventDefault();
+  }
 
   return (
     <>
       {modalIsShown && (
         <Modal onClose={hideModalHandler}>
           <div className="">
-            <p>{modalContent}</p>
-            <Button onClick={onSave} variant="success">Save</Button>
-          </div>
+            <h2>{modalContent}</h2>
 
+          </div>
         </Modal>
       )}
-      
+
       <motion.div
         initial={{ opacity: 0, scale: 0.2 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7 }}
         className="container mt-5"
         data-color-mode="light">
+
+        <div>
+          <Form.Group className="mb-3">
+            <div className={classes.descriptionItem}>
+              <Form.Control type="text" isInvalid={documentNameInvalid} placeholder="Enter the document name" value={documentName} onChange={(e) => setDocumentName(e.target.value)} />
+            </div>
+            <div className={classes.levelItem}>
+              <Form.Select aria-label="Select change level" isInvalid={isLevelInvalid} value={level} onChange={(e) => setLevel(e.target.value)}>
+                <option>Select change level</option>
+                <option value="1">Small</option>
+                <option value="2">Medium</option>
+                <option value="3">Large</option>
+              </Form.Select>
+            </div>
+            <div className={classes.buttonItem}><Button disabled={isValueInvalid} onClick={(e) => onSave(e)}>Save</Button></div>
+          </Form.Group>
+        </div>
         <Form.Group className="mb-3">
-          <Form.Control type="text" placeholder="Enter the document name" value={documentName} onChange={(e) => setDocumentName(e.target.value)} />
+          <Form.Control type="text" placeholder="Enter the document description" value={description} onChange={(e) => setDescription(e.target.value)} />
         </Form.Group>
-        {/*<Button className='mb-3' onClick={showModalHandler}>Save</Button>*/}
         <MDEditor
           height={450}
           value={value}

@@ -81,6 +81,7 @@ namespace evoKnowledgeShare.Backend.Services
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         public string GetLatestVersion(Guid noteId) {
+            
             string versionRaw = String.Empty;
             string md = String.Empty;
 
@@ -92,7 +93,7 @@ namespace evoKnowledgeShare.Backend.Services
             }
 
             using (StreamReader reader = new StreamReader(Path.Combine(currentDirectory, noteId.ToString(), versionRaw, "document.md"))) {
-                md = reader.ReadLine();
+                md = reader.ReadToEnd();
             }
 
             return md;

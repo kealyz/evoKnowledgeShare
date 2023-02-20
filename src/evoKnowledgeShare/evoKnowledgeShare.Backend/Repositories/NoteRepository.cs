@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.DataAccess;
 using evoKnowledgeShare.Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 
@@ -52,6 +53,7 @@ namespace evoKnowledgeShare.Backend.Repositories
         /// <inheritdoc/>
         public override async Task<Note> AddAsync(Note note)
         {
+            
             try
             {
                 await myDbContext.Notes.AddAsync(note);
@@ -62,6 +64,27 @@ namespace evoKnowledgeShare.Backend.Repositories
             {
                 throw;
             }
+            
+
+            /*
+            if (note == null)
+            {
+                throw new ArgumentNullException(nameof(note));
+            }
+
+            note.NoteId = Guid.NewGuid();
+            try
+            {
+                EntityEntry<Note> addedNote = await myDbContext.Notes.AddAsync(note);
+                await myDbContext.SaveChangesAsync();
+                return addedNote.Entity;
+            }
+            catch (OperationCanceledException)
+            {
+                //TODO: Log(ex)
+                throw;
+            }
+            */
         }
 
         /// <inheritdoc/>
