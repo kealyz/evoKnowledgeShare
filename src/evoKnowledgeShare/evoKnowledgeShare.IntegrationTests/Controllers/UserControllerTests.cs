@@ -97,6 +97,19 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
+        public async Task UserController_GetUserById_BadRequest() {
+            // Arrange
+            Uri getUri = new Uri($"/api/User/not guid", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        [Test]
         public async Task UserController_GetUserByUserName_ReturnsUserByUserName()
         {
             // Arrange
