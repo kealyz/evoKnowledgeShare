@@ -145,6 +145,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 {
                     myDbContext.Remove(topic);
                 }
+                myDbContext.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -173,6 +174,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 {
                     myDbContext.Topics.Remove(topicToRemove);
                 }
+                myDbContext.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -208,6 +210,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
 
             myDbContext.Topics.UpdateRange(topics);
+            myDbContext.SaveChanges();
             return myDbContext.Topics.Where(topic => topics.Any(entity => entity == topic)).ToList();
         }
 
