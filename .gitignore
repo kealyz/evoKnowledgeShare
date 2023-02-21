@@ -352,4 +352,3 @@ MigrationBackup/
 src/evoKnowledgeShare/evoKnowledgeShare.Backend/Notes
 src/evoKnowledgeShare/evoKnowledgeShare.Backend/Migrations
 src/evoKnowledgeShare/evoKnowledgeShare.Backend/appsettings.json
-evoKnowledgeShareFrontend/package-lock.json
