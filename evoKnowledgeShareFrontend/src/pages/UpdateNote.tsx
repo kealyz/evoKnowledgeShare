@@ -100,7 +100,7 @@ export const UpdateNote = () => {
         }
 
         const request = await fetch('https://localhost:7145/api/Note/', {
-            method: 'POST',
+            method: 'PUT',
             body: JSON.stringify(body),
             headers: {
                 'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ export const UpdateNote = () => {
             setSave(true);
             saveNoteRequest()
             if (!save) {
-                navigate("/Notes");
+                navigate("/");
             }
 
         } else {
@@ -167,7 +167,7 @@ export const UpdateNote = () => {
                 <MDEditor
                     height={450}
                     value={value}
-                    preview="edit"
+                    preview="preview"
                     onChange={onChangeValue}
                 />
             </motion.div>) : <NotFound/>}
