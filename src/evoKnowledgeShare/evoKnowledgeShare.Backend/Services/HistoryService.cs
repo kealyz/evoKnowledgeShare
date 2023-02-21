@@ -1,5 +1,6 @@
 ﻿using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
+using evoKnowledgeShare.Backend.Repositories;
 
 namespace evoKnowledgeShare.Backend.Services
 {
@@ -12,12 +13,26 @@ namespace evoKnowledgeShare.Backend.Services
             myHistoryRepository = historyRepository;
         }
 
-        public async Task<IEnumerable<History>> GetAllAsync() => await myHistoryRepository.GetAllAsync();
-
+        /// <summary>
+        /// Return all <see cref="History"/> entity from database.
+        /// </summary>
+        /// <returns>A list of <see cref="History"/> or empty list</returns>
         public IEnumerable<History> GetAll() => myHistoryRepository.GetAll();
 
-        public History GetById(Guid id) => myHistoryRepository.GetAll().First(x => x.Id == id);
+        /// <summary>
+        /// Return a specific history entity from database by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>A <see cref="History"/> entity </returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public History GetById(Guid id) => myHistoryRepository.GetById(id);
 
-        public async Task CreateHistory(History history) => await myHistoryRepository.AddAsync(history);
+        /// <summary>
+        /// Create <see cref="History"/> entity in the database
+        /// </summary>
+        /// <param name="history"></param>
+        /// <returns>Task <see cref="History"/> if added</returns>
+        /// <exception cref="ArgumentException">Argument Exception</exception>
+        public async Task<History> CreateHistory(History history) => await myHistoryRepository.AddAsync(history);
     }
 }

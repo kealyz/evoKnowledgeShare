@@ -1,19 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using evoKnowledgeShare.Backend.DTO;
+
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace evoKnowledgeShare.Backend.Models
 {
     public class Topic
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string Title { get; set; }
 
-        public Topic(int id, string title)
+        [JsonConstructor]
+        public Topic(Guid id, string title)
         {
             Id = id;
             Title = title;
+        }
+
+        public Topic(TopicDTO topicDTO)
+        {
+            Id = Guid.NewGuid();
+            Title = topicDTO.Title;
         }
 
         public bool Equals(Topic other)
@@ -40,6 +50,11 @@ namespace evoKnowledgeShare.Backend.Models
         public override int GetHashCode()
         {
             return HashCode.Combine(Id, Title);
+        }
+
+        public Topic() {
+            Id = Guid.Empty;
+            Title = String.Empty;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using evoKnowledgeShare.Backend.Interfaces;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
 using Moq;
@@ -7,160 +8,143 @@ namespace evoKnowledgeShare.UnitTests.Services
 {
     public class TopicServiceTests
     {
-        private TopicService myTopicService;
-        private Mock<IRepository<Topic>> myRepositoryMock;
+        protected Mock<IRepository<Topic>> myRepositoryMock = default!;
+        protected TopicService myService = default!;
+        List<Topic> myTopics;
 
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
             myRepositoryMock = new Mock<IRepository<Topic>>(MockBehavior.Strict);
-            myTopicService = new TopicService(myRepositoryMock.Object);
+            myService = new TopicService(myRepositoryMock.Object);
+            myTopics = new List<Topic> {
+                new Topic(Guid.NewGuid(), "Topic Test Title 1."),
+                new Topic(Guid.NewGuid(), "Topic Test Title 2."),
+                new Topic(Guid.NewGuid(), "Topic Test Title 3."),
+                new Topic(Guid.NewGuid(), "Topic Test Title 4."),
+                new Topic(Guid.NewGuid(), "Topic Test Title 5."),
+            };
         }
 
-        //GET TESTS
-        [Test]
-        public void Topic_GetAll_ShouldReturnAll()
-        {
-            var shouldReturnFirst = new Topic(1, "Topic Test Title 1.");
-            var shouldReturnSecond = new Topic(2, "Topic Test Title 2.");
-
-            myRepositoryMock.Setup(x => x.GetAll()).Returns(() =>
-            {
-                return new List<Topic> {
-                    shouldReturnFirst,
-                    shouldReturnSecond
-                };
-            });
-
-            var actualTopics = myTopicService.GetAll();
-
-            Assert.That(Equals(actualTopics.ElementAt(0), shouldReturnFirst));
-            Assert.That(Equals(actualTopics.ElementAt(1), shouldReturnSecond));
-            Assert.That(actualTopics.Count, Is.EqualTo(2));
-        }
+        #region Get Test Section
 
         [Test]
-        public async Task Topic_GetAllAsync_ShouldReturnAll()
+        public void TopicService_GetAll_ShouldReturnAll()
         {
-            var shouldReturnFirst = new Topic(1, "Topic Test Title 1.");
-            var shouldReturnSecond = new Topic(2, "Topic Test Title 2.");
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(myTopics);
 
-            myRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(() =>
-            {
-                return new List<Topic> {
-                    shouldReturnFirst,
-                    shouldReturnSecond
-                };
-            });
+            IEnumerable<Topic> actualTopics = myService.GetAll();
 
-            var actualTopics = await myTopicService.GetAllAsync();
-
-            Assert.That(Equals(actualTopics.ElementAt(0), shouldReturnFirst));
-            Assert.That(Equals(actualTopics.ElementAt(1), shouldReturnSecond));
-            Assert.That(actualTopics.Count, Is.EqualTo(2));
+            foreach (var topic in myTopics)
+                Assert.That(actualTopics.Contains(topic));
+            Assert.That(actualTopics.Count, Is.EqualTo(myTopics.Count));
         }
 
         [Test]
-        public void Topic_GetById_ShouldReturnTopicWithSpecificId()
+        public void TopicService_GetAll_ShouldReturnEmptyList() {
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(Enumerable.Empty<Topic>);
+            var actualNotes = myService.GetAll();
+
+            Assert.That(actualNotes.Count, Is.EqualTo(0));
+            Assert.That(actualNotes, Is.Empty);
+        }
+
+        [Test]
+        public void TopicService_GetById_ShouldReturnTopicWithSpecificId()
         {
-            var expectedTopic = new Topic(1, "Topic Test Title 1.");
+            Topic expectedTopic = new Topic(myTopics[2].Id, myTopics[2].Title);
+            myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Returns(() => expectedTopic);
 
-            myRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(() => expectedTopic);
-
-            var actualTopic = myTopicService.GetById(expectedTopic.Id);
+            Topic actualTopic = myService.GetById(expectedTopic.Id)!;
 
             Assert.That(Equals(actualTopic, expectedTopic));
-            Assert.That(actualTopic.Title, Is.EqualTo(expectedTopic.Title));
         }
 
         [Test]
-        public void Topic_GetByTitle_ShouldReturnAListWhereItMatchesTitle()
+        public void TopicService_GetById_ShouldThrowKeyNotFoundException()
         {
-            var expectedTopic = new Topic(1, "Topic Test Title 1.");
-            var notExpectedTopic = new Topic(2, "Topic Test Title 2.");
+            Topic notExistingTopic = new Topic(Guid.NewGuid(), "Randomtitle");
+            myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Throws<KeyNotFoundException>();
 
-            myRepositoryMock.Setup(x => x.GetAll()).Returns(() =>
+            Assert.Throws<KeyNotFoundException>(() =>
             {
-                return new List<Topic> {
-                    expectedTopic,
-                    notExpectedTopic
-                };
+                Topic actualTopic = myService.GetById(notExistingTopic.Id)!;
             });
-
-            var actualTopics = myTopicService.GetByTitle(expectedTopic.Title);
-
-            Assert.That(Equals(actualTopics.ElementAt(0), expectedTopic));
         }
 
         [Test]
-        public void Topic_GetRangeById_ShouldReturnARangeOfIds()
+        public void TopicService_GetByTitle_ShouldReturnAListWhereItMatchesTitle()
         {
-            var shouldReturnFirst = new Topic(1, "Topic Test Title 1.");
-            var shouldReturnSecond = new Topic(2, "Topic Test Title 2.");
+            Topic expectedTopic = new Topic(myTopics[3].Id, myTopics[3].Title);
+            myRepositoryMock.Setup(x => x.GetAll()).Returns(myTopics);
 
-            myRepositoryMock.Setup(x => x.GetRangeById(It.IsAny<IEnumerable<int>>())).Returns(new List<Topic> {
-                shouldReturnFirst,
-                shouldReturnSecond
+            IEnumerable<Topic> actualTopics = myService.GetByTitle(expectedTopic.Title);
+
+            Assert.That(actualTopics.Contains(expectedTopic));
+        }
+
+        [Test]
+        public void TopicService_GetByTitle_ShouldThrowKeyNotFoundException()
+        {
+            myRepositoryMock.Setup(x => x.GetAll()).Throws<KeyNotFoundException>();
+
+
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                IEnumerable<Topic> actualTopics = myService.GetByTitle("Nagyonrandomtitle");
             });
-
-            var actualTopics = myTopicService.GetRangeById(new List<int> { 1, 3 });
-
-            Assert.That(Equals(actualTopics.ElementAt(0), shouldReturnFirst));
-            Assert.That(Equals(actualTopics.ElementAt(1), shouldReturnSecond));
-            Assert.That(actualTopics.Count, Is.EqualTo(2));
-        }
-
-        //ADD TESTS
-        [Test]
-        public void Topic_Add_ShouldCallAddOnce()
-        {
-            var addedTopic = new Topic(1, "Topic Test Title 1.");
-
-            myRepositoryMock.Setup(x => x.Add(It.IsAny<Topic>()));
-
-            myTopicService.Add(addedTopic);
-
-            myRepositoryMock.Verify(x => x.Add(addedTopic), Times.Once);
         }
 
         [Test]
-        public async Task Topic_Add_ShouldCallAddOnceAsync()
+        public void TopicService_GetRangeById_ShouldReturnARangeOfIds()
         {
-            var addedTopic = new Topic(1, "Topic Test Title 1.");
+            List<Topic> topicsToBeAdded = new List<Topic>() { myTopics[0], myTopics[1] };
+            myRepositoryMock.Setup(x => x.GetRangeById(It.IsAny<IEnumerable<Guid>>())).Returns(topicsToBeAdded);
 
-            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Topic>()));
+            IEnumerable<Topic> actualTopics = myService.GetRangeById(new List<Guid>() { topicsToBeAdded[0].Id, topicsToBeAdded[1].Id });
 
-            myTopicService.AddAsync(addedTopic);
-
-            myRepositoryMock.Verify(x => x.AddAsync(addedTopic), Times.Once);
+            CollectionAssert.AreEqual(actualTopics, topicsToBeAdded);
         }
 
         [Test]
-        public void Topic_AddRange_ShouldCallAddRangeOnce()
+        public void TopicService_GetRangeById_ShouldThrowKeyNotFoundException()
         {
-            List<Topic> rangeOfTopics = new List<Topic> {
-                new Topic(1, "First Topic"),
-                new Topic(2, "Second Topic"),
-                new Topic(3, "Third Topic"),
-                new Topic(4, "Fourth Topic")
-            };
+            myRepositoryMock.Setup(x => x.GetRangeById(It.IsAny<IEnumerable<Guid>>())).Throws<KeyNotFoundException>();
 
-            myRepositoryMock.Setup(x => x.AddRange(It.IsAny<IEnumerable<Topic>>()));
-
-            myTopicService.AddRange(rangeOfTopics);
-
-            myRepositoryMock.Verify(x => x.AddRange(rangeOfTopics), Times.Once);
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                IEnumerable<Topic> actualTopics = myService.GetRangeById(new List<Guid> { myTopics[0].Id, myTopics[1].Id });
+            });
         }
 
-        //Remove Tests
+        #endregion Get Test Section
+
+        #region Add Test Region
+
+        [Test]
+        public async Task Topic_AddAsync_ShouldCallAddAsyncOnce()
+        {
+            TopicDTO topicDTOToBeAdded = new TopicDTO(myTopics[0].Title);
+            Topic topicToBeAdded = new Topic(topicDTOToBeAdded);
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Topic>())).ReturnsAsync(topicToBeAdded);
+
+            Topic addedTopic = await myService.AddAsync(topicDTOToBeAdded);
+
+            //myRepositoryMock.Verify(x => x.AddAsync(asd), Times.Once);
+            Assert.That(addedTopic, Is.EqualTo(topicToBeAdded));
+        }
+
+        #endregion Add Test Region
+
+        #region Remove Test Region
+
         [Test]
         public void Topic_Remove_ShouldCallRemoveOnce()
         {
-            var removeTopic = new Topic(1, "Topic Test Title 1.");
-
+            Topic removeTopic = new Topic(myTopics[0].Id, myTopics[0].Title);
             myRepositoryMock.Setup(x => x.Remove(It.IsAny<Topic>()));
 
-            myTopicService.Remove(removeTopic);
+            myService.Remove(removeTopic);
 
             myRepositoryMock.Verify(x => x.Remove(removeTopic), Times.Once);
         }
@@ -168,11 +152,10 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public void Topic_RemoveById_ShouldCallRemoveByIdOnce()
         {
-            var removeId = 1;
+            Guid removeId = myTopics[2].Id;
+            myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<Guid>()));
 
-            myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<int>()));
-
-            myTopicService.RemoveById(removeId);
+            myService.RemoveById(removeId);
 
             myRepositoryMock.Verify(x => x.RemoveById(removeId), Times.Once);
         }
@@ -180,60 +163,55 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public void Topic_RemoveRange_ShouldCallRemoveRangeOnce()
         {
-            List<Topic> removeRangeOfTopics = new List<Topic> {
-                new Topic(1, "First Topic"),
-                new Topic(2, "Second Topic"),
-                new Topic(3, "Third Topic"),
-                new Topic(4, "Fourth Topic")
-            };
-
             myRepositoryMock.Setup(x => x.RemoveRange(It.IsAny<IEnumerable<Topic>>()));
 
-            myTopicService.RemoveRange(removeRangeOfTopics);
+            myService.RemoveRange(myTopics);
 
-            myRepositoryMock.Verify(x => x.RemoveRange(removeRangeOfTopics), Times.Once);
+            myRepositoryMock.Verify(x => x.RemoveRange(myTopics), Times.Once);
         }
 
         [Test]
-        public void Topic_RemoveRangeById_ShouldCallRemoveRangeByIdOnce()
+        public void TopicService_RemoveRangeById_ShouldCallRemoveRangeByIdOnce()
         {
-            List<int> removeRangeOfIds = new List<int> { 1, 2, 5, 6 };
+            List<Guid> removeRangeOfIds = new List<Guid> { myTopics[0].Id, myTopics[1].Id, myTopics[4].Id };
+            myRepositoryMock.Setup(x => x.RemoveRangeById(It.IsAny<IEnumerable<Guid>>()));
 
-            myRepositoryMock.Setup(x => x.RemoveRangeById(It.IsAny<IEnumerable<int>>()));
-
-            myTopicService.RemoveRangeById(removeRangeOfIds);
+            myService.RemoveRangeById(removeRangeOfIds);
 
             myRepositoryMock.Verify(x => x.RemoveRangeById(removeRangeOfIds), Times.Once);
         }
 
-        //Update Tests
+        #endregion Remove Test Region
+
+        #region Update Test Region
+
         [Test]
-        public void Topic_Update_ShouldCallUpdateOnce()
+        public void TopicService_Update_ShouldCallUpdateOnce()
         {
-            var updateTopic = new Topic(1, "Topic Test Title 1.");
+            Topic topicToBeUpdated = new Topic(myTopics[0].Id, "Ezegytitle");
+            myRepositoryMock.Setup(x => x.Update(It.IsAny<Topic>())).Returns(topicToBeUpdated);
 
-            myRepositoryMock.Setup(x => x.Update(It.IsAny<Topic>()));
+            Topic updatedTopic = myService.Update(topicToBeUpdated);
 
-            myTopicService.Update(updateTopic);
-
-            myRepositoryMock.Verify(x => x.Update(updateTopic), Times.Once);
+            myRepositoryMock.Verify(x => x.Update(topicToBeUpdated), Times.Once);
+            Assert.That(updatedTopic, Is.EqualTo(topicToBeUpdated));
         }
 
         [Test]
-        public void Topic_UpdateRange_ShouldCallUpdateRangeOnce()
+        public void TopicService_UpdateRange_ShouldCallUpdateRangeOnce()
         {
             List<Topic> updateRangeOfTopics = new List<Topic> {
-                new Topic(1, "First Topic"),
-                new Topic(2, "Second Topic"),
-                new Topic(3, "Third Topic"),
-                new Topic(4, "Fourth Topic")
+                new Topic(myTopics[0].Id, myTopics[1].Title),
+                new Topic(myTopics[1].Id, myTopics[0].Title)
             };
+            myRepositoryMock.Setup(x => x.UpdateRange(It.IsAny<IEnumerable<Topic>>())).Returns(updateRangeOfTopics);
 
-            myRepositoryMock.Setup(x => x.UpdateRange(It.IsAny<IEnumerable<Topic>>()));
-
-            myTopicService.UpdateRange(updateRangeOfTopics);
+            IEnumerable<Topic> updatedTopics = myService.UpdateRange(updateRangeOfTopics);
 
             myRepositoryMock.Verify(x => x.UpdateRange(updateRangeOfTopics), Times.Once);
+            Assert.That(updatedTopics, Is.EqualTo(updateRangeOfTopics));
         }
+
+        #endregion Update Test Region
     }
 }
