@@ -1,5 +1,9 @@
 ﻿using evoKnowledgeShare.Backend.DataAccess;
 using evoKnowledgeShare.Backend.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
+using System.Collections.Generic;
 
 namespace evoKnowledgeShare.Backend.Repositories
 {
@@ -8,144 +12,185 @@ namespace evoKnowledgeShare.Backend.Repositories
         public NoteRepository(EvoKnowledgeDbContext dbContext) : base(dbContext)
         { }
 
-        public override void Add(Note entity)
-        {
-            myDbContext.Notes.Add(entity);
-        }
+        #region Get Section
 
-        public override async Task AddAsync(Note entity)
-        {
-            await myDbContext.Notes.AddAsync(entity);
-        }
-
-        public override void AddRange(IEnumerable<Note> entities)
-        {
-            myDbContext.Notes.AddRange(entities);
-        }
-
-        public override Task AddRangeAsync(IEnumerable<Note> entities)
-        {
-            myDbContext.Notes.AddRangeAsync(entities);
-            return Task.CompletedTask;
-        }
-
+        /// <inheritdoc/>
         public override IEnumerable<Note> GetAll()
         {
-            return myDbContext.Notes;
-        }
-
-        public override Task<IEnumerable<Note>> GetAllAsync()
-        {
             IEnumerable<Note> notes = myDbContext.Notes;
-            return Task.FromResult(notes);
+            if (!notes.Any())
+            {
+                return Enumerable.Empty<Note>();
+            }
+            return notes;
         }
-
-
-        public override Note GetById(int id)
+        
+        ///<inheritdoc/>
+        public override Note GetById(Guid id)
         {
-            throw new NotImplementedException();
-            //Ez ide haszontalan?
+            Note? note=myDbContext.Notes.FirstOrDefault(x => x.NoteId == id);
+            if (note == null)
+            {
+                throw new KeyNotFoundException();
+            }
+            return note;
         }
 
-        public override Task<Note?> GetByIdAsync(int id)
+        /// <inheritdoc/>
+        public override IEnumerable<Note> GetRangeById(IEnumerable<Guid> guids)
         {
-            throw new NotImplementedException();
+            IEnumerable<Note> notes = myDbContext.Notes.Where(x => guids.Any(y => x.NoteId == y));
+            if (!notes.Any())
+            {
+                return Enumerable.Empty<Note>();
+            }
+            return notes;
         }
 
-        public override IEnumerable<Note> GetRangeById(IEnumerable<int> ids)
+        #endregion Get Section
+        #region Add Section
+
+        /// <inheritdoc/>
+        public override async Task<Note> AddAsync(Note note)
         {
-            throw new NotImplementedException();
-            //Ez ide haszontalan?
+            
+            try
+            {
+                await myDbContext.Notes.AddAsync(note);
+                myDbContext.SaveChanges();
+                return await Task.FromResult(note);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            
+
+            /*
+            if (note == null)
+            {
+                throw new ArgumentNullException(nameof(note));
+            }
+
+            note.NoteId = Guid.NewGuid();
+            try
+            {
+                EntityEntry<Note> addedNote = await myDbContext.Notes.AddAsync(note);
+                await myDbContext.SaveChangesAsync();
+                return addedNote.Entity;
+            }
+            catch (OperationCanceledException)
+            {
+                //TODO: Log(ex)
+                throw;
+            }
+            */
         }
 
-        public override Task<IEnumerable<Note>> GetRangeByIdAsync(IEnumerable<int> ids)
+        /// <inheritdoc/>
+        public override async Task<IEnumerable<Note>> AddRangeAsync(IEnumerable<Note> notes)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Note> resultNotes = new();
+                foreach (Note note in notes)
+                {
+                    resultNotes.Add(await AddAsync(note));
+                }
+                myDbContext.SaveChanges();
+                return resultNotes;
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            
         }
+        #endregion Add Section
+        #region Remove Section
 
-        public override void Remove(Note entity)
+        /// <inheritdoc/>
+        public override void Remove(Note note)
         {
-            myDbContext.Remove(entity);
+            try
+            {
+                myDbContext.Notes.Remove(note);
+                myDbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
 
-        public override Task RemoveAsync(Note entity)
+        /// <inheritdoc/>
+        public override void RemoveById(Guid id)
         {
-            throw new NotImplementedException();
+            Note note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
+            myDbContext.Notes.Remove(note);
+            myDbContext.SaveChanges();
         }
 
-        public override void RemoveById(int id)
-        {
-            throw new NotImplementedException();
-            //Ez ide haszontalan?
-        }
-
-        public override Task RemoveByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <inheritdoc/>
         public override void RemoveRange(IEnumerable<Note> entities)
         {
-            myDbContext.Notes.RemoveRange(entities);
-        }
-
-        public override Task RemoveRangeAsync(IEnumerable<Note> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void RemoveRangeById(IEnumerable<int> ids)
-        {
-            throw new NotImplementedException();
-            //Ez ide haszontalan?
-        }
-
-        public override Task RemoveRangeByIdAsync(IEnumerable<int> ids)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Update(Note entity)
-        {
-            foreach (var item in myDbContext.Notes)
+            try
             {
-                if (item.NoteId == entity.NoteId)
-                {
-                    item.Title = entity.Title;
-                    item.TopicId = entity.TopicId;
-                    item.UserId = entity.UserId;
-                    item.CreatedAt = entity.CreatedAt;
-                    item.Description = entity.Description;
-                }
+                myDbContext.Notes.RemoveRange(entities);
+                myDbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
             }
         }
 
-        public override Task UpdateAsync(Note entity)
+        /// <inheritdoc/>
+        public override void RemoveRangeById(IEnumerable<Guid> ids)
         {
-            throw new NotImplementedException();
-        }
-
-        public override void UpdateRange(IEnumerable<Note> entities)
-        {
-            foreach (var entity in entities)
+            foreach (Guid id in ids)
             {
-                foreach (var item in myDbContext.Notes)
-                {
-                    if (item.NoteId == entity.NoteId)
-                    {
-                        item.Title = entity.Title;
-                        item.TopicId = entity.TopicId;
-                        item.UserId = entity.UserId;
-                        item.CreatedAt = entity.CreatedAt;
-                        item.Description = entity.Description;
-                    }
-                }
+                Note? note = myDbContext.Notes.FirstOrDefault(x => x.NoteId == id) ?? throw new KeyNotFoundException();
+                myDbContext.Notes.Remove(note);
+            }
+            myDbContext.SaveChanges();
+        }
+        #endregion Remove Section
+        #region Modify Section
+
+        /// <inheritdoc/>
+        public override Note Update(Note note)
+        {
+            try
+            {
+                Note resultNote = myDbContext.Notes.Update(note).Entity;
+                myDbContext.SaveChanges();
+                return resultNote;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
             }
         }
 
-        public override Task UpdateRangeAsync(IEnumerable<Note> entitites)
+        /// <inheritdoc/>
+        public override IEnumerable<Note> UpdateRange(IEnumerable<Note> notes)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Note> resultNotes = new();
+                foreach (Note note in notes)
+                {
+                    resultNotes.Add(myDbContext.Notes.Update(note).Entity);
+                }
+                myDbContext.SaveChanges();
+                return resultNotes;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new KeyNotFoundException();
+            }
         }
+        #endregion Modify Section
     }
 }

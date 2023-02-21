@@ -6,236 +6,157 @@ using Microsoft.EntityFrameworkCore;
 namespace evoKnowledgeShare.UnitTests.Repositories
 {
     [TestFixture]
-    public class TopicRepositoryTests
+    public class TopicRepositoryTests:RepositoryTestBase<Topic>
     {
-        private TopicRepository myRepository = default!;
-        private EvoKnowledgeDbContext myDbContext = default!;
+        List<Topic> myTopics;
 
         [SetUp]
         public void Setup()
         {
-            DbContextOptions dbContextOptions = new DbContextOptionsBuilder<EvoKnowledgeDbContext>()
-                .UseInMemoryDatabase("InMemoryDB").Options;
-
-            myDbContext = new EvoKnowledgeDbContext(dbContextOptions);
             myRepository = new TopicRepository(myDbContext);
+            myTopics = new List<Topic>() { 
+                new Topic(Guid.NewGuid(), "Test Topic Title 1."),
+                new Topic(Guid.NewGuid(), "Test Topic Title 2."),
+                new Topic(Guid.NewGuid(), "Test Topic Title 3."),
+                new Topic(Guid.NewGuid(), "Test Topic Title 4."),
+                new Topic(Guid.NewGuid(), "Test Topic Title 5."),
+            };
+            myDbContext.Topics.AddRange(myTopics);
+            myDbContext.SaveChanges();
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            myDbContext.Database.EnsureDeleted();
-            myDbContext.Dispose();
-        }
-
-        [Test]
-        public void Repository_Add_ShouldAddOneNewTopic()
-        {
-            var expectedTopic = new Topic(1, "Test Topic 1.");
-
-            myRepository.Add(expectedTopic);
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(1));
-            Assert.That(myDbContext.Topics.First(), Is.EqualTo(expectedTopic));
-        }
-
+        #region Add Test Section
         [Test]
         public async Task Repository_AddAsync_ShouldAddOneNewTopic()
         {
-            var expectedTopic = new Topic(1, "Test Topic 1.");
+            Topic expectedTopic = new Topic(Guid.NewGuid(), "Add Async Test Title");
 
-            await myRepository.AddAsync(expectedTopic);
+            Topic actualTopic = await myRepository.AddAsync(expectedTopic);
             await myRepository.SaveChangesAsync();
 
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(1));
-            Assert.That(myDbContext.Topics.First(), Is.EqualTo(expectedTopic));
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(myTopics.Count + 1));
+            Assert.That(Equals(actualTopic, expectedTopic));
+            Assert.That(myDbContext.Topics, Does.Contain(expectedTopic));
         }
 
         [Test]
-        public void Repository_AddRange_ShouldAddARangeOfTopics()
-        {
-            var expectedTopics = new List<Topic>
-            {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
+        public async Task Repository_AddRangeAsync_ShouldAddARangeOfTopicsAsync() {
+            List<Topic> expectedTopics = new List<Topic>() {
+                new Topic(Guid.NewGuid(), "Add Range Async Test Title 1."),
+                new Topic(Guid.NewGuid(), "Add Range Async Test Title 2."),
+                new Topic(Guid.NewGuid(), "Add Range Async Test Title 3.")
             };
 
-            myRepository.AddRange(expectedTopics);
-            myRepository.SaveChanges();
+            IEnumerable<Topic> actualTopics = await myRepository.AddRangeAsync(expectedTopics);
 
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(expectedTopics.Count));
-            foreach (var expectedTopic in expectedTopics)
-            {
-                Assert.That(myDbContext.Topics, Does.Contain(expectedTopic));
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(expectedTopics.Count + myTopics.Count));
+            foreach (var topic in expectedTopics) {
+                Assert.That(actualTopics.Contains(topic));
+                Assert.That(myDbContext.Topics, Does.Contain(topic));
             }
+            
         }
+        #endregion Add Test Section
 
+        #region Get Test Section
         [Test]
         public void Repository_GetAll_ShouldGetAllTopics()
         {
-            var expectedTopics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
-            };
-            
-            myDbContext.Topics.AddRange(expectedTopics);
-            myDbContext.SaveChanges();
+            IEnumerable<Topic> actualTopics = myRepository.GetAll().ToList();
 
-            var actualTopics = myRepository.GetAll().ToArray();
-
-            Assert.That(actualTopics, Has.Length.EqualTo(expectedTopics.Count));
+            Assert.That(actualTopics.Count, Is.EqualTo(myTopics.Count));
             foreach (var actualTopic in actualTopics)
-            {
                 Assert.That(myDbContext.Topics, Does.Contain(actualTopic));
-            }
-        }
-
-        [Test]
-        public async Task Repository_GetAllAsync_ShouldGetAllAsync()
-        {
-            var expectedTopics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
-            };
-
-            myDbContext.Topics.AddRange(expectedTopics);
-            await myDbContext.SaveChangesAsync();
-
-            var actualTopics = (await myRepository.GetAllAsync()).ToArray();
-
-            Assert.That(actualTopics, Has.Length.EqualTo(expectedTopics.Count));
-            foreach (var actualTopic in actualTopics)
-            {
-                Assert.That(myDbContext.Topics, Does.Contain(actualTopic));
-            }
         }
 
         [Test]
         public void Repository_GetById_ShouldReturnATopicWithSpecificId()
         {
-            var expectedTopic = new Topic(1, "Test Topic 1.");
-            var expectedTopics = new List<Topic> {
-                expectedTopic,
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
-            };
+            Topic expectedTopic = new Topic(myTopics[2].Id, myTopics[2].Title);
 
-            myDbContext.Topics.AddRange(expectedTopics);
-            myDbContext.SaveChanges();
+            Topic actualTopic = myRepository.GetById(expectedTopic.Id);
 
-            var actualTopic = myRepository.GetById(expectedTopic.Id);
-
-            Assert.That(actualTopic, Is.EqualTo(expectedTopic));
+            Assert.That(Equals(actualTopic, expectedTopic));
         }
 
         [Test]
         public void Repository_GetRangeById_ShouldReturnARangeOfTopicsByIds()
         {
-            var topics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
+            List<Topic> expectedTopics = new List<Topic> {
+                new Topic(myTopics[1].Id, myTopics[1].Title),
+                new Topic(myTopics[3].Id, myTopics[3].Title),
+                new Topic(myTopics[4].Id, myTopics[4].Title)
             };
 
-            myDbContext.Topics.AddRange(topics);
-            myDbContext.SaveChanges();
+            IEnumerable<Topic> actualTopics = myRepository.GetRangeById(expectedTopics.Take(3).Select(x => x.Id)).ToArray();
 
-            var actualTopics = myRepository.GetRangeById(topics.Take(2).Select(x => x.Id)).ToArray();
-
-            Assert.That(actualTopics, Does.Contain(topics[0]));
-            Assert.That(actualTopics, Does.Contain(topics[1]));
-            Assert.That(actualTopics, Has.Length.EqualTo(2));
+            foreach (var expectedTopic in expectedTopics)
+                Assert.That(myDbContext.Topics, Does.Contain(expectedTopic));
+            Assert.That(actualTopics.Count, Is.EqualTo(expectedTopics.Count));
         }
+        #endregion Get Test Section
 
+        #region Remove Test Section
         [Test]
         public void Repository_Remove_ShouldRemoveOneTopic()
         {
-            var topicToRemove = new Topic(1, "Test Topic 1.");
-            var topics = new List<Topic> {
-                topicToRemove,
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
-            };
-
-            myDbContext.Topics.AddRange(topics);
-            myDbContext.SaveChanges();
-
-            myRepository.Remove(topicToRemove);
+            myRepository.Remove(myTopics[0]);
             myRepository.SaveChanges();
 
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(2));
-            Assert.That(myDbContext.Topics.All(x => !x.Equals(topicToRemove)));
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(myTopics.Count - 1));
+            Assert.That(myDbContext.Topics.All(x => !x.Equals(myTopics[0])));
         }
 
         [Test]
-        public void Repository_RemoveById_ShouldRemoveOneTopicWithSpecificId()
+        public void Repository_RemoveById_ShouldRemoveOneTopicWithSpecificId() 
         {
-            var topicToRemove = new Topic(1, "Test Topic 1.");
-            var topics = new List<Topic> {
-                topicToRemove,
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
-            };
-
-            myDbContext.Topics.AddRange(topics);
-            myDbContext.SaveChanges();
+            Topic topicToRemove = new Topic(myTopics[0].Id, myTopics[0].Title);
 
             myRepository.RemoveById(topicToRemove.Id);
             myRepository.SaveChanges();
 
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(2));
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(myTopics.Count - 1));
             Assert.That(myDbContext.Topics.All(x => !x.Equals(topicToRemove)));
         }
 
         [Test]
         public void Repository_RemoveRange_ShouldRemoveARangeOfTopics()
         {
-            var topics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
+            List<Topic> topicsToRemove = new List<Topic>() {
+                myTopics[0],
+                myTopics[1],
             };
 
-            myRepository.AddRange(topics);
+            myRepository.RemoveRange(topicsToRemove.Take(2));
             myRepository.SaveChanges();
 
-            myRepository.RemoveRange(topics.Take(2));
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(1));
-            Assert.That(!myDbContext.Topics.Contains(topics[0]));
-            Assert.That(!myDbContext.Topics.Contains(topics[1]));
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(myTopics.Count - 2));
+            Assert.That(!myDbContext.Topics.Contains(topicsToRemove[0]));
+            Assert.That(!myDbContext.Topics.Contains(topicsToRemove[1]));
         }
 
         [Test]
-        public void Repository_RemoveRangeById_ShouldRemoveARangeOfTopicsById()
+        public void Repository_RemoveRangeById_ShouldRemoveARangeOfTopicsById() 
         {
-            var topics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
+            List<Topic> topicsToRemove = new List<Topic>() {
+                new Topic(myTopics[0].Id, myTopics[0].Title),
+                new Topic(myTopics[3].Id, myTopics[3].Title),
             };
 
-            myRepository.AddRange(topics);
+            myRepository.RemoveRangeById(topicsToRemove.Take(2).Select(x => x.Id));
             myRepository.SaveChanges();
 
-
-            myRepository.RemoveRangeById(topics.Take(2).Select(x => x.Id));
-            myRepository.SaveChanges();
-
-            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(1));
+            Assert.That(myDbContext.Topics.Count(), Is.EqualTo(myTopics.Count - 2));
         }
+        #endregion Remove Test Section
 
+        #region Update Test Section
         [Test]
-        public void Repository_Update_ShouldUpdateOneTopic()
+        public async Task Repository_Update_ShouldUpdateOneTopic()
         {
-            var topic = new Topic(1, "Test Topic 1.");
+            var topic = new Topic(Guid.NewGuid(), "Test Topic 1.");
 
-            myRepository.Add(topic);
+            await myRepository.AddAsync(topic);
             myRepository.SaveChanges();
 
             string newTopicTitle = "Updated Test Topic 1.";
@@ -247,19 +168,19 @@ namespace evoKnowledgeShare.UnitTests.Repositories
 
             var updatedTopic = myRepository.GetById(topic.Id);
 
-            Assert.That(updatedTopic.Title, Is.EqualTo(newTopicTitle));
+            Assert.That(updatedTopic?.Title, Is.EqualTo(newTopicTitle));
         }
 
         [Test]
         public void Repository_UpdateRange_ShouldUpdateARangeOfTopics()
         {
             var topics = new List<Topic> {
-                new Topic(1, "Test Topic 1."),
-                new Topic(2, "Test Topic 2."),
-                new Topic(3, "Test Topic 3.")
+                new Topic(Guid.NewGuid(), "Test Topic 1."),
+                new Topic(Guid.NewGuid(), "Test Topic 2."),
+                new Topic(Guid.NewGuid(), "Test Topic 3.")
             };
 
-            myRepository.AddRange(topics);
+            myRepository.AddRangeAsync(topics);
             myRepository.SaveChanges();
 
             List<string> newTopicTitles = new List<string> {
@@ -281,5 +202,6 @@ namespace evoKnowledgeShare.UnitTests.Repositories
             Assert.That(updatedTopics.Contains(topics.ElementAt(1)));
             Assert.That(updatedTopics.Contains(topics.ElementAt(2)));
         }
+        #endregion Update Test Section
     }
 }
