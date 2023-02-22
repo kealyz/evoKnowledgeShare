@@ -1,0 +1,15 @@
+.keyItem {
+    display: inline-block;
+    width: 300px;
+    margin-right: 1rem;
+}
+
+.inputItem {
+    display: inline-block;
+    width: 600px;
+    margin-right: 1rem;
+}
+
+.container{
+    margin-bottom: 1rem;
+}

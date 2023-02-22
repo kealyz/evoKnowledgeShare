@@ -96,6 +96,20 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
         }
 
         [Test]
+        public async Task TopicController_GetTopicById_ShouldReturnWithBadRequest() {
+            // Arrange
+            Uri getUri = new Uri($"/api/Topic/not id", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+
+        [Test]
         public async Task TopicController_GetTopicsByTitle_ReturnsTopicsWithSpecificTitle()
         {
             // Arrange
@@ -171,6 +185,20 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
             Assert.That(actualTopic!.Title, Is.EqualTo(topicDTO.Title));
         }
+
+        [Test]
+        public async Task TopicController_CreateTopic_ShouldReturnWithBadRequest() {
+            // Arrange
+            Uri postUri = new Uri("/api/Topic/Create", UriKind.Relative);
+            int notTopicDTO = int.MaxValue;
+
+            // Action
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, notTopicDTO);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
         #endregion Add Test Section
 
         #region Remove Test Section
@@ -198,6 +226,24 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
 
             // Assert
             Assert.That(actualTopic!.Title, Is.EqualTo(topic.Title));
+        }
+        [Test]
+        public async Task TopicController_UpdateTopic_ShouldReturnWithBadRequest() {
+            // Arrange
+            Uri postUri = new Uri("/api/Topic/Create", UriKind.Relative);
+            Topic topic = new Topic(myTopics[0].Id, myTopics[0].Title);
+
+            // Action
+            HttpResponseMessage response = await myClient.PostAsJsonAsync(postUri, topic);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            Uri updateUri = new Uri("/api/Topic/Update", UriKind.Relative);
+
+            HttpResponseMessage updateResponse = await myClient.PostAsJsonAsync(postUri, new List<int>());
+            Console.WriteLine(await updateResponse.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
         #endregion Update Test Section
     }

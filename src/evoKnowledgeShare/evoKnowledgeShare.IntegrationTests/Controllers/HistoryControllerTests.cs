@@ -59,7 +59,7 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
-  /*       [Test]
+         [Test]
        public async Task HistoryController_GetById_ShouldRetrunNoContent()
         {
             Uri getUri = new($"/api/History/{Guid.NewGuid()}", UriKind.Relative);
@@ -67,8 +67,8 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             HttpResponseMessage response = await myClient.GetAsync(getUri);
             Console.WriteLine(await response.Content.ReadAsStringAsync());
    
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-        }*/
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
 
         [Test]
         public async Task HistoryController_GetById_ShouldReturnBadRequest()

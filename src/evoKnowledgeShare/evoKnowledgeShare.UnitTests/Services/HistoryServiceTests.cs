@@ -44,9 +44,16 @@ namespace evoKnowledgeShare.UnitTests.Services
             Assert.That(historyEntityById, Is.Not.Null);
             Assert.That(historyEntityById.Id.Equals(entity.Id));
         }
+        [Test]
+        public void HistoryService_GetById_ShouldReturnKeyNotFoundException() {
+            Assert.Throws<KeyNotFoundException>(() => {
+                myRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).Throws(new KeyNotFoundException());
+                var history = myHistoryService.GetById(Guid.Empty);
+            });
+        }
 
         [Test]
-        public async Task HistoryService_Create_ShouldCreateHistory()
+        public async Task HistoryService_CreateHistory_ShouldCreateHistory()
         {
             var historyEntities = new List<History>();
             var entity = new History(Guid.NewGuid(), "Activity param", new DateTimeOffset(), "0.1", Guid.NewGuid(), "PK001");

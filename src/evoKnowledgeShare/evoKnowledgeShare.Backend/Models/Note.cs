@@ -1,5 +1,6 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace evoKnowledgeShare.Backend.Models
@@ -8,7 +9,7 @@ namespace evoKnowledgeShare.Backend.Models
     {
         public Note(Guid noteId, Guid userId, Guid topicId, DateTimeOffset createdAt, string description, string title)
         {
-            NoteId = noteId;
+            NoteId = Guid.NewGuid();
             UserId = userId;
             TopicId = topicId;
             CreatedAt = createdAt;

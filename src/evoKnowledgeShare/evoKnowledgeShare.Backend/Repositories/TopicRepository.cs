@@ -119,8 +119,10 @@ namespace evoKnowledgeShare.Backend.Repositories
         {
             try
             {
+                //Something wrong here
                 Topic topicToRemove = myDbContext.Topics.FirstOrDefault(x => x.Id == id) ?? throw new KeyNotFoundException();
                 myDbContext.Topics.Remove(topicToRemove);
+                myDbContext.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -143,6 +145,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 {
                     myDbContext.Remove(topic);
                 }
+                myDbContext.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -171,6 +174,7 @@ namespace evoKnowledgeShare.Backend.Repositories
                 {
                     myDbContext.Topics.Remove(topicToRemove);
                 }
+                myDbContext.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -206,6 +210,7 @@ namespace evoKnowledgeShare.Backend.Repositories
             }
 
             myDbContext.Topics.UpdateRange(topics);
+            myDbContext.SaveChanges();
             return myDbContext.Topics.Where(topic => topics.Any(entity => entity == topic)).ToList();
         }
 
