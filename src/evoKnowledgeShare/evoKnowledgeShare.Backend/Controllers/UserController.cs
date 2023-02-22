@@ -119,12 +119,11 @@ namespace evoKnowledgeShare.Backend.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateUserAsync([FromBody] UserDTO user)
+        public async Task<IActionResult> CreateUserAsync([FromBody] UserDTO userDTO)
         {
             try 
             {
-                User? result = await myUserService.CreateUserAsync(new User(user));
-                return Created(nameof(CreateUserAsync),result);
+                return Created(nameof(CreateUserAsync), await myUserService.CreateUserAsync(userDTO));
             }
             catch (ArgumentNullException)
             {

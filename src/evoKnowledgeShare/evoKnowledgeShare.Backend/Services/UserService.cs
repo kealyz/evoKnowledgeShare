@@ -1,4 +1,5 @@
-﻿using evoKnowledgeShare.Backend.Interfaces;
+﻿using evoKnowledgeShare.Backend.DTO;
+using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -63,10 +64,10 @@ namespace evoKnowledgeShare.Backend.Services
         /// <returns>Task <see cref="User"/></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="OperationCanceledException"></exception>
-        public async Task<User> CreateUserAsync(User user)
+        public async Task<User> CreateUserAsync(UserDTO userDTO)
         {
-            await myRepository.AddAsync(user);
-            return await Task.FromResult(user);
+            User user = new User(Guid.NewGuid(), userDTO.UserName, userDTO.FirstName, userDTO.LastName);
+            return await myRepository.AddAsync(user);
         }
 
         #region Remove Section

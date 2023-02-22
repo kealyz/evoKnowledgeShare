@@ -1,3 +1,4 @@
+using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
@@ -77,13 +78,66 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public async Task UserService_CreateUserAsync_CreatesNewUser()
         {
-            User user = new User(Guid.NewGuid(), "Lajos", "Lali", "L");
-            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).ReturnsAsync(user);
+            UserDTO userDTOToBeAdded = new UserDTO(myUsers[0].UserName, myUsers[0].FirstName, myUsers[0].LastName);
+            User userToBeAdded = new User(userDTOToBeAdded);
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).ReturnsAsync(userToBeAdded);
 
-            User actualUser = await myUserService.CreateUserAsync(user);
+            User actualUser = await myUserService.CreateUserAsync(userDTOToBeAdded);
 
-            myRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(y => y.Equals(user))), Times.Once);
-            Assert.That(actualUser, Is.EqualTo(user));
+            Assert.That(actualUser, Is.EqualTo(userToBeAdded));
+        }
+
+        #endregion Add Test Section
+
+        #region Remove Test Section
+
+        [Test]
+        public void UserService_Remove_ShouldRemoveSpecificUser()
+        {
+            myRepositoryMock.Setup(x => x.Remove(It.IsAny<User>()));
+
+            myUserService.Remove(myUsers[0]);
+
+            myRepositoryMock.Verify(x => x.Remove(It.Is<User>(y => y.Equals(myUsers[0]))), Times.Once);
+        }
+
+        [Test]
+        public void UserService_Remove_ShouldThrowKeyNotFoundException()
+        {
+            myRepositoryMock.Setup(x => x.Remove(It.IsAny<User>())).Throws<KeyNotFoundException>();
+
+            Assert.Throws<KeyNotFoundException>(() => myUserService.Remove(myUsers[0]));
+        }
+
+        [Test]
+        public void UserService_RemoveUserById_ShouldRemoveSpecificUserById()
+        {
+            myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<Guid>()));
+
+            myUserService.RemoveUserById(myUsers[0].Id);
+
+            myRepositoryMock.Verify(x => x.RemoveById(It.Is<Guid>(y => y.Equals(myUsers[0].Id))), Times.Once);
+        }
+        
+        [Test]
+        public void UserService_RemoveUserById_ShouldThrowKeyNotFoundException()
+        {
+            Guid guid = Guid.NewGuid();
+            myRepositoryMock.Setup(x => x.RemoveById(It.IsAny<Guid>())).Throws<KeyNotFoundException>();
+
+            Assert.Throws<KeyNotFoundException>(() => myUserService.RemoveUserById(guid));
+        }
+        
+        #endregion Remove Test Section
+
+        #region Update Test Section
+
+        [Test]
+        public async Task UserService_CreateUserAsync_ShouldThrowArgumentNullException()
+        {
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).Throws<ArgumentNullException>();
+
+            Assert.ThrowsAsync<ArgumentNullException>(() => myUserService.CreateUserAsync(new UserDTO("", "", "")));
         }
 
         #endregion Add Test Section
@@ -134,7 +188,7 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public void UserService_UpdateUser_ShouldUpdate()
         {
-            User user = new User(myUsers[0].Id, "Géza", myUsers[0].FirstName, myUsers[0].LastName);
+            User user = new User(myUsers[0].Id, "Gï¿½za", myUsers[0].FirstName, myUsers[0].LastName);
             myRepositoryMock.Setup(x => x.Update(It.IsAny<User>())).Returns(user);
 
             User actualUser = myUserService.Update(user);
@@ -155,8 +209,8 @@ namespace evoKnowledgeShare.UnitTests.Services
         public void UserService_UpdateRange_ShouldUpdateSpecificUsers()
         {
             IEnumerable<User> users = new List<User> { myUsers[0], myUsers[1] };
-            users.ElementAt(0).UserName = "Géza";
-            users.ElementAt(1).UserName = "Géza";
+            users.ElementAt(0).UserName = "Gï¿½za";
+            users.ElementAt(1).UserName = "Gï¿½za";
             myRepositoryMock.Setup(x => x.UpdateRange(It.IsAny<IEnumerable<User>>())).Returns(users);
 
             IEnumerable<User> actualUsers = myUserService.UpdateRange(users);

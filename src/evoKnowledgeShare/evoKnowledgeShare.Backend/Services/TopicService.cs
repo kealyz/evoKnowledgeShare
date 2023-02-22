@@ -1,6 +1,7 @@
 ﻿using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,6 @@ namespace evoKnowledgeShare.Backend.Services
     public class TopicService
     {
         private readonly IRepository<Topic> myRepository;
-
         public TopicService(IRepository<Topic> repository)
         {
             myRepository = repository;
