@@ -114,12 +114,11 @@ export default function MaterialTreeView() {
         <>
             {modalIsShown && (
                 <Modal onClose={hideModalHandler}>
-                    <p>{modalContent}</p>
                     <Form.Control type="text" placeholder="Enter the Topic title" value={topicTitle} onChange={e => setTopicTitle(e.target.value)} />
                     <Button onClick={() => onSave()}>Save</Button>
                 </Modal>
             )}
-            <Box sx={{ height: 600, flexGrow: 1, maxWidth: 450, overflowY: 'auto' }}>
+            <Box sx={{ height: 600, flexGrow: 1, maxWidth: 450, overflowY: 'auto', textSizeAdjust: 100 }}>
                 <Box sx={{ mb: 1, paddingLeft: "55px" }}>
                     <Button onClick={closeOrOpenTree}>
                         {expanded.length === 0 ? 'Expand all' : 'Collapse all'}

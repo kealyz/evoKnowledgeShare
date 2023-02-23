@@ -1,5 +1,11 @@
+  .topicItem {
+    width: 250px;
+    margin-right: 2rem;
+    display: inline-block;
+  }
+  
   .descriptionItem {
-      width: 600px;
+      width: 500px;
       margin-right: 2rem;
       display: inline-block;
   }
@@ -11,7 +17,7 @@
 
   .buttonItem{
     display: inline-block;
-    margin-left: 3rem;
+    margin-left: 4rem;
     
   }
 

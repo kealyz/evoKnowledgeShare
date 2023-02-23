@@ -114,7 +114,7 @@ export const Editor = () => {
       note: {
         noteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
         userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        topicId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        topicId: topicId,
         createdAt: moment().format('YYYY-MM-DD[T]HH:mm:ss.SSSZ'),
         description: description,
         title: documentName
