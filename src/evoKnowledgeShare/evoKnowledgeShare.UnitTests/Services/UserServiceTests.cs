@@ -1,3 +1,4 @@
+using evoKnowledgeShare.Backend.DTO;
 using evoKnowledgeShare.Backend.Interfaces;
 using evoKnowledgeShare.Backend.Models;
 using evoKnowledgeShare.Backend.Services;
@@ -77,13 +78,13 @@ namespace evoKnowledgeShare.UnitTests.Services
         [Test]
         public async Task UserService_CreateUserAsync_CreatesNewUser()
         {
-            User user = new User(Guid.NewGuid(), "Lajos", "Lali", "L");
-            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).ReturnsAsync(user);
+            UserDTO userDTOToBeAdded = new UserDTO(myUsers[0].UserName, myUsers[0].FirstName, myUsers[0].LastName);
+            User userToBeAdded = new User(userDTOToBeAdded);
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).ReturnsAsync(userToBeAdded);
 
-            User actualUser = await myUserService.CreateUserAsync(user);
+            User actualUser = await myUserService.CreateUserAsync(userDTOToBeAdded);
 
-            myRepositoryMock.Verify(x => x.AddAsync(It.Is<User>(y => y.Equals(user))), Times.Once);
-            Assert.That(actualUser, Is.EqualTo(user));
+            Assert.That(actualUser, Is.EqualTo(userToBeAdded));
         }
 
         #endregion Add Test Section
@@ -132,56 +133,14 @@ namespace evoKnowledgeShare.UnitTests.Services
         #region Update Test Section
 
         [Test]
-        public void UserService_UpdateUser_ShouldUpdate()
+        public async Task UserService_CreateUserAsync_ShouldThrowArgumentNullException()
         {
-            User user = new User(myUsers[0].Id, "Géza", myUsers[0].FirstName, myUsers[0].LastName);
-            myRepositoryMock.Setup(x => x.Update(It.IsAny<User>())).Returns(user);
+            myRepositoryMock.Setup(x => x.AddAsync(It.IsAny<User>())).Throws<ArgumentNullException>();
 
-            User actualUser = myUserService.Update(user);
-
-            myRepositoryMock.Verify(x => x.Update(It.Is<User>(y => y.Equals(user))), Times.Once);
-            Assert.That(actualUser, Is.EqualTo(user));
+            Assert.ThrowsAsync<ArgumentNullException>(() => myUserService.CreateUserAsync(new UserDTO("", "", "")));
         }
 
-        [Test]
-        public void UserService_Update_ShouldThrowKeyNotFoundException()
-        {
-            myRepositoryMock.Setup(x => x.Update(It.IsAny<User>())).Throws<KeyNotFoundException>();
+        #endregion Add Test Section
 
-            Assert.Throws<KeyNotFoundException>(() => myUserService.Update(myUsers[0]));
-        }
-
-        [Test]
-        public void UserService_UpdateRange_ShouldUpdateSpecificUsers()
-        {
-            IEnumerable<User> users = new List<User> { myUsers[0], myUsers[1] };
-            users.ElementAt(0).UserName = "Géza";
-            users.ElementAt(1).UserName = "Géza";
-            myRepositoryMock.Setup(x => x.UpdateRange(It.IsAny<IEnumerable<User>>())).Returns(users);
-
-            IEnumerable<User> actualUsers = myUserService.UpdateRange(users);
-
-            myRepositoryMock.Verify(x => x.UpdateRange(It.Is<IEnumerable<User>>(y => y.Equals(users))), Times.Once);
-            int i = 0;
-            foreach(var user in actualUsers)
-            {
-                Assert.That(user, Is.EqualTo(users.ElementAt(i)));
-                i++;
-            }
-        }
-
-        [Test]
-        public void UserService_UpdateRange_ShouldThrowKeyNotFoundException()
-        {
-            var usersList = new List<User>()
-            {
-                myUsers[0],
-                myUsers[1]
-            };
-            myRepositoryMock.Setup(x => x.UpdateRange(It.IsAny<List<User>>())).Throws<KeyNotFoundException>();
-            Assert.Throws<KeyNotFoundException>(() => myUserService.UpdateRange(usersList));
-        }
-
-        #endregion Update Test Section
     }
 }

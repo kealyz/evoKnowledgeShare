@@ -10,6 +10,7 @@ export default function NavMenu() {
                 <Nav className="me-auto">
                     <Link to="/" className="nav-link">Home</Link>
                     <Link to="/Editor" className="nav-link">Editor</Link>
+                    <Link to="/TreeView" className="nav-link">TreeView</Link>
                     <NavDropdown title="Operations" id="basic-nav-dropdown">
                             <NavDropdown.Item><Link style={{ color: "black" }} className="nav-link" to="/Histories">History Actions</Link></NavDropdown.Item>
                             <NavDropdown.Divider />

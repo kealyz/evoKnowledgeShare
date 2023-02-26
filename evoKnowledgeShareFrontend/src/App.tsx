@@ -6,8 +6,10 @@ import { NotFound } from './pages/NotFound';
 import { Editor } from './pages/Editor';
 import { Histories } from './pages/Histories';
 import { Users } from './pages/Users';
+import MaterialTreeView from './pages/MaterialTreeView';
 import { Notes } from './pages/Notes';
 import { UpdateNote } from './pages/UpdateNote';
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/Topics' element={<Topics />} />
         <Route path='/Editor' element={<Editor/>}/>
+        <Route path='/TreeView' element={<MaterialTreeView/>}/>
         <Route path='/Histories' element={<Histories/>}/>
         <Route path='/Users' element={<Users/>}/>
         <Route path='/Notes' element={<Notes/>}/>

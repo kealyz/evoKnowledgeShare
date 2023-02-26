@@ -41,6 +41,7 @@ namespace evoKnowledgeShare.Backend
             services.AddScoped<NoteService>();
             services.AddScoped<TopicService>();
             services.AddScoped<HistoryService>();
+            services.AddScoped<TreeViewService>();
             Console.WriteLine("Done.");
 
             services.AddCors(options =>

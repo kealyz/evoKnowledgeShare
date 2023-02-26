@@ -143,6 +143,30 @@ namespace evoKnowledgeShare.IntegrationTests.Controllers
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        [Test]
+        public async Task TopicController_GetTreeView_ReturnsTopicsWithItsCorrespondingNotes()
+        {
+            //Arrange
+            myContext.Topics.AddRange(myTopics);
+            myContext.SaveChanges();
+            Note[] myNotes = new Note[]
+            {
+                new Note(Guid.NewGuid(), Guid.NewGuid(), myTopics[0].Id,DateTimeOffset.Now,"Test Description 1","Test Title 1"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), myTopics[0].Id,DateTimeOffset.Now,"Test Description 2","Test Title 2"),
+                new Note(Guid.NewGuid(), Guid.NewGuid(), myTopics[1].Id,DateTimeOffset.Now,"Test Description 3","Test Title 3"),
+            };
+            myContext.Notes.AddRange(myNotes);
+            myContext.SaveChanges();
+            Uri getUri = new Uri("/api/Topic/TreeView", UriKind.Relative);
+
+            // Action
+            HttpResponseMessage response = await myClient.GetAsync(getUri);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
         #endregion Get Test Section
 
         #region Add Test Section

@@ -1,20 +1,23 @@
 import MDEditor from '@uiw/react-md-editor'
 import { motion } from 'framer-motion'
-import moment from 'moment';
+import React from 'react';
 import { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import IEditorTopic from '../interfaces/IEditorTopic';
+import moment from 'moment';
 import { RootState } from '../store';
 import { modalActions } from '../store/modal';
 import { Modal } from '../ui/Modal';
 import classes from './Editor.module.css';
 
 export const Editor = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   let modalIsShown = useSelector((state: RootState) => state.modal.show);
   const modalContent = useSelector((state: RootState) => state.modal.content);
-  const navigate = useNavigate();
 
   const [value, setValue] = useState<string>("");
   const [documentName, setDocumentName] = useState<string>("");
@@ -23,8 +26,52 @@ export const Editor = () => {
   const [save, setSave] = useState<boolean>(false);
 
   const [isLevelInvalid, setIsLevelInvalid] = useState<boolean>(false);
+  const [isTopicTitleInvalid, setIsTopicTitleInvalid] = useState<boolean>(false);
   const [isValueInvalid, setIsValueInvalid] = useState<boolean>(false);
   const [documentNameInvalid, setDocumentNameInvalid] = useState<boolean>(false);
+  const [topics, setTopics] = useState([] as IEditorTopic[]);
+
+  const [topicId, setTopicId] = useState<string>("Choose a Topic Title");
+  const [topicTitle, setTopicTitle] = useState<string>("");
+  useEffect(() =>{
+    fetch('https://localhost:5145/api/Topic/All')
+            .then(res => res.json())
+            .then(json => {
+                setTopics(json)
+            });
+  }, [])
+
+  useEffect(() => {
+        topics.map(topic => { if (topic.id == searchParams.get("topic")) { setTopicTitle(topic.title); setTopicId(topic.id);} });
+  }, [topics])
+
+  useEffect(() => {
+    if (value.trim().length < 5) {
+      setIsValueInvalid(true);
+    } else {
+      setIsValueInvalid(false);
+    }
+
+    if (documentName.trim().length < 5 && documentName.trim().length === 0) {
+      setDocumentNameInvalid(true)
+    } else {
+      setDocumentNameInvalid(false);
+    }
+
+    if (level === "1" || level === "2" || level === "3") {
+      setIsLevelInvalid(false);
+    } else {
+      setIsLevelInvalid(true);
+    }
+
+    if (topicId === "Choose a Topic Title") {
+      setIsTopicTitleInvalid(true);
+    } else {
+      setIsTopicTitleInvalid(false);
+    }
+
+
+  }, [value, documentName, level, topicId])
 
   const showModalHandler = (content: string) => {
     dispatch(modalActions.setContent(content))
@@ -67,7 +114,7 @@ export const Editor = () => {
       note: {
         noteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
         userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        topicId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        topicId: topicId,
         createdAt: moment().format('YYYY-MM-DD[T]HH:mm:ss.SSSZ'),
         description: description,
         title: documentName
@@ -124,6 +171,12 @@ export const Editor = () => {
 
         <div>
           <Form.Group className="mb-3">
+            <div className={classes.topicItem}>
+              <Form.Select aria-label="Select title" isInvalid={isTopicTitleInvalid} value={topicId} onChange={(e) => {setTopicId(e.target.value);}}>
+                  <option>Choose a Topic Title</option>
+                  {topics.map(topic => <option value={topic.id}>{topic.title}</option>)}
+              </Form.Select>
+            </div>
             <div className={classes.descriptionItem}>
               <Form.Control type="text" isInvalid={documentNameInvalid} placeholder="Enter the document name" value={documentName} onChange={(e) => setDocumentName(e.target.value)} />
             </div>

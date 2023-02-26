@@ -12,15 +12,12 @@ namespace evoKnowledgeShare.Backend.Controllers
     {
         private TopicService myTopicService;
 
-        public TopicController(TopicService myTopicService)
-        {
-            this.myTopicService = myTopicService;
-        }
+        private TreeViewService myTreeViewService;
 
-        [HttpGet("Test")]
-        public IActionResult GetTest()
+        public TopicController(TopicService topicService, TreeViewService treeViewService)
         {
-            return Ok(new Topic[] { new Topic(Guid.NewGuid(), "Title1"), new Topic(Guid.NewGuid(), "Title2") });
+            myTopicService = topicService;
+            myTreeViewService = treeViewService;
         }
 
         [HttpGet("All")]
@@ -82,6 +79,13 @@ namespace evoKnowledgeShare.Backend.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpGet("TreeView")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetTreeView()
+        {
+            return Ok(myTreeViewService.GetTreeView());
         }
 
         [HttpPost("Create")]
